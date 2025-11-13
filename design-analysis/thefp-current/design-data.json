@@ -1,0 +1,35 @@
+{
+  "body": {
+    "fontFamily": "Spectral, serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"",
+    "fontSize": "19px",
+    "fontWeight": "400",
+    "lineHeight": "normal",
+    "color": "rgb(54, 55, 55)",
+    "backgroundColor": "rgba(0, 0, 0, 0)",
+    "padding": "0px",
+    "margin": "0px"
+  },
+  "header": null,
+  "mainHeadline": null,
+  "cardTitle": null,
+  "bodyText": {
+    "fontFamily": "Tiempos, serif",
+    "fontSize": "18px",
+    "fontWeight": "400",
+    "lineHeight": "27.9px",
+    "color": "rgb(22, 22, 19)",
+    "backgroundColor": "rgba(0, 0, 0, 0)",
+    "padding": "0px",
+    "margin": "0px"
+  },
+  "links": {
+    "fontFamily": "Spectral, serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"",
+    "fontSize": "19px",
+    "fontWeight": "400",
+    "lineHeight": "normal",
+    "color": "rgb(54, 55, 55)",
+    "backgroundColor": "rgba(0, 0, 0, 0)",
+    "padding": "0px",
+    "margin": "0px"
+  }
+}

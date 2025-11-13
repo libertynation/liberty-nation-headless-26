@@ -1,0 +1,339 @@
+const API_URL = process.env.WORDPRESS_API_URL || 'https://www.libertynation.com/wp-json/wp/v2';
+const WP_USERNAME = process.env.WP_APP_USERNAME;
+const WP_PASSWORD = process.env.WP_APP_PASSWORD;
+
+export interface WordPressPost {
+  id: number;
+  date: string;
+  modified: string;
+  slug: string;
+  status: string;
+  title: {
+    rendered: string;
+  };
+  content: {
+    rendered: string;
+  };
+  excerpt: {
+    rendered: string;
+  };
+  author: number;
+  featured_media: number;
+  categories: number[];
+  tags: number[];
+  acf?: {
+    author_quote?: string;
+    [key: string]: any;
+  };
+  yoast_head_json?: {
+    author?: string;
+    [key: string]: any;
+  };
+  _embedded?: {
+    author: Array<{
+      id: number;
+      name: string;
+      slug: string;
+      description?: string;
+      avatar_urls?: {
+        '24'?: string;
+        '48'?: string;
+        '96'?: string;
+        [key: string]: string | undefined;
+      };
+      acf?: {
+        title?: string;
+        [key: string]: any;
+      };
+    }>;
+    'wp:featuredmedia'?: Array<{
+      id: number;
+      source_url: string;
+      alt_text: string;
+      media_details: {
+        width: number;
+        height: number;
+      };
+    }>;
+    'wp:term': Array<Array<{
+      id: number;
+      name: string;
+      slug: string;
+      taxonomy?: string;
+    }>>;
+  };
+}
+
+export interface WordPressCategory {
+  id: number;
+  name: string;
+  slug: string;
+  count: number;
+  description?: string;
+  taxonomy?: string;
+  parent?: number;
+}
+
+export interface WordPressAuthor {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  avatar_urls?: {
+    '24'?: string;
+    '48'?: string;
+    '96'?: string;
+    [key: string]: string | undefined;
+  };
+  acf?: {
+    title?: string;
+    twitter?: string;
+    facebook?: string;
+    linkedin?: string;
+    [key: string]: any;
+  };
+  url?: string;
+  link?: string;
+}
+
+async function fetchAPI(endpoint: string, options: RequestInit = {}) {
+  const url = `${API_URL}${endpoint}`;
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...((options.headers || {}) as Record<string, string>),
+  };
+
+  // Add Basic Auth if credentials are available
+  if (WP_USERNAME && WP_PASSWORD) {
+    const token = Buffer.from(`${WP_USERNAME}:${WP_PASSWORD}`).toString('base64');
+    headers['Authorization'] = `Basic ${token}`;
+  }
+
+  const response = await fetch(url, {
+    ...options,
+    headers,
+  });
+
+  if (!response.ok) {
+    throw new Error(`WordPress API error: ${response.status} ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+export async function getPosts(params: {
+  per_page?: number;
+  page?: number;
+  categories?: string;
+  _embed?: boolean;
+  orderby?: string;
+  order?: 'asc' | 'desc';
+} = {}): Promise<WordPressPost[]> {
+  const searchParams = new URLSearchParams();
+
+  if (params.per_page) searchParams.set('per_page', params.per_page.toString());
+  if (params.page) searchParams.set('page', params.page.toString());
+  if (params.categories) searchParams.set('categories', params.categories);
+  if (params._embed !== false) searchParams.set('_embed', 'true');
+  if (params.orderby) searchParams.set('orderby', params.orderby);
+  if (params.order) searchParams.set('order', params.order);
+
+  const query = searchParams.toString();
+  return fetchAPI(`/posts${query ? `?${query}` : ''}`);
+}
+
+export async function getPostBySlug(slug: string): Promise<WordPressPost | null> {
+  const posts = await fetchAPI(`/posts?slug=${slug}&_embed=true`);
+  return posts.length > 0 ? posts[0] : null;
+}
+
+export async function getPost(id: number): Promise<WordPressPost> {
+  return fetchAPI(`/posts/${id}?_embed=true`);
+}
+
+export async function getCategories(): Promise<WordPressCategory[]> {
+  return fetchAPI('/categories?per_page=100');
+}
+
+export async function getCategory(slug: string): Promise<WordPressCategory | null> {
+  const categories = await fetchAPI(`/categories?slug=${slug}`);
+  return categories.length > 0 ? categories[0] : null;
+}
+
+export async function getCategoryById(id: number): Promise<WordPressCategory | null> {
+  try {
+    return await fetchAPI(`/categories/${id}`);
+  } catch (error) {
+    console.error('Error fetching category:', error);
+    return null;
+  }
+}
+
+export async function getPostsByCategory(categoryId: number, params: {
+  per_page?: number;
+  page?: number;
+  _embed?: boolean;
+} = {}): Promise<WordPressPost[]> {
+  const searchParams = new URLSearchParams();
+  searchParams.set('categories', categoryId.toString());
+
+  if (params.per_page) searchParams.set('per_page', params.per_page.toString());
+  if (params.page) searchParams.set('page', params.page.toString());
+  if (params._embed !== false) searchParams.set('_embed', 'true');
+
+  const query = searchParams.toString();
+  return fetchAPI(`/posts?${query}`);
+}
+
+export async function getAuthorBySlug(slug: string): Promise<WordPressAuthor | null> {
+  try {
+    const authors = await fetchAPI(`/users?slug=${slug}`);
+    return authors.length > 0 ? authors[0] : null;
+  } catch (error) {
+    console.error('Error fetching author:', error);
+    return null;
+  }
+}
+
+export async function getAuthorById(id: number): Promise<WordPressAuthor | null> {
+  try {
+    return await fetchAPI(`/users/${id}`);
+  } catch (error) {
+    console.error('Error fetching author:', error);
+    return null;
+  }
+}
+
+export async function getPostsByAuthor(authorId: number, params: {
+  per_page?: number;
+  page?: number;
+  _embed?: boolean;
+} = {}): Promise<WordPressPost[]> {
+  const searchParams = new URLSearchParams();
+  searchParams.set('author', authorId.toString());
+
+  if (params.per_page) searchParams.set('per_page', params.per_page.toString());
+  if (params.page) searchParams.set('page', params.page.toString());
+  if (params._embed !== false) searchParams.set('_embed', 'true');
+
+  const query = searchParams.toString();
+  return fetchAPI(`/posts?${query}`);
+}
+
+// Helper functions to extract embedded data
+export function getFeaturedImageUrl(post: WordPressPost): string | null {
+  return post._embedded?.['wp:featuredmedia']?.[0]?.source_url || null;
+}
+
+export function getAuthorName(post: WordPressPost): string {
+  // First try Yoast SEO author field (most reliable for this site)
+  const yoastAuthor = post.yoast_head_json?.author;
+  if (yoastAuthor) {
+    return yoastAuthor;
+  }
+
+  // Try to get guest-author from wp:term (index 2)
+  // The wp:term array contains: [0] = categories, [1] = tags, [2] = guest-author
+  const guestAuthor = post._embedded?.['wp:term']?.[2]?.[0]?.name;
+  if (guestAuthor) {
+    return guestAuthor;
+  }
+
+  // Fallback to regular author embed (usually returns error for this site)
+  const regularAuthor = post._embedded?.author?.[0]?.name;
+  if (regularAuthor && !('code' in (post._embedded?.author?.[0] || {}))) {
+    return regularAuthor;
+  }
+
+  // Final fallback
+  return 'Liberty Nation';
+}
+
+export function getCategoryName(post: WordPressPost): string {
+  return post._embedded?.['wp:term']?.[0]?.[0]?.name || 'NEWS';
+}
+
+// Check if post is in LNTV category (600) or any of its child categories
+export async function isLNTVPost(post: WordPressPost): Promise<boolean> {
+  // Check if post directly has LNTV category (600)
+  if (post.categories.includes(600)) {
+    return true;
+  }
+
+  // Check if any of the post's categories are children of LNTV (600)
+  for (const catId of post.categories) {
+    try {
+      const category = await getCategoryById(catId);
+      if (category && category.parent === 600) {
+        return true;
+      }
+    } catch (error) {
+      console.error(`Error checking category ${catId}:`, error);
+    }
+  }
+
+  return false;
+}
+
+export function stripHtmlTags(html: string): string {
+  return html.replace(/<[^>]*>/g, '');
+}
+
+export function decodeHtmlEntities(text: string): string {
+  const entities: Record<string, string> = {
+    '&#8217;': "'",
+    '&apos;': "'",
+    '&#039;': "'",
+    '&#8216;': "'",
+    '&quot;': '"',
+    '&#34;': '"',
+    '&#8220;': '"',
+    '&#8221;': '"',
+    '&amp;': '&',
+    '&#38;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&#8211;': '–',
+    '&#8212;': '—',
+  };
+
+  let decoded = text;
+  for (const [entity, char] of Object.entries(entities)) {
+    decoded = decoded.replace(new RegExp(entity, 'g'), char);
+  }
+  return decoded;
+}
+
+export function getExcerpt(post: WordPressPost): string {
+  // Prefer ACF author_quote if available
+  if (post.acf?.author_quote) {
+    return post.acf.author_quote;
+  }
+  // Otherwise use regular excerpt
+  return stripHtmlTags(post.excerpt.rendered);
+}
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
+
+export function getAuthorAvatar(post: WordPressPost): string | null {
+  // Check if we have avatar_urls from the author embed
+  const avatarUrls = post._embedded?.author?.[0]?.avatar_urls;
+  if (avatarUrls) {
+    // Try to get the highest resolution available
+    return avatarUrls['96'] || avatarUrls['48'] || avatarUrls['24'] || null;
+  }
+  return null;
+}
+
+export function getAuthorTitle(post: WordPressPost): string | null {
+  // Check if author has a title in ACF
+  return post._embedded?.author?.[0]?.acf?.title || null;
+}

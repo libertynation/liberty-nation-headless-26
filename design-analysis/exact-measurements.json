@@ -1,0 +1,14 @@
+{
+  "logo": {
+    "width": 236,
+    "height": 64
+  },
+  "mainContainer": {
+    "maxWidth": "none",
+    "padding": "0px",
+    "background": "rgba(0, 0, 0, 0)",
+    "display": "block",
+    "gap": "normal"
+  },
+  "articles": []
+}

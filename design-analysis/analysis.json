@@ -1,0 +1,66 @@
+{
+  "timestamp": "2025-10-17T08:59:08.069Z",
+  "url": "https://www.thefp.com/",
+  "header": null,
+  "typography": {
+    "p": {
+      "fontFamily": "Tiempos, serif",
+      "fontSize": "18px",
+      "fontWeight": "400",
+      "lineHeight": "27.9px",
+      "letterSpacing": "normal",
+      "textTransform": "none",
+      "color": "rgb(22, 22, 19)"
+    },
+    "a": {
+      "fontFamily": "Spectral, serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"",
+      "fontSize": "19px",
+      "fontWeight": "400",
+      "lineHeight": "normal",
+      "letterSpacing": "normal",
+      "textTransform": "none",
+      "color": "rgb(54, 55, 55)"
+    }
+  },
+  "layout": {
+    "main": null,
+    "container": {
+      "maxWidth": "none",
+      "width": "1920px",
+      "padding": "0px",
+      "margin": "0px",
+      "display": "flex",
+      "gridTemplateColumns": "none",
+      "gap": "16px"
+    }
+  },
+  "colors": [
+    "rgb(0, 0, 0)",
+    "rgb(255, 255, 255)",
+    "rgb(54, 55, 55)",
+    "rgb(246, 244, 239)",
+    "rgb(22, 22, 19) rgb(54, 55, 55) rgb(54, 55, 55)",
+    "rgb(134, 135, 135)",
+    "rgb(249, 48, 61)",
+    "rgb(22, 22, 19)",
+    "rgb(242, 49, 44)",
+    "rgb(190, 189, 184)",
+    "rgb(128, 128, 128)",
+    "rgb(190, 189, 184) rgb(128, 128, 128) rgb(128, 128, 128)",
+    "rgb(22, 22, 19) rgb(54, 55, 55)",
+    "rgb(54, 55, 55) rgb(54, 55, 55) rgb(54, 55, 55) rgb(190, 189, 184)",
+    "rgb(190, 189, 184) rgb(54, 55, 55) rgb(54, 55, 55)",
+    "rgb(160, 119, 90)",
+    "rgb(250, 52, 9)",
+    "rgb(54, 55, 55) rgb(54, 55, 55) rgb(54, 55, 55) rgb(246, 244, 239)",
+    "rgb(0, 85, 145)",
+    "rgb(240, 240, 240)"
+  ],
+  "spacing": [],
+  "articles": [],
+  "uiElements": {
+    "subscribeButton": null,
+    "newsletterLink": null,
+    "signInLink": null
+  }
+}
