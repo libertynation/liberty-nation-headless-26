@@ -2,36 +2,6 @@ const API_URL = process.env.WORDPRESS_API_URL || 'https://libertynation.com/wp-j
 const WP_USERNAME = process.env.WP_APP_USERNAME;
 const WP_PASSWORD = process.env.WP_APP_PASSWORD;
 
-// Custom fetch that handles SSL certificate issues
-// Next.js 15 uses undici which doesn't respect NODE_TLS_REJECT_UNAUTHORIZED
-async function customFetch(url: string, options: RequestInit = {}): Promise<Response> {
-  // In development or when SSL issues occur, we need special handling
-  if (process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0' || process.env.VERCEL_ENV) {
-    // For Vercel/production with SSL issues, use undici with custom connector
-    try {
-      const { fetch: undiciFetch, Agent } = await import('undici');
-      const agent = new Agent({
-        connect: {
-          rejectUnauthorized: false
-        }
-      });
-
-      return await undiciFetch(url, {
-        ...options,
-        // @ts-ignore - undici specific
-        dispatcher: agent
-      });
-    } catch (error) {
-      // Fallback to native fetch if undici import fails
-      console.warn('Undici import failed, using native fetch:', error);
-      return fetch(url, options);
-    }
-  }
-
-  // Normal fetch for environments without SSL issues
-  return fetch(url, options);
-}
-
 export interface WordPressPost {
   id: number;
   date: string;
@@ -173,7 +143,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     headers['Authorization'] = `Basic ${token}`;
   }
 
-  const response = await customFetch(url, {
+  const response = await fetch(url, {
     ...options,
     headers,
     next: {
@@ -203,7 +173,7 @@ async function fetchAPIWithPagination<T>(endpoint: string, options: RequestInit 
     headers['Authorization'] = `Basic ${token}`;
   }
 
-  const response = await customFetch(url, {
+  const response = await fetch(url, {
     ...options,
     headers,
     next: {

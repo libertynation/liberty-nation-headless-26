@@ -1,3 +1,6 @@
+// This file should only run on the server
+import 'server-only';
+
 // Liberty Nation YouTube Channel ID
 // Found from: https://www.youtube.com/@libertynation
 const CHANNEL_ID = 'UCFJNurMd0OqPRdeKgV8R9BA';
