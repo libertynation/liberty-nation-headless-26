@@ -19,18 +19,14 @@ export const dynamicParams = true;
 const VALID_CATEGORIES = ['politics', 'economy', 'culture', 'opinion', 'podcasts', 'videos'];
 const STATIC_PAGES = ['about', 'contact', 'newsletters', 'signin'];
 
-// Generate static params for just categories and static pages at build time
-// Posts will be generated on-demand with ISR
+// Generate static params for just static pages at build time
+// Posts and categories will be generated on-demand with ISR
 export async function generateStaticParams() {
-  const categoryParams = VALID_CATEGORIES.map((slug) => ({
-    slug,
-  }));
-
   const staticParams = STATIC_PAGES.map((slug) => ({
     slug,
   }));
 
-  return [...categoryParams, ...staticParams];
+  return staticParams;
 }
 
 interface PageProps {
