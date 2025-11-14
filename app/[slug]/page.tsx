@@ -331,9 +331,21 @@ export default async function DynamicPage({ params }: PageProps) {
   }
 
   // Check if it's a category page
-  const categoryData = await getCategory(slug);
+  let categoryData;
+  try {
+    categoryData = await getCategory(slug);
+  } catch (error) {
+    console.error(`Error fetching category ${slug}:`, error);
+    categoryData = null;
+  }
+  
   if (categoryData) {
-    const posts = await getPosts({ categories: categoryData.id.toString(), per_page: 30 });
+    let posts: Awaited<ReturnType<typeof getPosts>> = [];
+    try {
+      posts = await getPosts({ categories: categoryData.id.toString(), per_page: 30 });
+    } catch (error) {
+      console.error(`Error fetching posts for category ${slug}:`, error);
+    }
 
     return (
       <>
@@ -406,7 +418,13 @@ export default async function DynamicPage({ params }: PageProps) {
   }
 
   // Finally, try to load it as an article
-  const post = await getPostBySlug(slug);
+  let post;
+  try {
+    post = await getPostBySlug(slug);
+  } catch (error) {
+    console.error(`Error fetching post ${slug}:`, error);
+    notFound();
+  }
 
   if (!post) {
     notFound();
@@ -426,15 +444,25 @@ export default async function DynamicPage({ params }: PageProps) {
   const shouldShowFeaturedImage = imageUrl && !isLNTV;
 
   // Fetch real LNTV videos for the shorts section
-  const lntvVideos = await getPosts({ categories: '600', per_page: 3 });
+  let lntvVideos: Awaited<ReturnType<typeof getPosts>> = [];
+  try {
+    lntvVideos = await getPosts({ categories: '600', per_page: 3 });
+  } catch (error) {
+    console.error('Error fetching LNTV videos:', error);
+  }
 
   // Fetch related articles from the same category (excluding current post)
   const primaryCategoryId = post.categories[0];
-  const relatedArticlesResponse = await getPosts({
-    categories: primaryCategoryId.toString(),
-    per_page: 4,
-    exclude: [post.id]
-  });
+  let relatedArticlesResponse: Awaited<ReturnType<typeof getPosts>> = [];
+  try {
+    relatedArticlesResponse = await getPosts({
+      categories: primaryCategoryId.toString(),
+      per_page: 4,
+      exclude: [post.id]
+    });
+  } catch (error) {
+    console.error('Error fetching related articles:', error);
+  }
   const relatedArticles = relatedArticlesResponse.slice(0, 3);
 
   // Get ACF fields for shorts section
