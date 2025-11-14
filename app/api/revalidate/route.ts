@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // URL: /api/revalidate?secret=YOUR_SECRET_TOKEN&path=/
 
 export async function POST(request: NextRequest) {
-  const searchParams = request.searchParams;
+  const searchParams = request.nextUrl.searchParams;
   const secret = searchParams.get('secret');
   const path = searchParams.get('path');
   const slug = searchParams.get('slug');
