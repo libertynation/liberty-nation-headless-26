@@ -1,4 +1,4 @@
-import { getPosts, getFeaturedImageUrl, getAuthorName, formatDate, getExcerpt, decodeHtmlEntities } from '@/lib/wordpress';
+import { getPosts, getFeaturedImageUrl, getAuthorName, formatDate, getExcerpt, decodeHtmlEntities, type WordPressPost } from '@/lib/wordpress';
 import { generateHomeMetadata } from '@/lib/seo';
 import Header from '@/components/Header';
 import FeaturedArticle from '@/components/FeaturedArticle';
@@ -31,7 +31,13 @@ export default async function HomePage() {
   // Fetch all data in parallel for better performance
   // Wrap in try-catch to handle SSL cert issues during Vercel builds
   // ISR will update the page with real data after deployment
-  let articlesResponse, posts, lntvPosts, audioPosts, cultureArticles, opinionArticles, breakingPosts;
+  let articlesResponse: WordPressPost[] = [];
+  let posts: WordPressPost[] = [];
+  let lntvPosts: WordPressPost[] = [];
+  let audioPosts: WordPressPost[] = [];
+  let cultureArticles: WordPressPost[] = [];
+  let opinionArticles: WordPressPost[] = [];
+  let breakingPosts: WordPressPost[] = [];
 
   try {
     [
@@ -53,14 +59,7 @@ export default async function HomePage() {
     ]);
   } catch (error) {
     console.error('Error fetching posts during build:', error);
-    // During Vercel build, SSL cert issues may occur - use empty arrays and let ISR update
-    articlesResponse = [];
-    posts = [];
-    lntvPosts = [];
-    audioPosts = [];
-    cultureArticles = [];
-    opinionArticles = [];
-    breakingPosts = [];
+    // During Vercel build, SSL cert issues may occur - empty arrays already initialized, let ISR update
   }
 
   const featuredPost = articlesResponse?.[0];
