@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getCategory, getPostsByCategory, stripHtmlTags, getAuthorName, formatDate } from '@/lib/wordpress';
+import { getCategory, getPostsByCategoryWithChildren, stripHtmlTags, getAuthorName, formatDate } from '@/lib/wordpress';
 import { generateCategoryMetadata } from '@/lib/seo';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -43,7 +43,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     notFound();
   }
 
-  const response = await getPostsByCategory(category.id, { per_page: 24, page: currentPage });
+  const response = await getPostsByCategoryWithChildren(category.id, { per_page: 24, page: currentPage });
   const posts = response.data;
   const totalPages = response.totalPages || 1;
 

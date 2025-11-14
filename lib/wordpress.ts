@@ -1,14 +1,36 @@
-import https from 'https';
-
 const API_URL = process.env.WORDPRESS_API_URL || 'https://libertynation.com/wp-json/wp/v2';
 const WP_USERNAME = process.env.WP_APP_USERNAME;
 const WP_PASSWORD = process.env.WP_APP_PASSWORD;
 
-// Custom HTTPS agent for Vercel build environment
-// Vercel's build environment may have SSL certificate chain issues
-const httpsAgent = process.env.VERCEL_ENV ? new https.Agent({
-  rejectUnauthorized: false // Disable SSL verification only during Vercel builds
-}) : undefined;
+// Custom fetch that handles SSL certificate issues
+// Next.js 15 uses undici which doesn't respect NODE_TLS_REJECT_UNAUTHORIZED
+async function customFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  // In development or when SSL issues occur, we need special handling
+  if (process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0' || process.env.VERCEL_ENV) {
+    // For Vercel/production with SSL issues, use undici with custom connector
+    try {
+      const { fetch: undiciFetch, Agent } = await import('undici');
+      const agent = new Agent({
+        connect: {
+          rejectUnauthorized: false
+        }
+      });
+
+      return await undiciFetch(url, {
+        ...options,
+        // @ts-ignore - undici specific
+        dispatcher: agent
+      });
+    } catch (error) {
+      // Fallback to native fetch if undici import fails
+      console.warn('Undici import failed, using native fetch:', error);
+      return fetch(url, options);
+    }
+  }
+
+  // Normal fetch for environments without SSL issues
+  return fetch(url, options);
+}
 
 export interface WordPressPost {
   id: number;
@@ -151,11 +173,9 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     headers['Authorization'] = `Basic ${token}`;
   }
 
-  const response = await fetch(url, {
+  const response = await customFetch(url, {
     ...options,
     headers,
-    // @ts-ignore - Node.js specific agent property
-    agent: httpsAgent,
     next: {
       revalidate: 60, // Cache for 60 seconds (news site - need fresh content)
       tags: ['wordpress-api'] // Tag for on-demand revalidation
@@ -183,11 +203,9 @@ async function fetchAPIWithPagination<T>(endpoint: string, options: RequestInit 
     headers['Authorization'] = `Basic ${token}`;
   }
 
-  const response = await fetch(url, {
+  const response = await customFetch(url, {
     ...options,
     headers,
-    // @ts-ignore - Node.js specific agent property
-    agent: httpsAgent,
     next: {
       revalidate: 60, // Cache for 60 seconds (news site - need fresh content)
       tags: ['wordpress-api'] // Tag for on-demand revalidation
@@ -266,6 +284,41 @@ export async function getPostsByCategory(categoryId: number, params: {
 } = {}): Promise<APIResponse<WordPressPost[]>> {
   const searchParams = new URLSearchParams();
   searchParams.set('categories', categoryId.toString());
+
+  if (params.per_page) searchParams.set('per_page', params.per_page.toString());
+  if (params.page) searchParams.set('page', params.page.toString());
+  if (params._embed !== false) searchParams.set('_embed', 'true');
+
+  const query = searchParams.toString();
+  return fetchAPIWithPagination<WordPressPost[]>(`/posts?${query}`);
+}
+
+// Get child categories of a parent category
+export async function getChildCategories(parentId: number): Promise<WordPressCategory[]> {
+  try {
+    const categories = await fetchAPI(`/categories?parent=${parentId}&per_page=100`);
+    return categories;
+  } catch (error) {
+    console.error('Error fetching child categories:', error);
+    return [];
+  }
+}
+
+// Get posts from a category and all its child categories
+export async function getPostsByCategoryWithChildren(categoryId: number, params: {
+  per_page?: number;
+  page?: number;
+  _embed?: boolean;
+} = {}): Promise<APIResponse<WordPressPost[]>> {
+  // Get child categories
+  const childCategories = await getChildCategories(categoryId);
+
+  // Build list of all category IDs (parent + children)
+  const categoryIds = [categoryId, ...childCategories.map(cat => cat.id)];
+
+  // Fetch posts from all categories
+  const searchParams = new URLSearchParams();
+  searchParams.set('categories', categoryIds.join(','));
 
   if (params.per_page) searchParams.set('per_page', params.per_page.toString());
   if (params.page) searchParams.set('page', params.page.toString());

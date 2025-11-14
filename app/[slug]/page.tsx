@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getPosts, getPostBySlug, getCategory, getFeaturedImageUrl, getAuthorName, getCategoryName, formatDate, getAuthorAvatar, getAuthorTitle, stripHtmlTags, decodeHtmlEntities, isLNTVPost, processContent } from '@/lib/wordpress';
+import { getLatestYouTubeVideos } from '@/lib/youtube';
 import { generatePostMetadata, generateCategoryMetadata, generateStaticPageMetadata } from '@/lib/seo';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -426,12 +427,12 @@ export default async function DynamicPage({ params }: PageProps) {
   const isLNTV = await isLNTVPost(post);
   const shouldShowFeaturedImage = imageUrl && !isLNTV;
 
-  // Fetch real LNTV videos for the shorts section
-  let lntvVideos: Awaited<ReturnType<typeof getPosts>> = [];
+  // Fetch YouTube videos from Liberty Nation channel
+  let youtubeVideos: Awaited<ReturnType<typeof getLatestYouTubeVideos>> = [];
   try {
-    lntvVideos = await getPosts({ categories: '600', per_page: 3 });
+    youtubeVideos = await getLatestYouTubeVideos(3);
   } catch (error) {
-    console.error('Error fetching LNTV videos:', error);
+    console.error('Error fetching YouTube videos:', error);
   }
 
   // Fetch related articles from the same category (excluding current post)
@@ -458,8 +459,8 @@ export default async function DynamicPage({ params }: PageProps) {
       <article className="bg-bg-offwhite">
         {/* SECTION 1: Title Only - Full Width */}
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 pt-12 pb-8">
-          {/* Title - Professional 40px */}
-          <h1 className="font-serif text-[40px] leading-[48px] font-normal mb-0 text-gray-900 tracking-tight">
+          {/* Title - Large typography like The Free Press */}
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.1] font-normal mb-0 text-gray-900 tracking-tight">
             {decodeHtmlEntities(post.title.rendered)}
           </h1>
         </div>
@@ -482,11 +483,11 @@ export default async function DynamicPage({ params }: PageProps) {
             )}
 
             {/* RIGHT: Metadata & Author Info */}
-            <div className={`flex flex-col gap-6 ${!shouldShowFeaturedImage ? 'max-w-[800px]' : ''}`}>
-              {/* Excerpt/Dek */}
-              {post.excerpt.rendered && (
+            <div className={`flex flex-col gap-6 justify-center ${!shouldShowFeaturedImage ? 'max-w-[800px]' : ''}`}>
+              {/* Author Quote (priority) or Excerpt/Dek (fallback) */}
+              {(authorQuote || post.excerpt.rendered) && (
                 <p className="font-serif text-xl md:text-2xl leading-[1.5] text-gray-700">
-                  {decodeHtmlEntities(stripHtmlTags(post.excerpt.rendered))}
+                  {authorQuote ? authorQuote : decodeHtmlEntities(stripHtmlTags(post.excerpt.rendered))}
                 </p>
               )}
 
@@ -619,25 +620,26 @@ export default async function DynamicPage({ params }: PageProps) {
               </div>
             )}
 
-            {/* Video Grid - Real LNTV Content */}
+            {/* Video Grid - YouTube Videos */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {lntvVideos.map((video) => {
-                const videoImage = getFeaturedImageUrl(video);
-                const videoDate = formatDate(video.date);
+              {youtubeVideos.map((video) => {
+                const videoDate = new Date(video.publishedAt).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                });
 
                 return (
                   <article key={video.id} className="group">
-                    <Link href={`/${video.slug}`}>
+                    <a href={video.videoUrl} target="_blank" rel="noopener noreferrer">
                       <div className="relative w-full aspect-video bg-gray-800 mb-4 overflow-hidden rounded-sm">
-                        {videoImage && (
-                          <Image
-                            src={videoImage}
-                            alt={decodeHtmlEntities(video.title.rendered)}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 768px) 100vw, 400px"
-                          />
-                        )}
+                        <Image
+                          src={video.thumbnailUrl}
+                          alt={video.title}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 400px"
+                        />
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/50 transition-colors duration-300">
                           <div className="w-16 h-16 bg-primary-red rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-xl">
                             <div className="w-0 h-0 border-l-[16px] border-l-white border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent ml-1" />
@@ -645,12 +647,12 @@ export default async function DynamicPage({ params }: PageProps) {
                         </div>
                       </div>
                       <h3 className="font-serif font-bold text-lg text-white group-hover:text-primary-red transition-colors duration-300 mb-2 line-clamp-2">
-                        {decodeHtmlEntities(video.title.rendered)}
+                        {video.title}
                       </h3>
                       <p className="font-sans text-sm text-gray-400 uppercase tracking-wide">
                         {videoDate}
                       </p>
-                    </Link>
+                    </a>
                   </article>
                 );
               })}
