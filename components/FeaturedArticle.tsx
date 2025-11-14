@@ -18,12 +18,12 @@ export default function FeaturedArticle({ post }: FeaturedArticleProps) {
     <article className="group">
       <Link href={`/${post.slug}`} prefetch={true}>
         {imageUrl && (
-          <div className="relative w-full aspect-[580/436] overflow-hidden bg-gray-200 mb-4 sm:mb-5 shadow-md group-hover:shadow-xl transition-shadow duration-400 ease-out">
+          <div className="relative w-full aspect-[580/436] overflow-hidden bg-gray-200 mb-4 sm:mb-5 shadow-md group-hover:shadow-xl transition-shadow duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
             <Image
               src={imageUrl}
               alt={post.title.rendered}
               fill
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-102"
+              className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-102"
               priority
               sizes="(max-width: 768px) 100vw, (max-width: 1440px) 60vw, 800px"
               quality={90}

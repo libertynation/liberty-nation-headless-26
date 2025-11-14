@@ -12,36 +12,25 @@ import AuthorCard from '@/components/AuthorCard';
 // ISR: Revalidate every 5 minutes
 export const revalidate = 300;
 
+// Allow dynamic params (pages not in generateStaticParams)
+export const dynamicParams = true;
+
 // List of valid category and static page slugs
 const VALID_CATEGORIES = ['politics', 'economy', 'culture', 'opinion', 'podcasts', 'videos'];
 const STATIC_PAGES = ['about', 'contact', 'newsletters', 'signin'];
 
-// Generate static params for all posts, categories, and static pages at build time
+// Generate static params for just categories and static pages at build time
+// Posts will be generated on-demand with ISR
 export async function generateStaticParams() {
-  try {
-    const posts = await getPosts({ per_page: 100 });
+  const categoryParams = VALID_CATEGORIES.map((slug) => ({
+    slug,
+  }));
 
-    const postParams = posts.map((post) => ({
-      slug: post.slug,
-    }));
+  const staticParams = STATIC_PAGES.map((slug) => ({
+    slug,
+  }));
 
-    const categoryParams = VALID_CATEGORIES.map((slug) => ({
-      slug,
-    }));
-
-    const staticParams = STATIC_PAGES.map((slug) => ({
-      slug,
-    }));
-
-    return [...postParams, ...categoryParams, ...staticParams];
-  } catch (error) {
-    console.error('Error generating static params:', error);
-    // Return just the static pages and categories if API fails
-    return [
-      ...VALID_CATEGORIES.map((slug) => ({ slug })),
-      ...STATIC_PAGES.map((slug) => ({ slug })),
-    ];
-  }
+  return [...categoryParams, ...staticParams];
 }
 
 interface PageProps {
