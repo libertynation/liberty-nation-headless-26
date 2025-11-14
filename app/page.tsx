@@ -29,27 +29,62 @@ export const metadata = generateHomeMetadata();
 
 export default async function HomePage() {
   // Fetch featured post from Articles category (ID: 5016) - latest article
-  const articlesResponse = await getPosts({ per_page: 1, categories: '5016', orderby: 'date', order: 'desc' });
+  let articlesResponse: Awaited<ReturnType<typeof getPosts>> = [];
+  try {
+    articlesResponse = await getPosts({ per_page: 1, categories: '5016', orderby: 'date', order: 'desc' });
+  } catch (error) {
+    console.error('Error fetching featured article:', error);
+  }
   const featuredPost = articlesResponse[0];
 
   // Fetch sidebar posts from all categories except Articles (5016)
   // Get recent posts and filter out the featured post
-  const posts = await getPosts({ per_page: 30, exclude: featuredPost ? [featuredPost.id] : [] });
+  let posts: Awaited<ReturnType<typeof getPosts>> = [];
+  try {
+    posts = await getPosts({ per_page: 30, exclude: featuredPost ? [featuredPost.id] : [] });
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+  }
 
   // Fetch LNTV (video) posts - lntv category and children (category ID: 600)
-  const lntvPosts = await getPosts({ per_page: 3, categories: '600', orderby: 'date', order: 'desc' });
+  let lntvPosts: Awaited<ReturnType<typeof getPosts>> = [];
+  try {
+    lntvPosts = await getPosts({ per_page: 3, categories: '600', orderby: 'date', order: 'desc' });
+  } catch (error) {
+    console.error('Error fetching LNTV posts:', error);
+  }
 
   // Fetch Audio posts - all audio categories and their children (category ID: 3390 includes podcasts, ln-radio, etc.)
-  const audioPosts = await getPosts({ per_page: 3, categories: '3390', orderby: 'date', order: 'desc' });
+  let audioPosts: Awaited<ReturnType<typeof getPosts>> = [];
+  try {
+    audioPosts = await getPosts({ per_page: 3, categories: '3390', orderby: 'date', order: 'desc' });
+  } catch (error) {
+    console.error('Error fetching audio posts:', error);
+  }
 
   // Fetch Culture posts - category ID: 444
-  const cultureArticles = await getPosts({ per_page: 3, categories: '444', orderby: 'date', order: 'desc' });
+  let cultureArticles: Awaited<ReturnType<typeof getPosts>> = [];
+  try {
+    cultureArticles = await getPosts({ per_page: 3, categories: '444', orderby: 'date', order: 'desc' });
+  } catch (error) {
+    console.error('Error fetching culture posts:', error);
+  }
 
   // Fetch Opinion posts - category ID: 11601, increased to 6 articles
-  const opinionArticles = await getPosts({ per_page: 6, categories: '11601', orderby: 'date', order: 'desc' });
+  let opinionArticles: Awaited<ReturnType<typeof getPosts>> = [];
+  try {
+    opinionArticles = await getPosts({ per_page: 6, categories: '11601', orderby: 'date', order: 'desc' });
+  } catch (error) {
+    console.error('Error fetching opinion posts:', error);
+  }
 
   // Fetch breaking headlines - using latest 5 posts for now
-  const breakingPosts = await getPosts({ per_page: 5 });
+  let breakingPosts: Awaited<ReturnType<typeof getPosts>> = [];
+  try {
+    breakingPosts = await getPosts({ per_page: 5 });
+  } catch (error) {
+    console.error('Error fetching breaking headlines:', error);
+  }
 
   if (!featuredPost || !posts || posts.length === 0) {
     return (
