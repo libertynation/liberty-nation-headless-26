@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -34,6 +35,12 @@ export async function generateMetadata({ params, searchParams }: AuthorPageProps
 
 export default async function AuthorPage({ params, searchParams }: AuthorPageProps) {
   const { slug } = await params;
+
+  // Redirect to WordPress author page since the WordPress API requires
+  // authentication for the /users endpoint
+  redirect(`https://www.libertynation.com/author/${slug}/`);
+
+  /* Original implementation - disabled due to WordPress API authentication requirement
   const { page: pageParam } = await searchParams;
   const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
 

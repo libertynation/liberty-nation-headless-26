@@ -149,14 +149,7 @@ export default async function DynamicPage({ params }: PageProps) {
           {/* Page Header */}
           <div className="bg-white border-b-4 border-primary-red py-16">
             <div className="max-w-[900px] mx-auto px-8 text-center">
-              <div className="flex items-center justify-center gap-3 mb-6">
-                <div className="w-12 h-[2px] bg-primary-red" />
-                <div className="w-2 h-2 bg-primary-red rotate-45" />
-                <div className="w-2 h-2 bg-primary-red rotate-45" />
-                <div className="w-2 h-2 bg-primary-red rotate-45" />
-                <div className="w-12 h-[2px] bg-primary-red" />
-              </div>
-              <h1 className="font-display font-black text-6xl md:text-7xl mb-6 tracking-tighter text-text-dark">
+              <h1 className="font-display font-bold text-5xl md:text-6xl mb-6 tracking-tight text-text-dark">
                 Daily Briefing
               </h1>
               <p className="font-serif text-xl leading-[1.7] text-text-dark max-w-[700px] mx-auto">
@@ -471,8 +464,8 @@ export default async function DynamicPage({ params }: PageProps) {
       <article className="bg-bg-offwhite">
         {/* SECTION 1: Title Only - Full Width */}
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 pt-12 pb-8">
-          {/* Title - Extra large, impactful headline */}
-          <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl leading-[1.1] font-normal mb-0 text-gray-900 tracking-tight">
+          {/* Title - Professional 40px */}
+          <h1 className="font-serif text-[40px] leading-[48px] font-normal mb-0 text-gray-900 tracking-tight">
             {decodeHtmlEntities(post.title.rendered)}
           </h1>
         </div>
@@ -503,10 +496,10 @@ export default async function DynamicPage({ params }: PageProps) {
                 </p>
               )}
 
-              {/* Author Name in Red */}
+              {/* Author Name */}
               <div>
                 <Link href={`/author/${authorSlug}`}>
-                  <h2 className="font-serif text-xl md:text-2xl text-primary-red hover:underline mb-2">
+                  <h2 className="font-serif text-xl md:text-2xl text-gray-800 hover:text-gray-900 mb-2">
                     By {author}
                   </h2>
                 </Link>
@@ -580,7 +573,7 @@ export default async function DynamicPage({ params }: PageProps) {
               prose-ul:my-8 prose-ul:list-disc prose-ul:pl-8
               prose-ol:my-8 prose-ol:list-decimal prose-ol:pl-8
               prose-li:text-[21px] prose-li:leading-[1.75] prose-li:mb-3
-              prose-blockquote:not-italic prose-blockquote:font-serif prose-blockquote:text-[26px] prose-blockquote:leading-[1.5] prose-blockquote:text-gray-900 prose-blockquote:bg-gray-50 prose-blockquote:border-l-0 prose-blockquote:px-12 prose-blockquote:py-10 prose-blockquote:my-12 prose-blockquote:rounded-sm prose-blockquote:shadow-inner prose-blockquote:relative prose-blockquote:before:content-['\201C'] prose-blockquote:before:absolute prose-blockquote:before:top-4 prose-blockquote:before:left-4 prose-blockquote:before:text-7xl prose-blockquote:before:text-primary-red/20 prose-blockquote:before:font-serif prose-blockquote:before:leading-none
+              prose-blockquote:not-italic prose-blockquote:font-serif prose-blockquote:text-[21px] prose-blockquote:leading-[1.6] prose-blockquote:text-gray-700 prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-6 prose-blockquote:my-8
               prose-hr:border-gray-300 prose-hr:my-14"
             dangerouslySetInnerHTML={{ __html: processContent(post.content.rendered) }}
           />
@@ -603,20 +596,7 @@ export default async function DynamicPage({ params }: PageProps) {
           <div className="max-w-[1400px] mx-auto px-6 md:px-12">
             {/* Section Header */}
             <div className="text-center mb-12">
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <div className="w-12 h-[2px] bg-primary-red" />
-                <svg className="w-3 h-3 text-primary-red" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                </svg>
-                <svg className="w-3 h-3 text-primary-red" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                </svg>
-                <svg className="w-3 h-3 text-primary-red" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                </svg>
-                <div className="w-12 h-[2px] bg-primary-red" />
-              </div>
-              <h2 className="font-display font-black text-4xl md:text-5xl text-white uppercase tracking-tight mb-3">
+              <h2 className="font-display font-bold text-4xl md:text-5xl text-white uppercase tracking-tight mb-3">
                 Liberty Nation TV
               </h2>
               <p className="font-serif text-lg text-gray-300 max-w-2xl mx-auto">
@@ -705,7 +685,7 @@ export default async function DynamicPage({ params }: PageProps) {
               <div className="mb-12">
                 <div className="flex items-center gap-4 mb-2">
                   <div className="w-1 h-12 bg-primary-red" />
-                  <h2 className="font-display font-black text-4xl md:text-5xl text-text-dark uppercase tracking-tight">
+                  <h2 className="font-display font-bold text-4xl md:text-5xl text-text-dark uppercase tracking-tight">
                     More from {category || 'Liberty Nation'}
                   </h2>
                 </div>
@@ -760,24 +740,19 @@ export default async function DynamicPage({ params }: PageProps) {
         {/* SECTION 6: Newsletter Signup CTA */}
         <div className="bg-gradient-to-br from-gray-50 to-white py-16 md:py-20 border-t border-b border-gray-200">
           <div className="max-w-[900px] mx-auto px-6 md:px-12 text-center">
-            <div className="bg-white px-8 md:px-12 py-10 md:py-12 rounded-sm shadow-xl border-2 border-gray-200 relative">
-              {/* Decorative Elements */}
-              <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-primary-red" />
-              <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-primary-red" />
+            <div className="bg-white px-8 md:px-12 py-10 md:py-12 rounded-sm shadow-xl border-2 border-gray-200">
+              <div className="inline-flex items-center gap-3 mb-4 bg-primary-red/10 px-6 py-2 rounded-full">
+                <svg className="w-5 h-5 text-primary-red" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                </svg>
+                <span className="font-sans font-bold text-sm uppercase tracking-widest text-primary-red">
+                  Daily Briefing
+                </span>
+              </div>
 
-              <div className="relative">
-                <div className="inline-flex items-center gap-3 mb-4 bg-primary-red/10 px-6 py-2 rounded-full">
-                  <svg className="w-5 h-5 text-primary-red" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                  </svg>
-                  <span className="font-sans font-black text-sm uppercase tracking-widest text-primary-red">
-                    Daily Briefing
-                  </span>
-                </div>
-
-                <h2 className="font-display font-black text-3xl md:text-4xl mb-4 uppercase leading-tight text-text-dark">
-                  Never Miss a Story
-                </h2>
+              <h2 className="font-display font-bold text-3xl md:text-4xl mb-4 uppercase leading-tight text-text-dark">
+                Never Miss a Story
+              </h2>
                 <p className="font-serif text-lg md:text-xl mb-8 leading-relaxed text-text-dark max-w-2xl mx-auto">
                   Get the day's most important stories delivered to your inbox every morning. No spam, ever.
                 </p>

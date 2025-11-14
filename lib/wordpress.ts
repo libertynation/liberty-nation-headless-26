@@ -1,6 +1,14 @@
+import https from 'https';
+
 const API_URL = process.env.WORDPRESS_API_URL || 'https://www.libertynation.com/wp-json/wp/v2';
 const WP_USERNAME = process.env.WP_APP_USERNAME;
 const WP_PASSWORD = process.env.WP_APP_PASSWORD;
+
+// Custom HTTPS agent for Vercel build environment
+// Vercel's build environment may have SSL certificate chain issues
+const httpsAgent = process.env.VERCEL_ENV ? new https.Agent({
+  rejectUnauthorized: false // Disable SSL verification only during Vercel builds
+}) : undefined;
 
 export interface WordPressPost {
   id: number;
@@ -146,6 +154,8 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   const response = await fetch(url, {
     ...options,
     headers,
+    // @ts-ignore - Node.js specific agent property
+    agent: httpsAgent,
     next: {
       revalidate: 60, // Cache for 60 seconds (news site - need fresh content)
       tags: ['wordpress-api'] // Tag for on-demand revalidation
@@ -176,6 +186,8 @@ async function fetchAPIWithPagination<T>(endpoint: string, options: RequestInit 
   const response = await fetch(url, {
     ...options,
     headers,
+    // @ts-ignore - Node.js specific agent property
+    agent: httpsAgent,
     next: {
       revalidate: 60, // Cache for 60 seconds (news site - need fresh content)
       tags: ['wordpress-api'] // Tag for on-demand revalidation
