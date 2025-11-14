@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { WordPressPost, decodeHtmlEntities } from '@/lib/wordpress';
+import { WordPressPost } from '@/lib/types';
+import { decodeHtmlEntities } from '@/lib/utils';
 import { motion } from 'motion/react';
 
 interface BreakingHeadlinesProps {
@@ -25,13 +26,13 @@ export default function BreakingHeadlines({ posts }: BreakingHeadlinesProps) {
         transition={{ duration: 0.8, ease: 'easeOut' }}
       />
 
-      {/* Bottom border - animates in from right */}
+      {/* Bottom border - animates in from right after top */}
       <motion.div
         className="absolute bottom-0 left-0 right-0 h-[2px] bg-black"
         initial={{ scaleX: 0, transformOrigin: 'right' }}
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
+        transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
       />
 
       <div className="max-w-[1600px] mx-auto px-10">
@@ -42,7 +43,7 @@ export default function BreakingHeadlines({ posts }: BreakingHeadlinesProps) {
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.8, ease: 'easeOut' }}
+            transition={{ duration: 0.5, delay: 1.2, ease: 'easeOut' }}
           >
             <span className="font-sans font-black text-xl uppercase text-white bg-primary-red px-5 py-2 inline-block">
               BREAKING
@@ -55,7 +56,7 @@ export default function BreakingHeadlines({ posts }: BreakingHeadlinesProps) {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 1, ease: 'easeOut' }}
+            transition={{ duration: 0.5, delay: 1.4, ease: 'easeOut' }}
           >
             {displayPosts.map((post) => (
               <Link

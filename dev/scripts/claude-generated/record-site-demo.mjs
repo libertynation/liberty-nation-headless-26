@@ -3,7 +3,7 @@
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { mkdir } from 'fs/promises';
+import { mkdir, rename } from 'fs/promises';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -175,13 +175,21 @@ async function recordPageDemo(browser, pageInfo) {
     console.error(`  ❌ Error recording ${pageInfo.name}:`, error.message);
   }
 
+  // Get video reference before closing
+  const video = page.video();
+
   // Close context to finalize video
   await context.close();
 
-  // Get the video path
-  const videoPath = await page.video()?.path();
-  if (videoPath) {
-    console.log(`  💾 Video saved to: videos/claude-generated/`);
+  // Get the video path after closing (this finalizes the recording)
+  if (video) {
+    const videoPath = await video.path();
+
+    // Rename video to meaningful name
+    const newVideoPath = join(videosDir, `${pageInfo.name}-demo.webm`);
+    await rename(videoPath, newVideoPath);
+
+    console.log(`  💾 Video saved: ${pageInfo.name}-demo.webm`);
   }
 }
 

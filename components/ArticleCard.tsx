@@ -33,7 +33,7 @@ export default function ArticleCard({ post, variant = 'sidebar' }: ArticleCardPr
           </div>
         )}
 
-        <h3 className="font-display font-extrabold text-[24px] sm:text-[28px] md:text-[34px] leading-[1.1] mb-3 tracking-tight group-hover:text-primary-red transition-colors duration-300 ease-out">
+        <h3 className="font-display font-black text-[24px] sm:text-[28px] md:text-[34px] leading-[1.1] mb-3 tracking-tight group-hover:text-primary-red transition-colors duration-300 ease-out">
           {decodeHtmlEntities(post.title.rendered)}
         </h3>
 

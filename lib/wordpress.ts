@@ -388,53 +388,20 @@ export async function isLNTVPost(post: WordPressPost): Promise<boolean> {
   return false;
 }
 
-export function stripHtmlTags(html: string): string {
-  return html.replace(/<[^>]*>/g, '');
-}
-
-export function decodeHtmlEntities(text: string): string {
-  const entities: Record<string, string> = {
-    '&#8217;': "'",
-    '&apos;': "'",
-    '&#039;': "'",
-    '&#8216;': "'",
-    '&quot;': '"',
-    '&#34;': '"',
-    '&#8220;': '"',
-    '&#8221;': '"',
-    '&amp;': '&',
-    '&#38;': '&',
-    '&lt;': '<',
-    '&gt;': '>',
-    '&#8211;': '–',
-    '&#8212;': '—',
-    '&hellip;': '…',
-    '&#8230;': '…',
-  };
-
-  let decoded = text;
-  for (const [entity, char] of Object.entries(entities)) {
-    decoded = decoded.replace(new RegExp(entity, 'g'), char);
-  }
-  return decoded;
-}
+// Re-export utility functions from lib/utils for backwards compatibility
+// This allows client components to import these without pulling in Node.js dependencies
+export { stripHtmlTags, decodeHtmlEntities, formatDate } from './utils';
 
 export function getExcerpt(post: WordPressPost): string {
+  // Import locally to avoid circular dependency
+  const { decodeHtmlEntities: decode, stripHtmlTags: strip } = require('./utils');
+
   // Prefer ACF author_quote if available
   if (post.acf?.author_quote) {
-    return decodeHtmlEntities(post.acf.author_quote);
+    return decode(post.acf.author_quote);
   }
   // Otherwise use regular excerpt, strip HTML and decode entities
-  return decodeHtmlEntities(stripHtmlTags(post.excerpt.rendered));
-}
-
-export function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
+  return decode(strip(post.excerpt.rendered));
 }
 
 export function getAuthorAvatar(post: WordPressPost): string | null {

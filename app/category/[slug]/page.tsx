@@ -81,7 +81,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                   const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
 
                   return (
-                    <article key={post.id} className="group">
+                    <article key={post.id} className="group text-center">
                       <Link href={`/${post.slug}`}>
                         {imageUrl && (
                           <div className="relative w-full aspect-video bg-gray-200 mb-4 overflow-hidden">
@@ -100,7 +100,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                             </div>
                           </div>
                         )}
-                        <h3 className="font-serif font-bold text-[22px] leading-tight group-hover:text-primary-red transition">
+                        <h3 className="font-display font-black text-[22px] leading-[1.2] group-hover:text-primary-red transition-colors duration-300">
                           {post.title.rendered}
                         </h3>
                       </Link>
@@ -115,7 +115,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                   const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
 
                   return (
-                    <article key={post.id} className="group">
+                    <article key={post.id} className="group text-center">
                       <Link href={`/${post.slug}`}>
                         {imageUrl && (
                           <div className="relative w-full aspect-video bg-gray-200 mb-4 overflow-hidden">
@@ -141,7 +141,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                             </div>
                           </div>
                         )}
-                        <h3 className="font-serif font-bold text-[22px] leading-tight group-hover:text-primary-red transition">
+                        <h3 className="font-display font-black text-[22px] leading-[1.2] group-hover:text-primary-red transition-colors duration-300">
                           {post.title.rendered}
                         </h3>
                       </Link>
@@ -240,7 +240,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                                     </div>
                                   )}
 
-                                  <h3 className="font-display font-bold text-[28px] leading-tight mb-3 tracking-tight group-hover:text-primary-red transition-colors duration-300">
+                                  <h3 className="font-display font-black text-[28px] leading-[1.2] mb-3 tracking-tight group-hover:text-primary-red transition-colors duration-300">
                                     {p.title.rendered}
                                   </h3>
 
@@ -283,7 +283,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                                         </div>
                                       )}
 
-                                      <h3 className="font-display font-bold text-[24px] leading-tight mb-3 group-hover:text-primary-red transition-colors duration-300">
+                                      <h3 className="font-display font-black text-[24px] leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
                                         {p.title.rendered}
                                       </h3>
 

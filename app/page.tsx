@@ -129,11 +129,6 @@ export default async function HomePage() {
           </div>
         </FadeInSection>
 
-        {/* Category Buttons Section */}
-        <FadeInSection delay={0.2}>
-          <CategoryButtons limit={10} />
-        </FadeInSection>
-
         {/* Daily Briefing Signup Section */}
         <FadeInSection delay={0.3}>
           <AnimatedSection bgColor="red" className="border-t border-b border-border-gray bg-bg-offwhite py-12 sm:py-16 lg:py-20 my-8 sm:my-12 lg:my-16">
@@ -206,7 +201,7 @@ export default async function HomePage() {
             <SectionHeader title="Liberty Nation TV" ctaHref="/category/lntv" ctaText="Watch more videos" />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
               {lntvPosts.map((post) => (
-                <article key={post.id} className="group">
+                <article key={post.id} className="group text-center">
                   <Link href={`/${post.slug}`}>
                     {post._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
                       <div className="relative w-full aspect-[580/436] bg-gray-200 mb-4 overflow-hidden">
@@ -233,7 +228,7 @@ export default async function HomePage() {
                         </div>
                       </div>
                     )}
-                    <h3 className="font-serif font-bold text-[17px] sm:text-[18px] md:text-[20px] leading-tight group-hover:text-primary-red transition-colors duration-300 ease-out">
+                    <h3 className="font-display font-black text-[17px] sm:text-[18px] md:text-[20px] leading-[1.2] group-hover:text-primary-red transition-colors duration-300">
                       {decodeHtmlEntities(post.title.rendered)}
                     </h3>
                   </Link>
@@ -321,7 +316,7 @@ export default async function HomePage() {
             <SectionHeader title="Audio" ctaHref="/category/audio" ctaText="Listen to more podcasts" />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
               {audioPosts.map((post) => (
-                <article key={post.id} className="group">
+                <article key={post.id} className="group text-center">
                   <Link href={`/${post.slug}`}>
                     {post._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
                       <div className="relative w-full aspect-[580/436] bg-gray-200 mb-4 overflow-hidden">
@@ -357,7 +352,7 @@ export default async function HomePage() {
                         </div>
                       </div>
                     )}
-                    <h3 className="font-serif font-bold text-[17px] sm:text-[18px] md:text-[20px] leading-tight group-hover:text-primary-red transition-colors duration-300 ease-out">
+                    <h3 className="font-display font-black text-[17px] sm:text-[18px] md:text-[20px] leading-[1.2] group-hover:text-primary-red transition-colors duration-300">
                       {decodeHtmlEntities(post.title.rendered)}
                     </h3>
                   </Link>
@@ -452,6 +447,9 @@ export default async function HomePage() {
           </div>
         </div>
       </main>
+
+      {/* Category Buttons Section - Bottom of page */}
+      <CategoryButtons />
 
       <Footer />
     </>
