@@ -1,12 +1,14 @@
 import { getPosts, getFeaturedImageUrl, getAuthorName, formatDate, getExcerpt, decodeHtmlEntities } from '@/lib/wordpress';
+import { generateHomeMetadata } from '@/lib/seo';
 import Header from '@/components/Header';
 import FeaturedArticle from '@/components/FeaturedArticle';
 import ArticleCard from '@/components/ArticleCard';
 import Footer from '@/components/Footer';
 import BreakingHeadlines from '@/components/BreakingHeadlines';
 import MoreSection from '@/components/MoreSection';
-import SectionLabel from '@/components/SectionLabel';
+import SectionViewMore from '@/components/SectionViewMore';
 import AnimatedSection from '@/components/AnimatedSection';
+import CategoryButtons from '@/components/CategoryButtons';
 import { Spotlight } from '@/components/Spotlight';
 import ExclusivesSlider from '@/components/ExclusivesSlider';
 import ExclusivesSliderV2 from '@/components/ExclusivesSliderV2';
@@ -14,15 +16,25 @@ import ExclusivesSliderV3 from '@/components/ExclusivesSliderV3';
 import ExclusivesSliderImproved from '@/components/ExclusivesSliderImproved';
 import ExclusivesSliderFinal from '@/components/ExclusivesSliderFinal';
 import CinematicDailyBriefing from '@/components/CinematicDailyBriefing';
+import FadeInSection from '@/components/FadeInSection';
 import Image from 'next/image';
 import Link from 'next/link';
+import SectionHeader from '@/components/SectionHeader';
 
 // ISR: Revalidate every 5 minutes
 export const revalidate = 300;
 
+// SEO Metadata
+export const metadata = generateHomeMetadata();
+
 export default async function HomePage() {
-  // Fetch latest posts from WordPress
-  const posts = await getPosts({ per_page: 30 });
+  // Fetch featured post from Articles category (ID: 5016) - latest article
+  const articlesResponse = await getPosts({ per_page: 1, categories: '5016', orderby: 'date', order: 'desc' });
+  const featuredPost = articlesResponse[0];
+
+  // Fetch sidebar posts from all categories except Articles (5016)
+  // Get recent posts and filter out the featured post
+  const posts = await getPosts({ per_page: 30, exclude: featuredPost ? [featuredPost.id] : [] });
 
   // Fetch LNTV (video) posts - lntv category and children (category ID: 600)
   const lntvPosts = await getPosts({ per_page: 3, categories: '600', orderby: 'date', order: 'desc' });
@@ -39,7 +51,7 @@ export default async function HomePage() {
   // Fetch breaking headlines - using latest 5 posts for now
   const breakingPosts = await getPosts({ per_page: 5 });
 
-  if (!posts || posts.length === 0) {
+  if (!featuredPost || !posts || posts.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <p className="text-xl font-serif text-text-gray">Loading articles...</p>
@@ -47,10 +59,9 @@ export default async function HomePage() {
     );
   }
 
-  // Distribute posts across sections - TASK 2: Reduce sidebar from 3 to 2 posts
+  // Distribute posts across sections - sidebar posts from general categories
   const leftColumnPosts = posts.slice(0, 2);
-  const featuredPost = posts[2] || posts[0];
-  const rightColumnPosts = posts.slice(3, 5);
+  const rightColumnPosts = posts.slice(2, 4);
 
   const exclusivesArticles = posts.slice(8, 12);
   const moreArticles = posts.slice(15, 23);
@@ -62,22 +73,22 @@ export default async function HomePage() {
       {/* Main Three-Column Layout */}
       <main className="bg-bg-offwhite">
         {/* Hero Section */}
-        <div className="max-w-[1600px] mx-auto px-10 py-4">
-          <div className="grid grid-cols-1 lg:grid-cols-[26%_48%_26%] gap-10 items-start">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-4 sm:py-6 lg:py-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[26%_48%_26%] gap-6 sm:gap-8 lg:gap-10 items-start">
             {/* Left Column */}
-            <aside className="space-y-8">
+            <aside className="space-y-6 sm:space-y-8">
               {leftColumnPosts.map((post) => (
                 <ArticleCard key={post.id} post={post} variant="sidebar" />
               ))}
             </aside>
 
             {/* Center Featured - with padding to align */}
-            <div className="pt-2">
+            <div className="pt-0 lg:pt-2">
               <FeaturedArticle post={featuredPost} />
             </div>
 
             {/* Right Column */}
-            <aside className="space-y-8">
+            <aside className="space-y-6 sm:space-y-8">
               {rightColumnPosts.map((post) => (
                 <ArticleCard key={post.id} post={post} variant="sidebar" />
               ))}
@@ -86,32 +97,40 @@ export default async function HomePage() {
         </div>
 
         {/* Breaking Headlines Section - TASK 3 */}
-        <div className="mt-16 mb-16">
-          <BreakingHeadlines posts={breakingPosts} />
-        </div>
+        <FadeInSection delay={0.1}>
+          <div className="mt-8 sm:mt-12 lg:mt-16 mb-8 sm:mb-12 lg:mb-16">
+            <BreakingHeadlines posts={breakingPosts} />
+          </div>
+        </FadeInSection>
+
+        {/* Category Buttons Section */}
+        <FadeInSection delay={0.2}>
+          <CategoryButtons limit={10} />
+        </FadeInSection>
 
         {/* Daily Briefing Signup Section */}
-        <AnimatedSection bgColor="red" className="border-t border-b border-border-gray bg-bg-offwhite py-20 my-16">
-          <div className="max-w-max mx-auto px-8">
-            <div className="white-card bg-white px-12 py-10 rounded-sm shadow-lg text-center text-black transition-all duration-1000" style={{ transitionDelay: '3200ms' }}>
-              <div className="inline-flex items-center gap-3 mb-4 bg-black/10 px-6 py-2 rounded-full text-black">
-                <svg className="w-5 h-5 animate-pulse text-black" fill="currentColor" viewBox="0 0 24 24">
+        <FadeInSection delay={0.3}>
+          <AnimatedSection bgColor="red" className="border-t border-b border-border-gray bg-bg-offwhite py-12 sm:py-16 lg:py-20 my-8 sm:my-12 lg:my-16">
+          <div className="max-w-max mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="white-card bg-white px-6 sm:px-8 md:px-10 lg:px-12 py-6 sm:py-8 md:py-10 rounded-sm shadow-lg text-center text-black transition-all duration-[1200ms]">
+              <div className="inline-flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 bg-black/10 px-4 sm:px-6 py-2 rounded-full text-black">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse text-black" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                 </svg>
-                <span className="font-sans font-black text-sm uppercase tracking-widest text-black">
+                <span className="font-sans font-black text-xs sm:text-sm uppercase tracking-widest text-black">
                   Daily Briefing
                 </span>
               </div>
 
-              <h2 className="font-display font-black text-4xl md:text-5xl mb-4 uppercase leading-tight text-black">
+              <h2 className="font-display font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl mb-3 sm:mb-4 uppercase leading-tight text-black">
                 Your Morning Dose of Liberty
               </h2>
-              <p className="font-serif text-xl mb-8 max-w-[650px] mx-auto leading-relaxed text-black">
+              <p className="font-serif text-base sm:text-lg md:text-xl mb-6 sm:mb-8 max-w-[650px] mx-auto leading-relaxed text-black">
                 Get the day's most important stories, analysis, and commentary delivered to your inbox every morning.
                 No fluff. No propaganda. Just truth.
               </p>
 
-              <form className="flex flex-col sm:flex-row gap-3 max-w-[600px] mx-auto mb-4 group">
+              <form className="flex flex-col sm:flex-row gap-3 max-w-[600px] mx-auto mb-3 sm:mb-4 group">
                 <div className="flex-1 relative">
                   <input
                     type="email"
@@ -151,17 +170,15 @@ export default async function HomePage() {
             </div>
           </div>
         </AnimatedSection>
+        </FadeInSection>
 
         {/* LNTV (Videos) Section - FIRST major content section */}
-        <div className="bg-bg-offwhite py-20 relative overflow-hidden">
-          <SectionLabel sectionTitle="Liberty Nation TV" href="/category/lntv" actionText="Watch more" />
-          <div className="max-w-[1400px] mx-auto px-8">
+        <FadeInSection delay={0.1}>
+          <div className="bg-bg-offwhite py-12 sm:py-16 lg:py-20 relative overflow-hidden">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header */}
-            <div className="flex items-center gap-6 mb-6">
-              <div className="flex-1 border-t-2 border-black" />
-              <h2 className="font-sans font-black text-5xl uppercase tracking-tight">Liberty Nation TV</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <SectionHeader title="Liberty Nation TV" ctaHref="/category/lntv" ctaText="Watch more videos" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
               {lntvPosts.map((post) => (
                 <article key={post.id} className="group">
                   <Link href={`/${post.slug}`}>
@@ -190,46 +207,50 @@ export default async function HomePage() {
                         </div>
                       </div>
                     )}
-                    <h3 className="font-serif font-bold text-[20px] leading-tight group-hover:text-primary-red transition-colors duration-300 ease-out">
+                    <h3 className="font-serif font-bold text-[17px] sm:text-[18px] md:text-[20px] leading-tight group-hover:text-primary-red transition-colors duration-300 ease-out">
                       {post.title.rendered}
                     </h3>
                   </Link>
                 </article>
               ))}
             </div>
+            <div className="lg:hidden">
+              <SectionViewMore href="/category/lntv" actionText="Watch more videos" />
+            </div>
           </div>
         </div>
+        </FadeInSection>
 
         {/* Culture Section */}
-        <div className="bg-white py-20 relative overflow-hidden">
-          <SectionLabel sectionTitle="Culture" href="/category/culture-and-entertainment-news" />
-          <div className="max-w-[1400px] mx-auto px-8">
+        <FadeInSection delay={0.2}>
+          <div className="bg-white py-12 sm:py-16 lg:py-20 relative overflow-hidden">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header */}
-            <div className="flex items-center gap-6 mb-6">
-              <div className="flex-1 border-t-2 border-black" />
-              <h2 className="font-sans font-black text-5xl uppercase tracking-tight">Culture</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <SectionHeader title="Culture" ctaHref="/category/culture-and-entertainment-news" ctaText="View all culture articles" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
               {cultureArticles.map((post) => (
                 <ArticleCard key={post.id} post={post} variant="sidebar" />
               ))}
             </div>
+            <div className="lg:hidden">
+              <SectionViewMore href="/category/culture-and-entertainment-news" actionText="View all culture articles" />
+            </div>
           </div>
         </div>
+        </FadeInSection>
 
         {/* LN Exclusives Section */}
-        <ExclusivesSliderFinal posts={exclusivesArticles} />
+        <FadeInSection delay={0.3}>
+          <ExclusivesSliderFinal posts={exclusivesArticles} />
+        </FadeInSection>
 
         {/* Opinion & Analysis Section */}
-        <div className="bg-bg-offwhite py-20 relative overflow-hidden">
-          <SectionLabel sectionTitle="Opinion & Analysis" href="/category/opinion" />
-          <div className="max-w-[1400px] mx-auto px-8">
+        <FadeInSection delay={0.1}>
+          <div className="bg-bg-offwhite py-12 sm:py-16 lg:py-20 relative overflow-hidden">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header */}
-            <div className="flex items-center gap-6 mb-6">
-              <div className="flex-1 border-t-2 border-black" />
-              <h2 className="font-sans font-black text-5xl uppercase tracking-tight">Opinion & Analysis</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <SectionHeader title="Opinion & Analysis" ctaHref="/category/opinion" ctaText="Read all opinion pieces" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
               {opinionArticles.map((post) => (
                 <article key={post.id} className="border-t-4 border-primary-red pt-4">
                   <Link href={`/${post.slug}`}>
@@ -246,19 +267,20 @@ export default async function HomePage() {
                 </article>
               ))}
             </div>
+            <div className="lg:hidden">
+              <SectionViewMore href="/category/opinion" actionText="Read all opinion pieces" />
+            </div>
           </div>
         </div>
+        </FadeInSection>
 
         {/* Audio Section (Podcasts, LN Radio) */}
-        <div className="bg-bg-offwhite py-20 relative overflow-hidden">
-          <SectionLabel sectionTitle="Audio" href="/category/audio" actionText="Listen to more" />
-          <div className="max-w-[1400px] mx-auto px-8">
+        <FadeInSection delay={0.2}>
+          <div className="bg-bg-offwhite py-12 sm:py-16 lg:py-20 relative overflow-hidden">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header */}
-            <div className="flex items-center gap-6 mb-6">
-              <div className="flex-1 border-t-2 border-black" />
-              <h2 className="font-sans font-black text-5xl uppercase tracking-tight">Audio</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <SectionHeader title="Audio" ctaHref="/category/audio" ctaText="Listen to more podcasts" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
               {audioPosts.map((post) => (
                 <article key={post.id} className="group">
                   <Link href={`/${post.slug}`}>
@@ -296,32 +318,40 @@ export default async function HomePage() {
                         </div>
                       </div>
                     )}
-                    <h3 className="font-serif font-bold text-[20px] leading-tight group-hover:text-primary-red transition-colors duration-300 ease-out">
+                    <h3 className="font-serif font-bold text-[17px] sm:text-[18px] md:text-[20px] leading-tight group-hover:text-primary-red transition-colors duration-300 ease-out">
                       {post.title.rendered}
                     </h3>
                   </Link>
                 </article>
               ))}
             </div>
+            <div className="lg:hidden">
+              <SectionViewMore href="/category/audio" actionText="Listen to more podcasts" />
+            </div>
           </div>
         </div>
+        </FadeInSection>
 
         {/* Donate Section */}
-        <div className="bg-gradient-to-br from-black via-gray-900 to-black py-20 my-16 relative overflow-hidden">
-          {/* Video Background - Right aligned with gradient overlay */}
-          <div className="absolute inset-0 overflow-hidden flex items-center justify-end">
-            <div className="relative h-full w-auto">
+        <FadeInSection delay={0.1}>
+          <div className="bg-gradient-to-br from-black via-gray-900 to-black py-12 sm:py-16 lg:py-20 my-8 sm:my-12 lg:my-16 relative overflow-hidden">
+          {/* Video Background - Right aligned with multiple gradient overlays for smooth blending */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="relative h-full w-full">
               <video
                 autoPlay
                 loop
                 muted
                 playsInline
-                className="h-[110%] w-auto scale-110 opacity-70 mix-blend-overlay"
+                className="absolute right-0 h-full w-auto min-w-full object-cover opacity-60"
               >
                 <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Untitled%20video-FU26yq0MK1y0rKSt7TYfo68XneAQ14.mp4" type="video/mp4" />
               </video>
-              {/* Gradient overlay - transparent center to left edge matching background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black via-gray-900/80 to-transparent" />
+              {/* Multiple gradient overlays for seamless edge blending */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 via-70% to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-l from-black/90 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent" />
             </div>
           </div>
 
@@ -332,16 +362,16 @@ export default async function HomePage() {
           <div className="absolute top-0 left-0 w-64 h-64 bg-primary-red opacity-10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary-red opacity-10 rounded-full blur-3xl" />
 
-          <div className="max-w-[900px] mx-auto px-8 text-center relative z-10">
-            <div className="inline-block mb-4">
-              <span className="font-sans font-black text-sm uppercase text-primary-red bg-primary-red/20 px-4 py-2 tracking-widest">
+          <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <div className="inline-block mb-3 sm:mb-4">
+              <span className="font-sans font-black text-xs sm:text-sm uppercase text-primary-red bg-primary-red/20 px-3 sm:px-4 py-2 tracking-widest">
                 SUPPORT INDEPENDENT JOURNALISM
               </span>
             </div>
-            <h2 className="font-display font-black text-5xl md:text-6xl mb-6 uppercase text-white leading-tight">
+            <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-5 lg:mb-6 uppercase text-white leading-tight">
               Defend Free Speech
             </h2>
-            <p className="font-serif text-xl text-gray-300 mb-8 leading-relaxed max-w-[700px] mx-auto">
+            <p className="font-serif text-base sm:text-lg md:text-xl text-gray-300 mb-6 sm:mb-8 leading-relaxed max-w-[700px] mx-auto">
               In a world of censorship and propaganda, Liberty Nation stands for truth, freedom, and the Constitution.
               Your support keeps us independent and fearless.
             </p>
@@ -355,23 +385,26 @@ export default async function HomePage() {
             </p>
           </div>
         </div>
+        </FadeInSection>
 
         {/* More Stories Section */}
-        <MoreSection posts={moreArticles} title="MORE" />
+        <FadeInSection delay={0.2}>
+          <MoreSection posts={moreArticles} title="MORE" />
+        </FadeInSection>
 
         {/* Final CTA Banner */}
-        <div className="bg-primary-red text-white py-20 mt-16 relative overflow-hidden">
+        <div className="bg-primary-red text-white py-12 sm:py-16 lg:py-20 mt-8 sm:mt-12 lg:mt-16 relative overflow-hidden">
           {/* Subtle dot pattern background */}
           <div className="absolute inset-0 opacity-[0.15]" style={{
             backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
             backgroundSize: '24px 24px'
           }} />
 
-          <div className="max-w-[900px] mx-auto px-8 text-center relative z-10">
-            <h2 className="font-sans font-black text-white text-5xl md:text-6xl mb-6 uppercase leading-tight tracking-tight">
+          <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <h2 className="font-sans font-black text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-5 lg:mb-6 uppercase leading-tight tracking-tight">
               Support Fearless Journalism
             </h2>
-            <p className="font-serif text-white text-xl md:text-2xl mb-8 leading-relaxed">
+            <p className="font-serif text-white text-lg sm:text-xl md:text-2xl mb-6 sm:mb-8 leading-relaxed">
               Join <em>Liberty Nation</em> today for unlimited access to independent news and commentary
             </p>
             <button className="bg-white text-primary-red px-10 py-4 font-sans font-black text-base uppercase hover:bg-gray-100 transition-all duration-300 shadow-xl hover:scale-105">

@@ -40,7 +40,7 @@ export default function ExclusivesSliderFinal({ posts }: ExclusivesSliderFinalPr
           {/* Left: Numbers + Featured Image with Continuous Red Background */}
           <div className="relative flex items-start">
             {/* Numbers on left side with red background on active */}
-            <div className="flex flex-col gap-1 mr-0">
+            <div className="flex flex-col gap-0 mr-0">
               {displayPosts.map((_, index) => {
                 const isActive = currentIndex === index;
                 return (
@@ -50,22 +50,21 @@ export default function ExclusivesSliderFinal({ posts }: ExclusivesSliderFinalPr
                     className="relative cursor-pointer py-6 px-6 flex items-center justify-center"
                     style={{ flex: 1 }}
                   >
-                    {/* Red background that slides behind number */}
+                    {/* Red background that slides down smoothly */}
                     <motion.div
                       className="absolute inset-0 bg-primary-red"
                       initial={false}
                       animate={{
-                        scaleX: isActive ? 1 : 0,
+                        scaleY: isActive ? 1 : 0,
                       }}
-                      transition={{ duration: 0.3, ease: 'easeOut' }}
-                      style={{ transformOrigin: 'right' }}
+                      transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1], delay: isActive ? index * 0.08 : 0 }}
+                      style={{ transformOrigin: 'top' }}
                     />
-                    {/* Number with mix-blend-mode for smooth color transition */}
+                    {/* Number with exclusion blend mode for white on red */}
                     <span
-                      className="font-sans font-black text-5xl relative z-10"
+                      className="font-sans font-black text-5xl relative z-10 text-black"
                       style={{
-                        mixBlendMode: 'difference',
-                        color: '#ffffff',
+                        mixBlendMode: 'exclusion',
                       }}
                     >
                       {index + 1}
@@ -103,50 +102,74 @@ export default function ExclusivesSliderFinal({ posts }: ExclusivesSliderFinalPr
           </div>
 
           {/* Right: 4 Articles - Red background connects from image */}
-          <div className="flex flex-col justify-between gap-1">
+          <div className="flex flex-col justify-between gap-0">
             {displayPosts.map((post, index) => {
               const isActive = currentIndex === index;
 
               return (
-                <motion.article
+                <div
                   key={post.id}
                   onClick={() => setCurrentIndex(index)}
-                  className={`cursor-pointer transition-all duration-300 flex-1 flex items-center gap-4 p-6 ${
-                    isActive ? 'bg-primary-red' : 'bg-white hover:bg-gray-50'
-                  }`}
-                  animate={{
-                    scale: isActive ? 1.02 : 1,
-                  }}
-                  transition={{ duration: 0.3 }}
+                  className="cursor-pointer relative flex-1 flex items-center overflow-hidden"
+                  style={{ flex: 1 }}
                 >
-                  {/* Title and Meta */}
-                  <div className="flex-1">
+                  {/* Red background that morphs down smoothly */}
+                  <motion.div
+                    className="absolute inset-0 bg-primary-red"
+                    initial={false}
+                    animate={{
+                      scaleY: isActive ? 1 : 0,
+                    }}
+                    transition={{
+                      duration: 0.9,
+                      ease: [0.4, 0, 0.2, 1],
+                      delay: isActive ? index * 0.08 : 0
+                    }}
+                    style={{ transformOrigin: 'top' }}
+                  />
+
+                  {/* Content with smooth color transition */}
+                  <div className="relative z-10 p-6 w-full">
                     <Link href={`/${post.slug}`}>
-                      <h3
-                        className={`font-serif font-bold text-xl leading-tight mb-2 transition-colors duration-300 ${
-                          isActive ? 'text-white' : 'text-black'
-                        }`}
+                      <motion.h3
+                        className="font-serif font-bold text-xl leading-tight mb-2"
+                        animate={{
+                          color: isActive ? '#ffffff' : '#000000',
+                        }}
+                        transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
                       >
                         {decodeHtmlEntities(post.title.rendered)}
-                      </h3>
+                      </motion.h3>
                       <div className="flex items-center gap-2 text-xs font-sans uppercase">
-                        <span
-                          className={`font-semibold ${
-                            isActive ? 'text-white' : 'text-gray-600'
-                          }`}
+                        <motion.span
+                          className="font-semibold"
+                          animate={{
+                            color: isActive ? '#ffffff' : '#4B5563',
+                          }}
+                          transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
                         >
                           {getAuthorName(post).toUpperCase()}
-                        </span>
-                        <span className={isActive ? 'text-white' : 'text-gray-400'}>
+                        </motion.span>
+                        <motion.span
+                          animate={{
+                            color: isActive ? '#ffffff' : '#9CA3AF',
+                          }}
+                          transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+                        >
                           •
-                        </span>
-                        <span className={isActive ? 'text-white' : 'text-gray-600'}>
+                        </motion.span>
+                        <motion.span
+                          animate={{
+                            color: isActive ? '#ffffff' : '#4B5563',
+                          }}
+                          transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+                        >
                           {formatDate(post.date)}
-                        </span>
+                        </motion.span>
                       </div>
                     </Link>
                   </div>
-                </motion.article>
+                </div>
               );
             })}
           </div>

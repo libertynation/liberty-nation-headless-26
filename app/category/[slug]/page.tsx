@@ -2,44 +2,50 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { getCategory, getPostsByCategory, stripHtmlTags, getAuthorName, formatDate } from '@/lib/wordpress';
+import { generateCategoryMetadata } from '@/lib/seo';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ArticleCard from '@/components/ArticleCard';
+import Pagination from '@/components/Pagination';
 
 // ISR: Revalidate every 5 minutes
 export const revalidate = 300;
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ page?: string }>;
 }
 
-export async function generateMetadata({ params }: CategoryPageProps) {
+export async function generateMetadata({ params, searchParams }: CategoryPageProps) {
   const { slug } = await params;
+  const { page: pageParam } = await searchParams;
+  const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
   const category = await getCategory(slug);
 
   if (!category) {
     return {
       title: 'Category Not Found | Liberty Nation',
+      description: 'The category you are looking for could not be found.',
     };
   }
 
-  return {
-    title: `${category.name} | Liberty Nation`,
-    description: category.description
-      ? stripHtmlTags(category.description).substring(0, 160)
-      : `Read the latest ${category.name.toLowerCase()} articles from Liberty Nation`,
-  };
+  return generateCategoryMetadata(category, currentPage);
 }
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   const { slug } = await params;
+  const { page: pageParam } = await searchParams;
+  const currentPage = pageParam ? parseInt(pageParam, 10) : 1;
+
   const category = await getCategory(slug);
 
   if (!category) {
     notFound();
   }
 
-  const posts = await getPostsByCategory(category.id, { per_page: 30 });
+  const response = await getPostsByCategory(category.id, { per_page: 24, page: currentPage });
+  const posts = response.data;
+  const totalPages = response.totalPages || 1;
 
   // Check if this is LNTV category (category ID 600 based on homepage)
   const isLNTV = slug === 'lntv' || category.id === 600;
@@ -50,65 +56,27 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       <Header />
 
       <main className="bg-bg-offwhite">
-        {/* Category Header - Enhanced Editorial Style */}
-        <div className="relative bg-gradient-to-br from-white to-bg-gray border-b-4 border-primary-red py-20 md:py-24 overflow-hidden">
-          {/* Decorative Background Elements */}
-          <div className="absolute top-0 left-0 w-64 h-64 bg-primary-red opacity-[0.02] rounded-full -translate-x-32 -translate-y-32" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary-red opacity-[0.02] rounded-full translate-x-48 translate-y-48" />
-
-          <div className="relative max-w-[900px] mx-auto px-8 text-center">
-            {/* Ornamental Top Divider */}
-            <div className="flex items-center justify-center gap-3 mb-8">
-              <div className="w-12 h-[2px] bg-primary-red" />
-              <div className="w-2 h-2 bg-primary-red rotate-45" />
-              <div className="w-2 h-2 bg-primary-red rotate-45" />
-              <div className="w-2 h-2 bg-primary-red rotate-45" />
-              <div className="w-12 h-[2px] bg-primary-red" />
-            </div>
-
-            {/* Category Name with Enhanced Typography */}
-            <h1 className="font-display font-black text-6xl md:text-7xl lg:text-8xl mb-6 tracking-tighter text-text-dark uppercase relative">
-              <span className="relative inline-block">
-                {category.name}
-                {/* Decorative Underline */}
-                <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-3/4 h-1 bg-primary-red" />
-              </span>
+        {/* Category Header - Simple */}
+        <div className="bg-white border-b border-gray-200 py-8 sm:py-10 lg:py-12">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-text-dark uppercase mb-2">
+              {category.name}
             </h1>
 
-            {/* Category Description with Enhanced Styling */}
             {category.description && (
-              <div className="relative">
-                <p className="font-serif text-[21px] leading-[1.8] text-text-dark mb-8 max-w-[700px] mx-auto font-light italic">
-                  {stripHtmlTags(category.description)}
-                </p>
-              </div>
+              <p className="font-serif text-base sm:text-lg text-text-gray max-w-[800px]">
+                {stripHtmlTags(category.description)}
+              </p>
             )}
-
-            {/* Article Count with Enhanced Badge Style */}
-            <div className="inline-flex items-center gap-2 px-6 py-2 bg-text-dark rounded-full shadow-lg">
-              <div className="w-2 h-2 bg-primary-red rounded-full animate-pulse" />
-              <span className="font-sans text-xs font-bold uppercase tracking-widest text-white">
-                {posts.length} {posts.length === 1 ? 'Article' : 'Articles'}
-              </span>
-            </div>
-
-            {/* Ornamental Bottom Divider */}
-            <div className="flex items-center justify-center gap-3 mt-8">
-              <div className="w-12 h-[2px] bg-primary-red" />
-              <div className="w-2 h-2 bg-primary-red rotate-45" />
-              <div className="w-2 h-2 bg-primary-red rotate-45" />
-              <div className="w-2 h-2 bg-primary-red rotate-45" />
-              <div className="w-12 h-[2px] bg-primary-red" />
-            </div>
           </div>
         </div>
 
         {/* Articles Grid - The Free Press Style */}
         {posts.length > 0 ? (
-          <div className="max-w-[1400px] mx-auto px-8 py-16">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
             {isLNTV ? (
               // LNTV Special Grid with Video Play Icons
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
                 {posts.map((post) => {
                   const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
 
@@ -142,7 +110,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
               </div>
             ) : isPodcast ? (
               // Podcast Special Grid with Microphone Icons
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
                 {posts.map((post) => {
                   const imageUrl = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
 
@@ -187,9 +155,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                 {/* Featured First Article - Hero Treatment */}
                 {posts.length > 0 && (
                   <>
-                    <article className="group mb-16 pb-16 border-b-2 border-border-dark">
+                    <article className="group mb-10 sm:mb-12 lg:mb-16 pb-10 sm:pb-12 lg:pb-16 border-b-2 border-border-dark">
                       <Link href={`/${posts[0].slug}`} className="block">
-                        <div className="grid md:grid-cols-2 gap-12 items-center">
+                        <div className="grid md:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
                           {/* Featured Image */}
                           {posts[0]._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
                             <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-200 shadow-2xl group-hover:shadow-primary-red/20 transition-all duration-500">
@@ -216,12 +184,12 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                               {category.name}
                             </div>
 
-                            <h2 className="font-display font-black text-5xl md:text-6xl leading-[1.05] mb-6 tracking-tight group-hover:text-primary-red transition-colors duration-300">
+                            <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.05] mb-4 sm:mb-5 lg:mb-6 tracking-tight group-hover:text-primary-red transition-colors duration-300">
                               {posts[0].title.rendered}
                             </h2>
 
                             {posts[0].excerpt && (
-                              <p className="font-serif text-[21px] leading-[1.7] text-text-dark mb-6 line-clamp-4">
+                              <p className="font-serif text-[17px] sm:text-[19px] md:text-[21px] leading-[1.7] text-text-dark mb-4 sm:mb-5 lg:mb-6 line-clamp-4">
                                 {stripHtmlTags(posts[0].excerpt.rendered)}
                               </p>
                             )}
@@ -239,17 +207,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                         </div>
                       </Link>
                     </article>
-
-                    {/* Decorative Section Divider */}
-                    <div className="flex items-center justify-center gap-4 mb-16">
-                      <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-border-dark to-transparent" />
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-primary-red rotate-45" />
-                        <div className="w-3 h-3 bg-primary-red rotate-45" />
-                        <div className="w-2 h-2 bg-primary-red rotate-45" />
-                      </div>
-                      <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-border-dark to-transparent" />
-                    </div>
                   </>
                 )}
 
@@ -299,8 +256,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                                     <span className="text-text-gray">{formatDate(p.date)}</span>
                                   </div>
                                 </Link>
-                                {/* Decorative Corner Accent */}
-                                <div className="absolute -top-2 -left-2 w-8 h-8 border-l-2 border-t-2 border-primary-red opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                               </article>
                             ))}
                           </div>
@@ -309,15 +264,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                         {/* Two Column Grid - Posts 4-9 */}
                         {index >= 3 && index < 9 && index === 3 && (
                           <>
-                            {/* Section Break with Typography */}
+                            {/* Section Break */}
                             <div className="mb-16">
-                              <div className="flex items-center gap-4 mb-12">
-                                <div className="w-1 h-12 bg-primary-red" />
-                                <h3 className="font-display font-bold text-2xl uppercase tracking-wide text-text-dark">
-                                  More Stories
-                                </h3>
-                                <div className="flex-1 h-[2px] bg-gradient-to-r from-primary-red via-border-dark to-transparent" />
-                              </div>
 
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                                 {posts.slice(4, 10).map((p) => (
@@ -361,31 +309,17 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                         {/* Remaining Posts - Standard 3 Column Grid */}
                         {index >= 9 && index === 9 && posts.slice(10).length > 0 && (
                           <>
-                            {/* Section Divider */}
-                            <div className="flex items-center justify-center gap-4 mb-16">
-                              <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-border-dark to-transparent" />
-                              <div className="px-6 py-2 bg-text-dark text-white font-sans text-xs font-bold uppercase tracking-widest">
+                            {/* Archive Section */}
+                            <div className="mb-8">
+                              <h2 className="font-sans font-bold text-xl uppercase tracking-wide text-text-dark">
                                 Archive
-                              </div>
-                              <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-border-dark to-transparent" />
+                              </h2>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                              {posts.slice(10).map((p, idx) => {
-                                const showBreak = (idx + 1) % 9 === 0 && idx + 1 < posts.slice(10).length;
-                                return (
-                                  <div key={p.id}>
-                                    <ArticleCard post={p} variant="sidebar" />
-                                    {showBreak && (
-                                      <div className="col-span-full my-12 flex items-center justify-center gap-3">
-                                        <div className="w-16 h-[2px] bg-primary-red" />
-                                        <div className="w-2 h-2 bg-primary-red rotate-45" />
-                                        <div className="w-16 h-[2px] bg-primary-red" />
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
+                              {posts.slice(10).map((p) => (
+                                <ArticleCard key={p.id} post={p} variant="sidebar" />
+                              ))}
                             </div>
                           </>
                         )}
@@ -394,6 +328,15 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                   })}
                 </div>
               </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                baseUrl={`/category/${slug}`}
+              />
             )}
           </div>
         ) : (

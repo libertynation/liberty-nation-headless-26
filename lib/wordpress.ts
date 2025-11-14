@@ -26,8 +26,35 @@ export interface WordPressPost {
     [key: string]: any;
   };
   yoast_head_json?: {
+    title?: string;
+    description?: string;
+    canonical?: string;
+    og_locale?: string;
+    og_type?: string;
+    og_title?: string;
+    og_description?: string;
+    og_url?: string;
+    og_site_name?: string;
+    og_image?: Array<{
+      width: number;
+      height: number;
+      url: string;
+      type: string;
+    }>;
     author?: string;
-    [key: string]: any;
+    twitter_card?: string;
+    twitter_creator?: string;
+    twitter_site?: string;
+    robots?: {
+      index?: string;
+      follow?: string;
+      'max-snippet'?: string;
+      'max-image-preview'?: string;
+      'max-video-preview'?: string;
+    };
+    schema?: any;
+    article_published_time?: string;
+    article_modified_time?: string;
   };
   _embedded?: {
     author: Array<{
@@ -96,6 +123,12 @@ export interface WordPressAuthor {
   link?: string;
 }
 
+export interface APIResponse<T> {
+  data: T;
+  total?: number;
+  totalPages?: number;
+}
+
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   const url = `${API_URL}${endpoint}`;
 
@@ -113,6 +146,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   const response = await fetch(url, {
     ...options,
     headers,
+    next: { revalidate: 300 }, // Cache for 5 minutes
   });
 
   if (!response.ok) {
@@ -122,6 +156,41 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
   return response.json();
 }
 
+async function fetchAPIWithPagination<T>(endpoint: string, options: RequestInit = {}): Promise<APIResponse<T>> {
+  const url = `${API_URL}${endpoint}`;
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...((options.headers || {}) as Record<string, string>),
+  };
+
+  // Add Basic Auth if credentials are available
+  if (WP_USERNAME && WP_PASSWORD) {
+    const token = Buffer.from(`${WP_USERNAME}:${WP_PASSWORD}`).toString('base64');
+    headers['Authorization'] = `Basic ${token}`;
+  }
+
+  const response = await fetch(url, {
+    ...options,
+    headers,
+    next: { revalidate: 300 }, // Cache for 5 minutes
+  });
+
+  if (!response.ok) {
+    throw new Error(`WordPress API error: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  const total = response.headers.get('X-WP-Total');
+  const totalPages = response.headers.get('X-WP-TotalPages');
+
+  return {
+    data,
+    total: total ? parseInt(total, 10) : undefined,
+    totalPages: totalPages ? parseInt(totalPages, 10) : undefined,
+  };
+}
+
 export async function getPosts(params: {
   per_page?: number;
   page?: number;
@@ -129,6 +198,7 @@ export async function getPosts(params: {
   _embed?: boolean;
   orderby?: string;
   order?: 'asc' | 'desc';
+  exclude?: number[];
 } = {}): Promise<WordPressPost[]> {
   const searchParams = new URLSearchParams();
 
@@ -138,6 +208,7 @@ export async function getPosts(params: {
   if (params._embed !== false) searchParams.set('_embed', 'true');
   if (params.orderby) searchParams.set('orderby', params.orderby);
   if (params.order) searchParams.set('order', params.order);
+  if (params.exclude) searchParams.set('exclude', params.exclude.join(','));
 
   const query = searchParams.toString();
   return fetchAPI(`/posts${query ? `?${query}` : ''}`);
@@ -174,7 +245,7 @@ export async function getPostsByCategory(categoryId: number, params: {
   per_page?: number;
   page?: number;
   _embed?: boolean;
-} = {}): Promise<WordPressPost[]> {
+} = {}): Promise<APIResponse<WordPressPost[]>> {
   const searchParams = new URLSearchParams();
   searchParams.set('categories', categoryId.toString());
 
@@ -183,7 +254,7 @@ export async function getPostsByCategory(categoryId: number, params: {
   if (params._embed !== false) searchParams.set('_embed', 'true');
 
   const query = searchParams.toString();
-  return fetchAPI(`/posts?${query}`);
+  return fetchAPIWithPagination<WordPressPost[]>(`/posts?${query}`);
 }
 
 export async function getAuthorBySlug(slug: string): Promise<WordPressAuthor | null> {
@@ -209,7 +280,7 @@ export async function getPostsByAuthor(authorId: number, params: {
   per_page?: number;
   page?: number;
   _embed?: boolean;
-} = {}): Promise<WordPressPost[]> {
+} = {}): Promise<APIResponse<WordPressPost[]>> {
   const searchParams = new URLSearchParams();
   searchParams.set('author', authorId.toString());
 
@@ -218,7 +289,7 @@ export async function getPostsByAuthor(authorId: number, params: {
   if (params._embed !== false) searchParams.set('_embed', 'true');
 
   const query = searchParams.toString();
-  return fetchAPI(`/posts?${query}`);
+  return fetchAPIWithPagination<WordPressPost[]>(`/posts?${query}`);
 }
 
 // Helper functions to extract embedded data
@@ -296,6 +367,8 @@ export function decodeHtmlEntities(text: string): string {
     '&gt;': '>',
     '&#8211;': '–',
     '&#8212;': '—',
+    '&hellip;': '…',
+    '&#8230;': '…',
   };
 
   let decoded = text;
@@ -308,10 +381,10 @@ export function decodeHtmlEntities(text: string): string {
 export function getExcerpt(post: WordPressPost): string {
   // Prefer ACF author_quote if available
   if (post.acf?.author_quote) {
-    return post.acf.author_quote;
+    return decodeHtmlEntities(post.acf.author_quote);
   }
-  // Otherwise use regular excerpt
-  return stripHtmlTags(post.excerpt.rendered);
+  // Otherwise use regular excerpt, strip HTML and decode entities
+  return decodeHtmlEntities(stripHtmlTags(post.excerpt.rendered));
 }
 
 export function formatDate(dateString: string): string {
@@ -336,4 +409,42 @@ export function getAuthorAvatar(post: WordPressPost): string | null {
 export function getAuthorTitle(post: WordPressPost): string | null {
   // Check if author has a title in ACF
   return post._embedded?.author?.[0]?.acf?.title || null;
+}
+
+export function getAuthorSlug(post: WordPressPost): string | null {
+  // Get the author slug from the embedded author data
+  return post._embedded?.author?.[0]?.slug || null;
+}
+
+// Function to strip WordPress shortcodes from content
+export function stripShortcodes(content: string): string {
+  // Remove all shortcodes [shortcode] and [shortcode attr="value"]content[/shortcode]
+  return content
+    // Remove self-closing shortcodes: [shortcode], [shortcode attr="value"]
+    .replace(/\[([a-zA-Z0-9_-]+)(?:\s+[^\]]+)?\]/g, '')
+    // Remove paired shortcodes: [shortcode]...[/shortcode]
+    .replace(/\[([a-zA-Z0-9_-]+)(?:\s+[^\]]+)?\](.*?)\[\/\1\]/gs, '$2')
+    // Remove any remaining closing shortcodes
+    .replace(/\[\/[a-zA-Z0-9_-]+\]/g, '');
+}
+
+// Function to process content and handle WordPress shortcodes
+export function processContent(content: string): string {
+  let processed = content;
+
+  // Handle specific shortcodes that should be replaced with meaningful content
+  // Example: Replace [briefing-embed] shortcodes with nothing (already rendered server-side)
+  processed = processed.replace(/\[briefing-embed[^\]]*\]/g, '');
+
+  // Remove ElevenLabs audio widget shortcodes (these render as inline HTML already)
+  processed = processed.replace(/<div id="elevenlabs-audionative-widget"[^>]*><\/div>/g, '');
+  processed = processed.replace(/<script[^>]*elevenlabs[^>]*><\/script>/g, '');
+
+  // Remove YouTube placement divs
+  processed = processed.replace(/<div id="YouTube-Placement"><\/div>/g, '');
+
+  // Strip any remaining shortcodes
+  processed = stripShortcodes(processed);
+
+  return processed;
 }

@@ -1,11 +1,13 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getPosts, getPostBySlug, getCategory, getFeaturedImageUrl, getAuthorName, getCategoryName, formatDate, getAuthorAvatar, getAuthorTitle, stripHtmlTags, decodeHtmlEntities, isLNTVPost } from '@/lib/wordpress';
+import { getPosts, getPostBySlug, getCategory, getFeaturedImageUrl, getAuthorName, getCategoryName, formatDate, getAuthorAvatar, getAuthorTitle, stripHtmlTags, decodeHtmlEntities, isLNTVPost, processContent } from '@/lib/wordpress';
+import { generatePostMetadata, generateCategoryMetadata, generateStaticPageMetadata } from '@/lib/seo';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ShareButtons from '@/components/ShareButtons';
 import FollowTopicButton from '@/components/FollowTopicButton';
+import AuthorCard from '@/components/AuthorCard';
 
 // ISR: Revalidate every 5 minutes
 export const revalidate = 300;
@@ -16,21 +18,30 @@ const STATIC_PAGES = ['about', 'contact', 'newsletters', 'signin'];
 
 // Generate static params for all posts, categories, and static pages at build time
 export async function generateStaticParams() {
-  const posts = await getPosts({ per_page: 100 });
+  try {
+    const posts = await getPosts({ per_page: 100 });
 
-  const postParams = posts.map((post) => ({
-    slug: post.slug,
-  }));
+    const postParams = posts.map((post) => ({
+      slug: post.slug,
+    }));
 
-  const categoryParams = VALID_CATEGORIES.map((slug) => ({
-    slug,
-  }));
+    const categoryParams = VALID_CATEGORIES.map((slug) => ({
+      slug,
+    }));
 
-  const staticParams = STATIC_PAGES.map((slug) => ({
-    slug,
-  }));
+    const staticParams = STATIC_PAGES.map((slug) => ({
+      slug,
+    }));
 
-  return [...postParams, ...categoryParams, ...staticParams];
+    return [...postParams, ...categoryParams, ...staticParams];
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    // Return just the static pages and categories if API fails
+    return [
+      ...VALID_CATEGORIES.map((slug) => ({ slug })),
+      ...STATIC_PAGES.map((slug) => ({ slug })),
+    ];
+  }
 }
 
 interface PageProps {
@@ -41,39 +52,48 @@ export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;
 
   // Check if it's a static page
-  const staticPageTitles: Record<string, string> = {
-    about: 'About Us',
-    contact: 'Contact',
-    newsletters: 'Newsletters',
-    signin: 'Sign In',
+  const staticPages: Record<string, { title: string; description: string }> = {
+    about: {
+      title: 'About Us',
+      description: 'Liberty Nation is an independent news and opinion website dedicated to bringing you the latest news, analysis, and commentary from a libertarian and constitutional perspective.',
+    },
+    contact: {
+      title: 'Contact',
+      description: 'Get in touch with Liberty Nation. We welcome your feedback, story tips, and inquiries.',
+    },
+    newsletters: {
+      title: 'Daily Briefing',
+      description: 'Stay informed with Liberty Nation\'s Daily Briefing. Get the latest news, analysis, and commentary delivered straight to your inbox.',
+    },
+    signin: {
+      title: 'Sign In',
+      description: 'Sign in to your Liberty Nation account to access exclusive features and personalized content.',
+    },
   };
 
-  if (staticPageTitles[slug]) {
-    return {
-      title: `${staticPageTitles[slug]} | Liberty Nation`,
-    };
+  if (staticPages[slug]) {
+    return generateStaticPageMetadata(
+      staticPages[slug].title,
+      staticPages[slug].description,
+      slug
+    );
   }
 
   // Check if it's a category
   const categoryData = await getCategory(slug);
   if (categoryData) {
-    return {
-      title: `${categoryData.name} | Liberty Nation`,
-      description: `Browse all ${categoryData.name} articles from Liberty Nation`,
-    };
+    return generateCategoryMetadata(categoryData);
   }
 
   // Otherwise, try to get it as a post
   const post = await getPostBySlug(slug);
   if (post) {
-    return {
-      title: `${post.title.rendered} | Liberty Nation`,
-      description: post.excerpt.rendered.replace(/<[^>]*>/g, '').substring(0, 160),
-    };
+    return generatePostMetadata(post);
   }
 
   return {
     title: 'Page Not Found | Liberty Nation',
+    description: 'The page you are looking for could not be found.',
   };
 }
 
@@ -140,30 +160,136 @@ export default async function DynamicPage({ params }: PageProps) {
     return (
       <>
         <Header />
-        <main className="max-w-4xl mx-auto px-4 py-12">
-          <h1 className="font-headline text-5xl md:text-6xl font-black uppercase mb-8 tracking-tight">
-            Newsletters
-          </h1>
-          <div className="prose prose-lg max-w-none font-serif">
-            <p className="text-[19px] leading-[1.7] mb-8">
-              Stay informed with Liberty Nation's newsletters. Get the latest news, analysis, and commentary delivered straight to your inbox.
-            </p>
-            <div className="bg-bg-cream border-2 border-border-gray rounded-lg p-8 my-8">
-              <h2 className="font-headline text-2xl font-black uppercase mb-4">Subscribe to Our Newsletter</h2>
-              <form className="space-y-4">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full px-4 py-3 border-2 border-border-gray rounded font-sans focus:outline-none focus:border-primary-red transition"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="bg-primary-red text-white px-8 py-3 font-sans font-bold text-sm uppercase hover:bg-[#e02835] transition rounded"
-                >
-                  Subscribe
-                </button>
-              </form>
+        <main className="bg-bg-offwhite">
+          {/* Page Header */}
+          <div className="bg-white border-b-4 border-primary-red py-16">
+            <div className="max-w-[900px] mx-auto px-8 text-center">
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <div className="w-12 h-[2px] bg-primary-red" />
+                <div className="w-2 h-2 bg-primary-red rotate-45" />
+                <div className="w-2 h-2 bg-primary-red rotate-45" />
+                <div className="w-2 h-2 bg-primary-red rotate-45" />
+                <div className="w-12 h-[2px] bg-primary-red" />
+              </div>
+              <h1 className="font-display font-black text-6xl md:text-7xl mb-6 tracking-tighter text-text-dark">
+                Daily Briefing
+              </h1>
+              <p className="font-serif text-xl leading-[1.7] text-text-dark max-w-[700px] mx-auto">
+                Get the day's most important stories, analysis, and commentary delivered to your inbox every morning. No fluff. No propaganda. Just truth.
+              </p>
+            </div>
+          </div>
+
+          {/* Newsletter Signup Section */}
+          <div className="py-20">
+            <div className="max-w-[800px] mx-auto px-8">
+              <div className="bg-white px-12 py-10 rounded-sm shadow-lg border-4 border-text-dark relative">
+                {/* Decorative Corner Accents */}
+                <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-primary-red" />
+                <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-primary-red" />
+
+                <div className="relative">
+                  <div className="inline-flex items-center gap-3 mb-4 bg-black/10 px-6 py-2 rounded-full text-black">
+                    <svg className="w-5 h-5 animate-pulse text-black" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <span className="font-sans font-black text-sm uppercase tracking-widest text-black">
+                      Daily Briefing
+                    </span>
+                  </div>
+
+                  <h2 className="font-display font-black text-4xl md:text-5xl mb-4 uppercase leading-tight text-black">
+                    Your Morning Dose of Liberty
+                  </h2>
+                  <p className="font-serif text-xl mb-8 leading-relaxed text-black">
+                    Get the day's most important stories, analysis, and commentary delivered to your inbox every morning.
+                    No fluff. No propaganda. Just truth.
+                  </p>
+
+                  <form className="flex flex-col sm:flex-row gap-3 mb-4 group">
+                    <div className="flex-1 relative">
+                      <input
+                        type="email"
+                        placeholder="Enter your email address"
+                        className="w-full px-6 py-4 border-2 border-gray-300 font-sans text-base text-black focus:outline-none focus:border-black transition-all duration-300 rounded-sm shadow-sm focus:shadow-lg"
+                        required
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="bg-black text-white px-8 py-4 font-sans font-black text-sm uppercase hover:bg-gray-800 transition-all duration-300 whitespace-nowrap rounded-sm shadow-lg hover:shadow-xl hover:scale-105"
+                    >
+                      Get The Briefing
+                    </button>
+                  </form>
+
+                  <div className="flex items-center justify-center gap-6 text-xs text-black">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span className="font-sans font-semibold text-black">Free Forever</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span className="font-sans font-semibold text-black">No Spam</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span className="font-sans font-semibold text-black">Unsubscribe Anytime</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Benefits Section */}
+          <div className="bg-white py-16 border-t border-border-gray">
+            <div className="max-w-[1200px] mx-auto px-8">
+              <h2 className="font-display font-bold text-3xl md:text-4xl mb-12 text-center text-text-dark">
+                Why Subscribe to the Daily Briefing?
+              </h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-primary-red rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                      <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                  <h3 className="font-sans font-bold text-lg mb-2 text-text-dark">Curated Daily</h3>
+                  <p className="font-serif text-text-gray">
+                    Hand-picked stories that matter, delivered every morning before your coffee gets cold.
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-primary-red rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                  <h3 className="font-sans font-bold text-lg mb-2 text-text-dark">Ad-Free</h3>
+                  <p className="font-serif text-text-gray">
+                    Pure news and analysis. No ads, no sponsored content, no distractions.
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-primary-red rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                  <h3 className="font-sans font-bold text-lg mb-2 text-text-dark">Unbiased</h3>
+                  <p className="font-serif text-text-gray">
+                    Independent journalism focused on truth, not political narratives.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </main>
@@ -310,81 +436,122 @@ export default async function DynamicPage({ params }: PageProps) {
   const isLNTV = await isLNTVPost(post);
   const shouldShowFeaturedImage = imageUrl && !isLNTV;
 
+  // Fetch real LNTV videos for the shorts section
+  const lntvVideos = await getPosts({ categories: '600', per_page: 3 });
+
+  // Fetch related articles from the same category (excluding current post)
+  const primaryCategoryId = post.categories[0];
+  const relatedArticlesResponse = await getPosts({
+    categories: primaryCategoryId.toString(),
+    per_page: 4,
+    exclude: [post.id]
+  });
+  const relatedArticles = relatedArticlesResponse.slice(0, 3);
+
+  // Get ACF fields for shorts section
+  const authorQuote = post.acf?.author_quote || null;
+
   return (
     <>
       <Header />
 
       <article className="bg-bg-offwhite">
-        {/* SECTION 1: Wide Header - Category, Title, Excerpt (max-w-[1400px]) */}
+        {/* SECTION 1: Title Only - Full Width */}
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 pt-12 pb-8">
-          {/* Category Badge */}
-          <div className="mb-8">
-            <Link href={`/category/${category.toLowerCase().replace(/\s+/g, '-')}`}>
-              <span className="inline-block font-sans font-bold text-sm uppercase text-gray-700 hover:text-primary-red transition tracking-wider border-b-2 border-transparent hover:border-primary-red pb-1">
-                {category} ▼
-              </span>
-            </Link>
-          </div>
-
           {/* Title - Extra large, impactful headline */}
-          <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[1.05] font-bold mb-10 text-gray-900 tracking-tight">
+          <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl leading-[1.1] font-normal mb-0 text-gray-900 tracking-tight">
             {decodeHtmlEntities(post.title.rendered)}
           </h1>
+        </div>
 
-          {/* Excerpt/Dek - Large intro text with more breathing room */}
-          {post.excerpt.rendered && (
-            <p className="font-serif text-2xl md:text-3xl leading-[1.5] text-gray-700 mb-12 max-w-[1200px]">
-              {decodeHtmlEntities(stripHtmlTags(post.excerpt.rendered))}
-            </p>
-          )}
-
-          {/* Author Byline & Metadata - In wide header section */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 pb-12 border-b border-gray-300">
-            <div>
-              <Link href={`/author/${authorSlug}`}>
-                <h2 className="font-serif text-2xl md:text-3xl text-primary-red hover:underline mb-2">
-                  By {author}
-                </h2>
-              </Link>
-              <div className="flex items-center gap-3 text-base font-sans text-gray-600">
-                <span>{date}</span>
-                <span>•</span>
-                <span className="uppercase tracking-wide">{category}</span>
+        {/* SECTION 2: Split Layout - Featured Image Left, Metadata Right */}
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 pb-12">
+          <div className={`grid grid-cols-1 gap-12 items-start ${shouldShowFeaturedImage ? 'lg:grid-cols-2' : 'lg:grid-cols-1'}`}>
+            {/* LEFT: Featured Image */}
+            {shouldShowFeaturedImage && (
+              <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-200">
+                <Image
+                  src={imageUrl}
+                  alt={post.title.rendered}
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
               </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <FollowTopicButton
-                author={author}
-                category={category}
-                title={post.title.rendered}
-              />
-              <ShareButtons
-                title={post.title.rendered}
-                url={`https://www.libertynation.com/${post.slug}`}
-              />
+            )}
+
+            {/* RIGHT: Metadata & Author Info */}
+            <div className={`flex flex-col gap-6 ${!shouldShowFeaturedImage ? 'max-w-[800px]' : ''}`}>
+              {/* Excerpt/Dek */}
+              {post.excerpt.rendered && (
+                <p className="font-serif text-xl md:text-2xl leading-[1.5] text-gray-700">
+                  {decodeHtmlEntities(stripHtmlTags(post.excerpt.rendered))}
+                </p>
+              )}
+
+              {/* Author Name in Red */}
+              <div>
+                <Link href={`/author/${authorSlug}`}>
+                  <h2 className="font-serif text-xl md:text-2xl text-primary-red hover:underline mb-2">
+                    By {author}
+                  </h2>
+                </Link>
+              </div>
+
+              {/* Date & Category */}
+              <div className="flex items-center gap-3 text-sm font-sans text-gray-600 uppercase tracking-wide">
+                <span>{date}</span>
+                {category && (
+                  <>
+                    <span>—</span>
+                    <Link href={`/category/${category.toLowerCase().replace(/\s+/g, '-')}`}>
+                      <span className="hover:text-primary-red transition">{category}</span>
+                    </Link>
+                  </>
+                )}
+              </div>
+
+              {/* Author Card - Compact variant in metadata section */}
+              {authorSlug && (
+                <div className="border-t border-gray-300 pt-6">
+                  <AuthorCard
+                    name={author}
+                    slug={authorSlug}
+                    title={authorTitle}
+                    bio={authorBio}
+                    avatar={authorAvatar}
+                    variant="compact"
+                  />
+                </div>
+              )}
+
+              {/* Follow & Share Buttons */}
+              <div className="flex items-center gap-4 pt-4 border-t border-gray-300">
+                <FollowTopicButton
+                  author={author}
+                  category={category}
+                  title={post.title.rendered}
+                />
+                <ShareButtons
+                  title={post.title.rendered}
+                  url={`https://www.libertynation.com/${post.slug}`}
+                />
+              </div>
+
+              {/* Engagement Metrics Placeholder - Can add later */}
+              {/* <div className="flex items-center gap-4 text-sm text-gray-600">
+                <span>📖 5 min read</span>
+                <span>💬 493</span>
+                <span>❤️ 193</span>
+              </div> */}
             </div>
           </div>
         </div>
 
-        {/* SECTION 2: Ultra-wide Featured Image (max-w-[1600px]) */}
-        {shouldShowFeaturedImage && (
-          <div className="max-w-[1600px] mx-auto px-6 md:px-12 py-16">
-            <div className="relative w-full aspect-[16/9] overflow-hidden bg-gray-200 shadow-2xl">
-              <Image
-                src={imageUrl}
-                alt={post.title.rendered}
-                fill
-                className="object-cover"
-                priority
-                sizes="(max-width: 768px) 100vw, 1600px"
-              />
-            </div>
-          </div>
-        )}
-
-        {/* SECTION 3: Readable Content Section (max-w-[750px]) */}
-        <div className="max-w-[750px] mx-auto px-6 md:px-8 py-12">
-          {/* Content - Clean readable typography */}
+        {/* SECTION 3: Readable Content Section (max-w-[900px] - Wider for better reading) */}
+        <div className="max-w-[900px] mx-auto px-6 md:px-8 py-12">
+          {/* Content - Clean readable typography with elegant blockquotes */}
           <div
             className="prose prose-xl max-w-none font-serif
               prose-headings:font-serif prose-headings:font-bold prose-headings:text-gray-900
@@ -400,43 +567,222 @@ export default async function DynamicPage({ params }: PageProps) {
               prose-ul:my-8 prose-ul:list-disc prose-ul:pl-8
               prose-ol:my-8 prose-ol:list-decimal prose-ol:pl-8
               prose-li:text-[21px] prose-li:leading-[1.75] prose-li:mb-3
-              prose-blockquote:border-l-4 prose-blockquote:border-primary-red prose-blockquote:pl-8 prose-blockquote:py-6 prose-blockquote:italic prose-blockquote:text-2xl prose-blockquote:leading-relaxed prose-blockquote:text-gray-800
+              prose-blockquote:not-italic prose-blockquote:font-serif prose-blockquote:text-[26px] prose-blockquote:leading-[1.5] prose-blockquote:text-gray-900 prose-blockquote:bg-gray-50 prose-blockquote:border-l-0 prose-blockquote:px-12 prose-blockquote:py-10 prose-blockquote:my-12 prose-blockquote:rounded-sm prose-blockquote:shadow-inner prose-blockquote:relative prose-blockquote:before:content-['\201C'] prose-blockquote:before:absolute prose-blockquote:before:top-4 prose-blockquote:before:left-4 prose-blockquote:before:text-7xl prose-blockquote:before:text-primary-red/20 prose-blockquote:before:font-serif prose-blockquote:before:leading-none
               prose-hr:border-gray-300 prose-hr:my-14"
-            dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+            dangerouslySetInnerHTML={{ __html: processContent(post.content.rendered) }}
           />
 
-          {/* Author Bio */}
-          <div className="mt-20 p-8 bg-white border border-gray-200 rounded-sm shadow-sm">
-            <div className="flex items-start gap-6">
-              <Link href={`/author/${authorSlug}`} className="flex-shrink-0">
-                {authorAvatar ? (
-                  <div className="w-24 h-24 rounded-full overflow-hidden hover:opacity-80 transition">
-                    <Image
-                      src={authorAvatar}
-                      alt={author}
-                      width={96}
-                      height={96}
-                      className="object-cover w-full h-full"
-                    />
+          {/* Full Author Card at end of article */}
+          {authorSlug && (
+            <AuthorCard
+              name={author}
+              slug={authorSlug}
+              title={authorTitle}
+              bio={authorBio}
+              avatar={authorAvatar}
+              variant="default"
+            />
+          )}
+        </div>
+
+        {/* SECTION 4: Liberty Nation Shorts - Clips of the Day */}
+        <div className="bg-gradient-to-br from-black via-gray-900 to-black py-16 md:py-20 border-t-4 border-primary-red">
+          <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+            {/* Section Header */}
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="w-12 h-[2px] bg-primary-red" />
+                <svg className="w-3 h-3 text-primary-red" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <svg className="w-3 h-3 text-primary-red" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <svg className="w-3 h-3 text-primary-red" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                <div className="w-12 h-[2px] bg-primary-red" />
+              </div>
+              <h2 className="font-display font-black text-4xl md:text-5xl text-white uppercase tracking-tight mb-3">
+                Liberty Nation TV
+              </h2>
+              <p className="font-serif text-lg text-gray-300 max-w-2xl mx-auto">
+                Watch the latest video commentary and analysis
+              </p>
+            </div>
+
+            {/* Author Quote Card - If Available */}
+            {authorQuote && (
+              <div className="max-w-3xl mx-auto mb-12">
+                <div className="bg-white/5 backdrop-blur-sm border-l-4 border-primary-red p-8 hover:bg-white/10 transition-all duration-300">
+                  <div className="flex items-start gap-4">
+                    <svg className="w-8 h-8 text-primary-red flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                    </svg>
+                    <div className="flex-1">
+                      <p className="font-serif text-xl text-white leading-relaxed italic">
+                        {authorQuote}
+                      </p>
+                      <p className="font-sans text-sm text-gray-400 mt-3 uppercase tracking-wide">
+                        — {author}
+                      </p>
+                    </div>
                   </div>
-                ) : (
-                  <div className="w-24 h-24 bg-primary-red rounded-full flex items-center justify-center text-white font-serif font-bold text-3xl hover:bg-[#e02835] transition">
-                    {author.charAt(0)}
-                  </div>
-                )}
+                </div>
+              </div>
+            )}
+
+            {/* Video Grid - Real LNTV Content */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {lntvVideos.map((video) => {
+                const videoImage = getFeaturedImageUrl(video);
+                const videoDate = formatDate(video.date);
+
+                return (
+                  <article key={video.id} className="group">
+                    <Link href={`/${video.slug}`}>
+                      <div className="relative w-full aspect-video bg-gray-800 mb-4 overflow-hidden rounded-sm">
+                        {videoImage && (
+                          <Image
+                            src={videoImage}
+                            alt={decodeHtmlEntities(video.title.rendered)}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 400px"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/50 transition-colors duration-300">
+                          <div className="w-16 h-16 bg-primary-red rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-xl">
+                            <div className="w-0 h-0 border-l-[16px] border-l-white border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent ml-1" />
+                          </div>
+                        </div>
+                      </div>
+                      <h3 className="font-serif font-bold text-lg text-white group-hover:text-primary-red transition-colors duration-300 mb-2 line-clamp-2">
+                        {decodeHtmlEntities(video.title.rendered)}
+                      </h3>
+                      <p className="font-sans text-sm text-gray-400 uppercase tracking-wide">
+                        {videoDate}
+                      </p>
+                    </Link>
+                  </article>
+                );
+              })}
+            </div>
+
+            {/* View All Videos CTA */}
+            <div className="text-center mt-12">
+              <Link
+                href="/category/lntv"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-primary-red text-white font-sans font-bold text-sm uppercase tracking-wide hover:bg-white hover:text-primary-red transition-all duration-300 group"
+              >
+                <span>Watch All Videos</span>
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </Link>
-              <div className="flex-1">
-                <Link href={`/author/${authorSlug}`}>
-                  <h3 className="font-serif text-2xl font-bold mb-1 text-gray-900 hover:text-primary-red transition">{author}</h3>
-                </Link>
-                {authorTitle && (
-                  <p className="font-sans text-sm text-gray-600 uppercase tracking-wider mb-4 font-semibold">
-                    {authorTitle}
-                  </p>
-                )}
-                <p className="font-serif text-lg text-gray-700 leading-relaxed">
-                  {authorBio}
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 5: Related Articles */}
+        {relatedArticles.length > 0 && (
+          <div className="bg-white py-16 md:py-20">
+            <div className="max-w-[1400px] mx-auto px-6 md:px-12">
+              {/* Section Header */}
+              <div className="mb-12">
+                <div className="flex items-center gap-4 mb-2">
+                  <div className="w-1 h-12 bg-primary-red" />
+                  <h2 className="font-display font-black text-4xl md:text-5xl text-text-dark uppercase tracking-tight">
+                    More from {category || 'Liberty Nation'}
+                  </h2>
+                </div>
+                <p className="font-serif text-lg text-text-gray ml-5 pl-4">
+                  Continue reading stories that matter
                 </p>
+              </div>
+
+              {/* Related Articles Grid - Real Data */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                {relatedArticles.map((article) => {
+                  const relatedImage = getFeaturedImageUrl(article);
+                  const relatedAuthor = getAuthorName(article);
+                  const relatedDate = formatDate(article.date);
+                  const relatedExcerpt = stripHtmlTags(article.excerpt.rendered);
+
+                  return (
+                    <article key={article.id} className="group">
+                      <Link href={`/${article.slug}`}>
+                        {relatedImage && (
+                          <div className="relative w-full aspect-[4/3] bg-gray-200 mb-4 overflow-hidden shadow-md group-hover:shadow-xl transition-shadow duration-300">
+                            <Image
+                              src={relatedImage}
+                              alt={decodeHtmlEntities(article.title.rendered)}
+                              fill
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
+                              sizes="(max-width: 768px) 100vw, 400px"
+                            />
+                            <div className="absolute inset-0 bg-primary-red/0 group-hover:bg-primary-red/10 transition-colors duration-300" />
+                          </div>
+                        )}
+                        <h3 className="font-display font-bold text-2xl leading-tight mb-3 group-hover:text-primary-red transition-colors duration-300">
+                          {decodeHtmlEntities(article.title.rendered)}
+                        </h3>
+                        <p className="font-serif text-base text-text-gray mb-3 line-clamp-2">
+                          {relatedExcerpt.substring(0, 120)}...
+                        </p>
+                        <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-wide">
+                          <span className="text-primary-red font-bold">{relatedAuthor}</span>
+                          <span className="text-text-gray">—</span>
+                          <span className="text-text-gray">{relatedDate}</span>
+                        </div>
+                      </Link>
+                    </article>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* SECTION 6: Newsletter Signup CTA */}
+        <div className="bg-gradient-to-br from-gray-50 to-white py-16 md:py-20 border-t border-b border-gray-200">
+          <div className="max-w-[900px] mx-auto px-6 md:px-12 text-center">
+            <div className="bg-white px-8 md:px-12 py-10 md:py-12 rounded-sm shadow-xl border-2 border-gray-200 relative">
+              {/* Decorative Elements */}
+              <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-primary-red" />
+              <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-primary-red" />
+
+              <div className="relative">
+                <div className="inline-flex items-center gap-3 mb-4 bg-primary-red/10 px-6 py-2 rounded-full">
+                  <svg className="w-5 h-5 text-primary-red" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                  </svg>
+                  <span className="font-sans font-black text-sm uppercase tracking-widest text-primary-red">
+                    Daily Briefing
+                  </span>
+                </div>
+
+                <h2 className="font-display font-black text-3xl md:text-4xl mb-4 uppercase leading-tight text-text-dark">
+                  Never Miss a Story
+                </h2>
+                <p className="font-serif text-lg md:text-xl mb-8 leading-relaxed text-text-dark max-w-2xl mx-auto">
+                  Get the day's most important stories delivered to your inbox every morning. No spam, ever.
+                </p>
+
+                <form className="flex flex-col sm:flex-row gap-3 max-w-[600px] mx-auto">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="flex-1 px-6 py-4 border-2 border-gray-300 font-sans text-base focus:outline-none focus:border-primary-red transition rounded-sm"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="bg-primary-red text-white px-8 py-4 font-sans font-bold text-sm uppercase hover:bg-text-dark transition whitespace-nowrap rounded-sm"
+                  >
+                    Subscribe
+                  </button>
+                </form>
               </div>
             </div>
           </div>

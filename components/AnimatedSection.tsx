@@ -44,12 +44,12 @@ export default function AnimatedSection({
     };
   }, [threshold]);
 
-  // Trigger text color change 3200ms after animation starts
+  // Trigger text color change 4200ms after animation starts (after flag fades out)
   useEffect(() => {
     if (animate) {
       const timer = setTimeout(() => {
         setChangeTextColor(true);
-      }, 3200);
+      }, 4200);
 
       return () => clearTimeout(timer);
     }
@@ -107,11 +107,11 @@ export default function AnimatedSection({
     >
       {/* Blue background with twinkling stars across entire section */}
       <div
-        className="absolute inset-0 transition-opacity ease-out"
+        className="absolute inset-0 ease-in-out"
         style={{
           backgroundColor: '#1e3a8a',
-          opacity: animate ? 1 : 0,
-          transitionDuration: '1000ms',
+          opacity: animate ? (changeTextColor ? 0 : 1) : 0,
+          transition: changeTextColor ? 'opacity 800ms ease-in-out' : 'opacity 1000ms ease-out',
           zIndex: 1,
         }}
       >
@@ -126,12 +126,12 @@ export default function AnimatedSection({
               width: `${star.size}px`,
               height: `${star.size}px`,
               background: 'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 40%, rgba(255,255,255,0) 100%)',
-              opacity: animate ? star.opacity : 0,
-              animation: animate ? `twinklePulse ${star.twinkleDuration}ms ease-in-out ${star.twinkleDelay}ms infinite` : 'none',
+              opacity: animate ? (changeTextColor ? 0 : star.opacity) : 0,
+              animation: animate && !changeTextColor ? `twinklePulse ${star.twinkleDuration}ms ease-in-out ${star.twinkleDelay}ms infinite` : 'none',
               boxShadow: '0 0 4px rgba(255,255,255,0.8), 0 0 8px rgba(255,255,255,0.4)',
               filter: 'blur(0.5px)',
-              transitionDuration: '2000ms',
-              transitionDelay: `${star.moveDelay}ms`,
+              transitionDuration: changeTextColor ? '800ms' : '2000ms',
+              transitionDelay: changeTextColor ? '0ms' : `${star.moveDelay}ms`,
             }}
           />
         ))}
@@ -152,8 +152,9 @@ export default function AnimatedSection({
               right: '0',
               backgroundColor: stripe.color,
               transform: animate ? 'scaleX(1)' : 'scaleX(0)',
-              transitionDuration: `${stripe.duration}ms`,
-              transitionDelay: `${stripe.delay}ms`,
+              opacity: changeTextColor ? 0 : 1,
+              transitionDuration: changeTextColor ? '800ms' : `${stripe.duration}ms`,
+              transitionDelay: changeTextColor ? '0ms' : `${stripe.delay}ms`,
               transformOrigin: 'left',
               zIndex: 10,
             }}
@@ -161,14 +162,14 @@ export default function AnimatedSection({
         );
       })}
 
-      {/* Final full red background overlay - reduced delay */}
+      {/* Final full red background overlay - starts after flag fades out */}
       <div
         className="absolute inset-0 transition-opacity ease-in-out"
         style={{
           backgroundColor: bgColorHex,
           opacity: animate ? 1 : 0,
-          transitionDuration: '1500ms',
-          transitionDelay: '3200ms', // Reduced from 5000ms
+          transitionDuration: '1200ms',
+          transitionDelay: '4200ms', // Starts after flag completes fadeout
           zIndex: 20,
         }}
       />
@@ -180,11 +181,11 @@ export default function AnimatedSection({
           zIndex: 30,
         }}
       >
-        {/* Text transitions from black to white */}
+        {/* Text transitions from black to white - synced with red fade */}
         <div
-          className="transition-colors duration-1000"
+          className="transition-colors duration-1200"
           style={{
-            transitionDelay: '3200ms',
+            transitionDelay: '4200ms',
           }}
         >
           <div className={changeTextColor ? '[&_*]:!text-white [&_.white-card]:!bg-transparent [&_.white-card]:!shadow-none' : ''}>
