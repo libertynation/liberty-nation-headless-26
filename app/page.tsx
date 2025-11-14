@@ -29,27 +29,59 @@ export const metadata = generateHomeMetadata();
 
 export default async function HomePage() {
   // Fetch all data in parallel for better performance
-  // During build: errors will fail the build (good - we want to know if API is down)
-  // During ISR: Next.js will serve stale content if revalidation fails
-  const [
-    articlesResponse,
-    posts,
-    lntvPosts,
-    audioPosts,
-    cultureArticles,
-    opinionArticles,
-    breakingPosts
-  ] = await Promise.all([
-    getPosts({ per_page: 1, categories: '5016', orderby: 'date', order: 'desc' }),
-    getPosts({ per_page: 30 }),
-    getPosts({ per_page: 3, categories: '600', orderby: 'date', order: 'desc' }),
-    getPosts({ per_page: 3, categories: '3390', orderby: 'date', order: 'desc' }),
-    getPosts({ per_page: 3, categories: '444', orderby: 'date', order: 'desc' }),
-    getPosts({ per_page: 6, categories: '11601', orderby: 'date', order: 'desc' }),
-    getPosts({ per_page: 5 })
-  ]);
+  // Wrap in try-catch to handle SSL cert issues during Vercel builds
+  // ISR will update the page with real data after deployment
+  let articlesResponse, posts, lntvPosts, audioPosts, cultureArticles, opinionArticles, breakingPosts;
 
-  const featuredPost = articlesResponse[0];
+  try {
+    [
+      articlesResponse,
+      posts,
+      lntvPosts,
+      audioPosts,
+      cultureArticles,
+      opinionArticles,
+      breakingPosts
+    ] = await Promise.all([
+      getPosts({ per_page: 1, categories: '5016', orderby: 'date', order: 'desc' }),
+      getPosts({ per_page: 30 }),
+      getPosts({ per_page: 3, categories: '600', orderby: 'date', order: 'desc' }),
+      getPosts({ per_page: 3, categories: '3390', orderby: 'date', order: 'desc' }),
+      getPosts({ per_page: 3, categories: '444', orderby: 'date', order: 'desc' }),
+      getPosts({ per_page: 6, categories: '11601', orderby: 'date', order: 'desc' }),
+      getPosts({ per_page: 5 })
+    ]);
+  } catch (error) {
+    console.error('Error fetching posts during build:', error);
+    // During Vercel build, SSL cert issues may occur - use empty arrays and let ISR update
+    articlesResponse = [];
+    posts = [];
+    lntvPosts = [];
+    audioPosts = [];
+    cultureArticles = [];
+    opinionArticles = [];
+    breakingPosts = [];
+  }
+
+  const featuredPost = articlesResponse?.[0];
+
+  // If no data (build failure), render a minimal page that will be updated by ISR
+  if (!featuredPost || !posts || posts.length === 0) {
+    return (
+      <>
+        <Header />
+        <main className="bg-bg-offwhite min-h-screen flex items-center justify-center">
+          <div className="text-center p-8">
+            <h1 className="font-display font-black text-4xl mb-4">Liberty Nation</h1>
+            <p className="font-serif text-lg text-text-gray">
+              Loading latest content... This page will update shortly.
+            </p>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
   // Filter out featured post from general posts
   const filteredPosts = posts.filter(post => post.id !== featuredPost?.id);
