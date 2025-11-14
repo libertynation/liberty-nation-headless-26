@@ -21,85 +21,45 @@ import Image from 'next/image';
 import Link from 'next/link';
 import SectionHeader from '@/components/SectionHeader';
 
-// ISR: Revalidate every 5 minutes
-export const revalidate = 300;
+// ISR: Revalidate every 60 seconds for news site - fast updates critical
+export const revalidate = 60;
 
 // SEO Metadata
 export const metadata = generateHomeMetadata();
 
 export default async function HomePage() {
-  // Fetch featured post from Articles category (ID: 5016) - latest article
-  let articlesResponse: Awaited<ReturnType<typeof getPosts>> = [];
-  try {
-    articlesResponse = await getPosts({ per_page: 1, categories: '5016', orderby: 'date', order: 'desc' });
-  } catch (error) {
-    console.error('Error fetching featured article:', error);
-  }
+  // Fetch all data in parallel for better performance
+  // During build: errors will fail the build (good - we want to know if API is down)
+  // During ISR: Next.js will serve stale content if revalidation fails
+  const [
+    articlesResponse,
+    posts,
+    lntvPosts,
+    audioPosts,
+    cultureArticles,
+    opinionArticles,
+    breakingPosts
+  ] = await Promise.all([
+    getPosts({ per_page: 1, categories: '5016', orderby: 'date', order: 'desc' }),
+    getPosts({ per_page: 30 }),
+    getPosts({ per_page: 3, categories: '600', orderby: 'date', order: 'desc' }),
+    getPosts({ per_page: 3, categories: '3390', orderby: 'date', order: 'desc' }),
+    getPosts({ per_page: 3, categories: '444', orderby: 'date', order: 'desc' }),
+    getPosts({ per_page: 6, categories: '11601', orderby: 'date', order: 'desc' }),
+    getPosts({ per_page: 5 })
+  ]);
+
   const featuredPost = articlesResponse[0];
 
-  // Fetch sidebar posts from all categories except Articles (5016)
-  // Get recent posts and filter out the featured post
-  let posts: Awaited<ReturnType<typeof getPosts>> = [];
-  try {
-    posts = await getPosts({ per_page: 30, exclude: featuredPost ? [featuredPost.id] : [] });
-  } catch (error) {
-    console.error('Error fetching posts:', error);
-  }
-
-  // Fetch LNTV (video) posts - lntv category and children (category ID: 600)
-  let lntvPosts: Awaited<ReturnType<typeof getPosts>> = [];
-  try {
-    lntvPosts = await getPosts({ per_page: 3, categories: '600', orderby: 'date', order: 'desc' });
-  } catch (error) {
-    console.error('Error fetching LNTV posts:', error);
-  }
-
-  // Fetch Audio posts - all audio categories and their children (category ID: 3390 includes podcasts, ln-radio, etc.)
-  let audioPosts: Awaited<ReturnType<typeof getPosts>> = [];
-  try {
-    audioPosts = await getPosts({ per_page: 3, categories: '3390', orderby: 'date', order: 'desc' });
-  } catch (error) {
-    console.error('Error fetching audio posts:', error);
-  }
-
-  // Fetch Culture posts - category ID: 444
-  let cultureArticles: Awaited<ReturnType<typeof getPosts>> = [];
-  try {
-    cultureArticles = await getPosts({ per_page: 3, categories: '444', orderby: 'date', order: 'desc' });
-  } catch (error) {
-    console.error('Error fetching culture posts:', error);
-  }
-
-  // Fetch Opinion posts - category ID: 11601, increased to 6 articles
-  let opinionArticles: Awaited<ReturnType<typeof getPosts>> = [];
-  try {
-    opinionArticles = await getPosts({ per_page: 6, categories: '11601', orderby: 'date', order: 'desc' });
-  } catch (error) {
-    console.error('Error fetching opinion posts:', error);
-  }
-
-  // Fetch breaking headlines - using latest 5 posts for now
-  let breakingPosts: Awaited<ReturnType<typeof getPosts>> = [];
-  try {
-    breakingPosts = await getPosts({ per_page: 5 });
-  } catch (error) {
-    console.error('Error fetching breaking headlines:', error);
-  }
-
-  if (!featuredPost || !posts || posts.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <p className="text-xl font-serif text-text-gray">Loading articles...</p>
-      </div>
-    );
-  }
+  // Filter out featured post from general posts
+  const filteredPosts = posts.filter(post => post.id !== featuredPost?.id);
 
   // Distribute posts across sections - sidebar posts from general categories
-  const leftColumnPosts = posts.slice(0, 2);
-  const rightColumnPosts = posts.slice(2, 4);
+  const leftColumnPosts = filteredPosts.slice(0, 2);
+  const rightColumnPosts = filteredPosts.slice(2, 4);
 
-  const exclusivesArticles = posts.slice(8, 12);
-  const moreArticles = posts.slice(15, 23);
+  const exclusivesArticles = filteredPosts.slice(8, 12);
+  const moreArticles = filteredPosts.slice(15, 23);
 
   return (
     <>

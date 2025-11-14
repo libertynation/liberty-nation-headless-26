@@ -60,21 +60,21 @@ export default function Header() {
           menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
         }`}
       >
-        {/* Left side overlay - clickable to close */}
+        {/* Left side overlay - clickable to close - Only visible on sm+ screens */}
         <div
-          className="absolute inset-0 bg-black/85"
+          className="hidden sm:block absolute inset-0 bg-black/85"
           onClick={() => setMenuOpen(false)}
         />
 
-        {/* Right side - Secret Area (starts after sidebar) */}
-        <div className="absolute top-0 left-[85vw] sm:left-[420px] right-0 bottom-0">
+        {/* Right side - Secret Area (starts after sidebar) - Only visible on sm+ screens */}
+        <div className="hidden sm:block absolute top-0 left-[420px] right-0 bottom-0">
           <SecretArea />
         </div>
       </div>
 
       {/* Slide-out Menu */}
       <div
-        className={`fixed top-0 left-0 w-[85vw] sm:w-[420px] max-w-[420px] h-full bg-black z-[2001] overflow-y-auto transition-all duration-500 ease-out shadow-xl flex flex-col ${
+        className={`fixed top-0 left-0 w-full sm:w-[420px] sm:max-w-[420px] h-full bg-black z-[2001] overflow-y-auto transition-all duration-500 ease-out shadow-xl flex flex-col ${
           menuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -309,15 +309,14 @@ export default function Header() {
               <span className="block w-8 h-1 bg-black group-hover:bg-primary-red transition" />
             </button>
 
-            <Link href="/" className="flex items-center">
-              <div className="relative w-[240px] sm:w-[320px] md:w-[380px] lg:w-[440px] h-[60px] sm:h-[70px] md:h-[80px] lg:h-[90px]">
+            <Link href="/" className="flex items-center flex-shrink min-w-0">
+              <div className="relative w-[180px] sm:w-[240px] md:w-[320px] lg:w-[380px] xl:w-[440px] h-[50px] sm:h-[60px] md:h-[70px] lg:h-[80px] xl:h-[90px]">
                 <Image
-                  src="/white_logo.png"
+                  src="/liberty-nation-logo.png"
                   alt="Liberty Nation News"
                   fill
                   className="object-contain object-left"
                   priority
-                  style={{ filter: 'invert(1)' }}
                 />
               </div>
             </Link>
@@ -333,7 +332,7 @@ export default function Header() {
                 DONATE
               </Link>
             </nav>
-            <button className="text-primary-red px-4 lg:px-6 py-2 font-sans font-bold text-xs lg:text-sm uppercase hover:bg-primary-red hover:text-white transition whitespace-nowrap border-2 border-primary-red">
+            <button className="hidden sm:block text-primary-red px-4 lg:px-6 py-2 font-sans font-bold text-xs lg:text-sm uppercase hover:bg-primary-red hover:text-white transition whitespace-nowrap border-2 border-primary-red">
               SUBSCRIBE
             </button>
           </div>

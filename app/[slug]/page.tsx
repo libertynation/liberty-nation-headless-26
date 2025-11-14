@@ -9,8 +9,8 @@ import ShareButtons from '@/components/ShareButtons';
 import FollowTopicButton from '@/components/FollowTopicButton';
 import AuthorCard from '@/components/AuthorCard';
 
-// ISR: Revalidate every 5 minutes
-export const revalidate = 300;
+// ISR: Revalidate every 60 seconds for news site - fast updates critical
+export const revalidate = 60;
 
 // Allow dynamic params (pages not in generateStaticParams)
 export const dynamicParams = true;

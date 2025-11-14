@@ -143,22 +143,20 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}) {
     headers['Authorization'] = `Basic ${token}`;
   }
 
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-      next: { revalidate: 300 }, // Cache for 5 minutes
-    });
+  const response = await fetch(url, {
+    ...options,
+    headers,
+    next: {
+      revalidate: 60, // Cache for 60 seconds (news site - need fresh content)
+      tags: ['wordpress-api'] // Tag for on-demand revalidation
+    },
+  });
 
-    if (!response.ok) {
-      throw new Error(`WordPress API error: ${response.status} ${response.statusText}`);
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error(`Error fetching ${endpoint}:`, error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`WordPress API error: ${response.status} ${response.statusText}`);
   }
+
+  return response.json();
 }
 
 async function fetchAPIWithPagination<T>(endpoint: string, options: RequestInit = {}): Promise<APIResponse<T>> {
@@ -178,7 +176,10 @@ async function fetchAPIWithPagination<T>(endpoint: string, options: RequestInit 
   const response = await fetch(url, {
     ...options,
     headers,
-    next: { revalidate: 300 }, // Cache for 5 minutes
+    next: {
+      revalidate: 60, // Cache for 60 seconds (news site - need fresh content)
+      tags: ['wordpress-api'] // Tag for on-demand revalidation
+    },
   });
 
   if (!response.ok) {

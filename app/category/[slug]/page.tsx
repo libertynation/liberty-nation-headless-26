@@ -8,8 +8,8 @@ import Footer from '@/components/Footer';
 import ArticleCard from '@/components/ArticleCard';
 import Pagination from '@/components/Pagination';
 
-// ISR: Revalidate every 5 minutes
-export const revalidate = 300;
+// ISR: Revalidate every 60 seconds for news site - fast updates critical
+export const revalidate = 60;
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
