@@ -181,7 +181,7 @@ export default async function HomePage() {
                       <div className="relative w-full aspect-[580/436] bg-gray-200 mb-4 overflow-hidden">
                         <Image
                           src={post._embedded['wp:featuredmedia'][0].source_url}
-                          alt={post.title.rendered}
+                          alt={decodeHtmlEntities(post.title.rendered)}
                           fill
                           className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                           sizes="(max-width: 768px) 100vw, 400px"
@@ -203,7 +203,7 @@ export default async function HomePage() {
                       </div>
                     )}
                     <h3 className="font-serif font-bold text-[17px] sm:text-[18px] md:text-[20px] leading-tight group-hover:text-primary-red transition-colors duration-300 ease-out">
-                      {post.title.rendered}
+                      {decodeHtmlEntities(post.title.rendered)}
                     </h3>
                   </Link>
                 </article>
@@ -241,22 +241,35 @@ export default async function HomePage() {
 
         {/* Opinion & Analysis Section */}
         <FadeInSection delay={0.1}>
-          <div className="bg-bg-offwhite py-12 sm:py-16 lg:py-20 relative overflow-hidden">
+          <div className="bg-white py-12 sm:py-16 lg:py-20 relative overflow-hidden border-t-2 border-b-2 border-black">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header */}
             <SectionHeader title="Opinion & Analysis" ctaHref="/category/opinion" ctaText="Read all opinion pieces" />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
-              {opinionArticles.map((post) => (
-                <article key={post.id} className="border-t-4 border-primary-red pt-4">
+              {opinionArticles.map((post, index) => (
+                <article key={post.id} className="group relative bg-bg-offwhite border-2 border-border-gray hover:border-primary-red transition-all duration-300 p-6">
+                  {/* Top corner accent */}
+                  <div className="absolute top-0 left-0 w-12 h-[3px] bg-primary-red" />
+
                   <Link href={`/${post.slug}`}>
-                    <div className="text-primary-red font-sans text-[10px] font-bold uppercase tracking-widest mb-2">
-                      OPINION
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="text-primary-red font-sans text-[10px] font-bold uppercase tracking-widest">
+                        OPINION
+                      </div>
+                      <div className="flex-1 h-[1px] bg-primary-red/20" />
                     </div>
-                    <h3 className="font-serif font-bold text-[24px] leading-tight mb-3 hover:text-primary-red transition">
-                      {post.title.rendered}
+                    <h3 className="font-serif font-bold text-[22px] sm:text-[24px] leading-tight mb-4 group-hover:text-primary-red transition-colors duration-300">
+                      {decodeHtmlEntities(post.title.rendered)}
                     </h3>
-                    <div className="font-sans text-[11px] font-semibold uppercase tracking-wide text-text-gray">
-                      {post._embedded?.author?.[0]?.name?.toUpperCase() || 'LIBERTY NATION'}
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 bg-primary-red rounded-full flex items-center justify-center">
+                        <span className="font-sans font-black text-white text-xs">
+                          {post._embedded?.author?.[0]?.name?.charAt(0) || 'L'}
+                        </span>
+                      </div>
+                      <div className="font-sans text-[11px] font-bold uppercase tracking-wide text-text-gray">
+                        {post._embedded?.author?.[0]?.name?.toUpperCase() || 'LIBERTY NATION'}
+                      </div>
                     </div>
                   </Link>
                 </article>
@@ -283,7 +296,7 @@ export default async function HomePage() {
                       <div className="relative w-full aspect-[580/436] bg-gray-200 mb-4 overflow-hidden">
                         <Image
                           src={post._embedded['wp:featuredmedia'][0].source_url}
-                          alt={post.title.rendered}
+                          alt={decodeHtmlEntities(post.title.rendered)}
                           fill
                           className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                           sizes="(max-width: 768px) 100vw, 400px"
@@ -314,7 +327,7 @@ export default async function HomePage() {
                       </div>
                     )}
                     <h3 className="font-serif font-bold text-[17px] sm:text-[18px] md:text-[20px] leading-tight group-hover:text-primary-red transition-colors duration-300 ease-out">
-                      {post.title.rendered}
+                      {decodeHtmlEntities(post.title.rendered)}
                     </h3>
                   </Link>
                 </article>

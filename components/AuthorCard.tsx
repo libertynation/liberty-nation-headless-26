@@ -20,22 +20,22 @@ export default function AuthorCard({
 }: AuthorCardProps) {
   if (variant === 'compact') {
     return (
-      <div className="border-t-2 border-b-2 border-border-dark py-8 my-8 bg-white">
-        <div className="flex items-start gap-6">
+      <div className="border-t border-gray-300 py-6 my-6">
+        <div className="flex items-start gap-5">
           {/* Author Avatar */}
-          <Link href={`/author/${slug}`} className="flex-shrink-0 group">
+          <Link href={`/author/${slug}`} className="flex-shrink-0">
             {avatar ? (
-              <div className="w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden ring-4 ring-primary-red ring-offset-2 shadow-lg group-hover:ring-offset-4 transition-all duration-300">
+              <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-300">
                 <Image
                   src={avatar}
                   alt={name}
-                  width={112}
-                  height={112}
-                  className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                  width={80}
+                  height={80}
+                  className="object-cover w-full h-full"
                 />
               </div>
             ) : (
-              <div className="w-24 h-24 md:w-28 md:h-28 bg-primary-red rounded-full flex items-center justify-center text-white font-display font-black text-4xl ring-4 ring-primary-red ring-offset-2 shadow-lg group-hover:ring-offset-4 transition-all duration-300">
+              <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center justify-center text-gray-700 font-display font-bold text-2xl border-2 border-gray-300">
                 {name.charAt(0).toUpperCase()}
               </div>
             )}
@@ -43,107 +43,83 @@ export default function AuthorCard({
 
           {/* Author Info */}
           <div className="flex-1 min-w-0">
-            <Link href={`/author/${slug}`} className="group">
-              <h3 className="font-display font-bold text-2xl md:text-3xl text-text-dark mb-2 group-hover:text-primary-red transition-colors duration-300">
+            <Link href={`/author/${slug}`}>
+              <h3 className="font-serif text-xl text-gray-900 mb-1 hover:text-gray-700">
                 {name}
               </h3>
             </Link>
             {title && (
-              <p className="font-sans text-sm font-semibold uppercase tracking-widest text-text-gray mb-3">
+              <p className="font-sans text-xs uppercase tracking-wide text-gray-600 mb-2">
                 {title}
               </p>
             )}
             {bio && (
-              <p className="font-serif text-base md:text-lg leading-relaxed text-text-dark mb-4 line-clamp-2">
+              <p className="font-serif text-sm leading-relaxed text-gray-700 line-clamp-2">
                 {bio}
               </p>
             )}
-            <Link
-              href={`/author/${slug}`}
-              className="inline-flex items-center gap-2 text-primary-red font-sans text-sm font-bold uppercase tracking-wide hover:gap-3 transition-all duration-300 group"
-            >
-              <span>Read more from {name}</span>
-              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
           </div>
         </div>
       </div>
     );
   }
 
-  // Default variant - full card with decorative elements
+  // Default variant - clean minimal design
   return (
-    <div className="relative border-4 border-text-dark bg-gradient-to-br from-white to-bg-offwhite p-8 md:p-10 my-12 shadow-xl overflow-hidden">
-      {/* Decorative Corner Accents */}
-      <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-primary-red" />
-      <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-primary-red" />
+    <div className="border-t-2 border-gray-300 py-10 my-10">
+      <div className="flex flex-col md:flex-row items-start gap-6">
+        {/* Author Avatar */}
+        <Link href={`/author/${slug}`} className="flex-shrink-0">
+          {avatar ? (
+            <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-gray-300">
+              <Image
+                src={avatar}
+                alt={name}
+                width={112}
+                height={112}
+                className="object-cover w-full h-full"
+              />
+            </div>
+          ) : (
+            <div className="w-28 h-28 bg-gray-200 rounded-full flex items-center justify-center text-gray-700 font-display font-bold text-4xl border-2 border-gray-300">
+              {name.charAt(0).toUpperCase()}
+            </div>
+          )}
+        </Link>
 
-      {/* Decorative Background Pattern */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-primary-red opacity-[0.03] rounded-full -translate-y-16 translate-x-16" />
-      <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary-red opacity-[0.03] rounded-full translate-y-20 -translate-x-20" />
-
-      <div className="relative">
-        {/* Header with decorative line */}
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-12 h-[3px] bg-primary-red" />
-          <h4 className="font-sans text-xs font-bold uppercase tracking-widest text-text-gray">
+        {/* Author Details */}
+        <div className="flex-1 min-w-0">
+          <p className="font-sans text-xs uppercase tracking-wide text-gray-500 mb-2">
             About the Author
-          </h4>
-          <div className="flex-1 h-[1px] bg-border-dark" />
-        </div>
+          </p>
 
-        <div className="flex flex-col md:flex-row items-start gap-6">
-          {/* Author Avatar */}
-          <Link href={`/author/${slug}`} className="flex-shrink-0 group">
-            {avatar ? (
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden ring-4 ring-primary-red ring-offset-4 shadow-2xl group-hover:ring-offset-6 transition-all duration-300">
-                <Image
-                  src={avatar}
-                  alt={name}
-                  width={160}
-                  height={160}
-                  className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-            ) : (
-              <div className="w-32 h-32 md:w-40 md:h-40 bg-primary-red rounded-full flex items-center justify-center text-white font-display font-black text-6xl ring-4 ring-primary-red ring-offset-4 shadow-2xl group-hover:ring-offset-6 transition-all duration-300">
-                {name.charAt(0).toUpperCase()}
-              </div>
-            )}
+          <Link href={`/author/${slug}`}>
+            <h3 className="font-serif text-2xl md:text-3xl text-gray-900 mb-2 hover:text-gray-700">
+              {name}
+            </h3>
           </Link>
 
-          {/* Author Details */}
-          <div className="flex-1 min-w-0">
-            <Link href={`/author/${slug}`} className="group inline-block mb-3">
-              <h3 className="font-display font-black text-4xl md:text-5xl text-text-dark tracking-tight group-hover:text-primary-red transition-colors duration-300">
-                {name}
-              </h3>
-            </Link>
+          {title && (
+            <p className="font-sans text-sm text-gray-600 mb-3">
+              {title}
+            </p>
+          )}
 
-            {title && (
-              <div className="inline-block mb-4 px-4 py-2 bg-text-dark text-white font-sans text-xs font-bold uppercase tracking-widest shadow-md">
-                {title}
-              </div>
-            )}
+          {bio && (
+            <p className="font-serif text-base leading-relaxed text-gray-700 mb-4 max-w-2xl">
+              {bio}
+            </p>
+          )}
 
-            {bio && (
-              <p className="font-serif text-lg md:text-xl leading-[1.7] text-text-dark mb-6 max-w-2xl">
-                {bio}
-              </p>
-            )}
-
-            <Link
-              href={`/author/${slug}`}
-              className="inline-flex items-center gap-3 px-6 py-3 bg-primary-red text-white font-sans text-sm font-bold uppercase tracking-wide hover:bg-text-dark transition-all duration-300 shadow-lg hover:shadow-xl hover:gap-4 group"
-            >
-              <span>Read more from {name}</span>
-              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </Link>
-          </div>
+          <Link
+            href={`/author/${slug}`}
+            className="inline-flex items-center gap-2 text-gray-900 font-sans text-sm hover:text-gray-700"
+          >
+            <span>More articles by {name}</span>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
         </div>
       </div>
     </div>

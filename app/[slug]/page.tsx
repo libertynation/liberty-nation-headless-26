@@ -91,7 +91,7 @@ export default async function DynamicPage({ params }: PageProps) {
       <>
         <Header />
         <main className="max-w-4xl mx-auto px-4 py-12">
-          <h1 className="font-headline text-5xl md:text-6xl font-black uppercase mb-8 tracking-tight">
+          <h1 className="font-headline text-5xl md:text-6xl font-bold uppercase mb-8 tracking-tight">
             About Liberty Nation
           </h1>
           <div className="prose prose-lg max-w-none font-serif">
@@ -101,7 +101,7 @@ export default async function DynamicPage({ params }: PageProps) {
             <p className="text-[19px] leading-[1.7] mb-6">
               Our mission is to promote free thinking, free speech, and the principles that made America great. We believe in limited government, individual liberty, free markets, and the Constitution.
             </p>
-            <h2 className="font-headline text-3xl font-black uppercase mt-12 mb-6">Our Values</h2>
+            <h2 className="font-headline text-3xl font-bold uppercase mt-12 mb-6">Our Values</h2>
             <ul className="space-y-3">
               <li className="text-[19px] leading-[1.7]"><strong>Free Speech:</strong> We defend the right to express ideas freely.</li>
               <li className="text-[19px] leading-[1.7]"><strong>Liberty:</strong> Individual freedom is paramount.</li>
@@ -120,14 +120,14 @@ export default async function DynamicPage({ params }: PageProps) {
       <>
         <Header />
         <main className="max-w-4xl mx-auto px-4 py-12">
-          <h1 className="font-headline text-5xl md:text-6xl font-black uppercase mb-8 tracking-tight">
+          <h1 className="font-headline text-5xl md:text-6xl font-bold uppercase mb-8 tracking-tight">
             Contact Us
           </h1>
           <div className="prose prose-lg max-w-none font-serif">
             <p className="text-[19px] leading-[1.7] mb-6">
               We'd love to hear from you. Whether you have a story tip, feedback, or just want to say hello, we're here to listen.
             </p>
-            <h2 className="font-headline text-3xl font-black uppercase mt-12 mb-6">Get In Touch</h2>
+            <h2 className="font-headline text-3xl font-bold uppercase mt-12 mb-6">Get In Touch</h2>
             <p className="text-[19px] leading-[1.7] mb-6">
               Email: <a href="mailto:contact@libertynation.com" className="text-primary-red hover:underline">contact@libertynation.com</a>
             </p>
@@ -161,24 +161,19 @@ export default async function DynamicPage({ params }: PageProps) {
           {/* Newsletter Signup Section */}
           <div className="py-20">
             <div className="max-w-[800px] mx-auto px-8">
-              <div className="bg-white px-12 py-10 rounded-sm shadow-lg border-4 border-text-dark relative">
-                {/* Decorative Corner Accents */}
-                <div className="absolute top-0 left-0 w-16 h-16 border-t-4 border-l-4 border-primary-red" />
-                <div className="absolute bottom-0 right-0 w-16 h-16 border-b-4 border-r-4 border-primary-red" />
+              <div className="bg-white px-12 py-10 rounded-sm shadow-lg border-4 border-text-dark">
+                <div className="inline-flex items-center gap-3 mb-4 bg-black/10 px-6 py-2 rounded-full text-black">
+                  <svg className="w-5 h-5 animate-pulse text-black" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                  </svg>
+                  <span className="font-sans font-bold text-sm uppercase tracking-widest text-black">
+                    Daily Briefing
+                  </span>
+                </div>
 
-                <div className="relative">
-                  <div className="inline-flex items-center gap-3 mb-4 bg-black/10 px-6 py-2 rounded-full text-black">
-                    <svg className="w-5 h-5 animate-pulse text-black" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                    </svg>
-                    <span className="font-sans font-black text-sm uppercase tracking-widest text-black">
-                      Daily Briefing
-                    </span>
-                  </div>
-
-                  <h2 className="font-display font-black text-4xl md:text-5xl mb-4 uppercase leading-tight text-black">
-                    Your Morning Dose of Liberty
-                  </h2>
+                <h2 className="font-display font-bold text-4xl md:text-5xl mb-4 uppercase leading-tight text-black">
+                  Your Morning Dose of Liberty
+                </h2>
                   <p className="font-serif text-xl mb-8 leading-relaxed text-black">
                     Get the day's most important stories, analysis, and commentary delivered to your inbox every morning.
                     No fluff. No propaganda. Just truth.
@@ -224,7 +219,6 @@ export default async function DynamicPage({ params }: PageProps) {
                 </div>
               </div>
             </div>
-          </div>
 
           {/* Benefits Section */}
           <div className="bg-white py-16 border-t border-border-gray">
@@ -281,7 +275,7 @@ export default async function DynamicPage({ params }: PageProps) {
       <>
         <Header />
         <main className="max-w-md mx-auto px-4 py-12">
-          <h1 className="font-headline text-4xl md:text-5xl font-black uppercase mb-8 tracking-tight text-center">
+          <h1 className="font-headline text-4xl md:text-5xl font-bold uppercase mb-8 tracking-tight text-center">
             Sign In
           </h1>
           <div className="bg-white border-2 border-border-gray rounded-lg p-8">
@@ -343,7 +337,7 @@ export default async function DynamicPage({ params }: PageProps) {
         <main className="max-w-7xl mx-auto px-4 py-12">
           {/* Category Header */}
           <div className="mb-12 pb-8 border-b-2 border-border-gray">
-            <h1 className="font-headline text-5xl md:text-6xl font-black uppercase mb-4 tracking-tight">
+            <h1 className="font-headline text-5xl md:text-6xl font-bold uppercase mb-4 tracking-tight">
               {categoryData.name}
             </h1>
             <p className="font-sans text-text-gray">
@@ -774,7 +768,6 @@ export default async function DynamicPage({ params }: PageProps) {
               </div>
             </div>
           </div>
-        </div>
       </article>
 
       <Footer />

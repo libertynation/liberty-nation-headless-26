@@ -60,15 +60,16 @@ export default function ExclusivesSliderFinal({ posts }: ExclusivesSliderFinalPr
                       transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1], delay: isActive ? index * 0.08 : 0 }}
                       style={{ transformOrigin: 'top' }}
                     />
-                    {/* Number with exclusion blend mode for white on red */}
-                    <span
-                      className="font-sans font-black text-5xl relative z-10 text-black"
-                      style={{
-                        mixBlendMode: 'exclusion',
+                    {/* Number with color transition */}
+                    <motion.span
+                      className="font-sans font-black text-5xl relative z-10"
+                      animate={{
+                        color: isActive ? '#ffffff' : '#000000',
                       }}
+                      transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
                     >
                       {index + 1}
-                    </span>
+                    </motion.span>
                   </motion.div>
                 );
               })}
