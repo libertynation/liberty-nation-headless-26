@@ -21,45 +21,71 @@ export default function SecretArea() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black/80" />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 h-full flex items-center justify-center px-8 py-16">
-        {/* Two-column layout: Briefing centered in first column */}
-        <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          {/* Left Column: Daily Briefing CTA - Centered */}
-          <div className="flex items-center justify-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
+      {/* Content - Integrated with canvas */}
+      <div className="relative z-10 h-full flex items-center px-12 lg:px-20 py-16">
+        <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+          {/* Left Column: Daily Briefing - Full canvas integration */}
+          <div className="space-y-8 max-w-2xl">
+            {/* Heading - animate first */}
+            <motion.h2
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
-              className="bg-black/80 backdrop-blur-sm border border-white/20 p-12 shadow-2xl max-w-md w-full"
+              transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="font-display font-black text-6xl md:text-7xl xl:text-8xl text-white uppercase tracking-tight leading-[0.9]"
             >
-              <h3 className="font-serif font-bold text-4xl text-white mb-4 leading-tight">
-                The Daily Briefing
-              </h3>
-              <p className="font-serif text-lg text-gray-300 mb-8 leading-relaxed border-t border-white/20 pt-6">
-                Wake up informed. Get the day's most important stories delivered to your inbox every morning.
-              </p>
-              <form className="space-y-4">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="w-full px-5 py-3 bg-white/10 border border-white/30 font-sans text-base text-white placeholder:text-gray-400 focus:outline-none focus:border-white focus:bg-white/20 transition-all duration-200"
-                  required
-                />
-                <button
-                  type="submit"
-                  className="w-full bg-primary-red text-white px-6 py-3 font-sans font-bold text-sm uppercase hover:bg-white hover:text-primary-red transition-all duration-300"
-                >
-                  Subscribe
-                </button>
-              </form>
-              <p className="font-sans text-xs text-gray-400 text-center mt-6">
-                Free • No spam • Unsubscribe anytime
-              </p>
-            </motion.div>
+              The Daily
+              <br />
+              Briefing
+            </motion.h2>
+
+            {/* Subtitle - animate second */}
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="font-serif text-2xl md:text-3xl text-gray-200 leading-relaxed max-w-xl"
+            >
+              Your morning advantage. Critical news, fearless analysis, and the truth mainstream media won't tell you—delivered before your first coffee.
+            </motion.p>
+
+            {/* Email Input - animate third */}
+            <motion.form
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="space-y-4"
+            >
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="w-full px-8 py-5 bg-transparent border-2 border-white/40 font-sans text-xl text-white placeholder:text-gray-400 focus:outline-none focus:border-white focus:bg-white/5 transition-all duration-300 backdrop-blur-sm"
+                required
+              />
+
+              {/* Submit Button - animate fourth */}
+              <motion.button
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 1.1, ease: [0.22, 1, 0.36, 1] }}
+                type="submit"
+                className="w-full bg-primary-red text-white px-8 py-5 font-sans font-black text-lg uppercase hover:bg-white hover:text-primary-red transition-all duration-300 shadow-2xl hover:shadow-primary-red/50"
+              >
+                Get the Briefing
+              </motion.button>
+            </motion.form>
+
+            {/* Fine print - animate last */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 1.4, ease: [0.22, 1, 0.36, 1] }}
+              className="font-sans text-sm text-gray-400"
+            >
+              Free • No spam • Unsubscribe anytime
+            </motion.p>
           </div>
 
-          {/* Right Column: Empty for now */}
+          {/* Right Column: Empty space for video to show through */}
           <div></div>
         </div>
       </div>
