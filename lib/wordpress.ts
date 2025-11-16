@@ -326,8 +326,7 @@ export async function getAuthors(params: {
 
 export async function getAuthorBySlug(slug: string): Promise<WordPressAuthor | null> {
   try {
-    // WordPress /users endpoint requires authentication
-    // Instead, fetch a post by this author and extract author info from embedded data
+    // First, get a post by this author to find their ID
     const posts = await fetchAPI(`/posts?author_name=${slug}&per_page=1&_embed=true`);
 
     if (posts.length === 0) {
@@ -337,11 +336,19 @@ export async function getAuthorBySlug(slug: string): Promise<WordPressAuthor | n
     const post = posts[0];
     const authorData = post._embedded?.author?.[0];
 
-    if (!authorData) {
+    if (!authorData || !authorData.id) {
       return null;
     }
 
-    return authorData;
+    // Now fetch the full author data including ACF fields from /users endpoint
+    try {
+      const fullAuthorData = await fetchAPI(`/users/${authorData.id}`);
+      return fullAuthorData;
+    } catch (userError) {
+      // If /users endpoint fails (auth required), fall back to embedded data
+      console.warn('Could not fetch full author data, using embedded data:', userError);
+      return authorData;
+    }
   } catch (error) {
     console.error('Error fetching author:', error);
     return null;
