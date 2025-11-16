@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { getAuthorBySlug, getPostsByAuthorSlug, getFeaturedImageUrl, formatDate, decodeHtmlEntities, stripHtmlTags } from '@/lib/wordpress';
+import { getAuthorBySlug, getPostsByAuthorSlug } from '@/lib/wordpress';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ArticleCard from '@/components/ArticleCard';
@@ -236,25 +236,13 @@ export default async function AuthorPage({ params, searchParams }: AuthorPagePro
             {posts.length > 0 ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                  {posts.map((post) => {
-                    const imageUrl = getFeaturedImageUrl(post);
-                    const date = formatDate(post.date);
-                    const excerpt = stripHtmlTags(post.excerpt.rendered);
-                    const categoryName = post._embedded?.['wp:term']?.[0]?.[0]?.name || 'NEWS';
-
-                    return (
-                      <ArticleCard
-                        key={post.id}
-                        title={decodeHtmlEntities(post.title.rendered)}
-                        slug={post.slug}
-                        excerpt={excerpt}
-                        imageUrl={imageUrl}
-                        author={author?.name || 'Author'}
-                        date={date}
-                        category={categoryName}
-                      />
-                    );
-                  })}
+                  {posts.map((post) => (
+                    <ArticleCard
+                      key={post.id}
+                      post={post}
+                      variant="sidebar"
+                    />
+                  ))}
                 </div>
 
                 {/* Pagination */}
