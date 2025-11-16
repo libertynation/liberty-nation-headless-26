@@ -32,7 +32,7 @@ export default function ExclusivesSliderFinal({ posts }: ExclusivesSliderFinalPr
         {/* Section Header */}
         <div className="flex items-center gap-6 mb-12">
           <div className="flex-1 border-t-2 border-black" />
-          <h2 className="font-sans font-black text-5xl uppercase tracking-tight">LN Exclusives</h2>
+          <h2 className="font-sans font-black text-5xl uppercase tracking-tight">Editor's Choice</h2>
         </div>
 
         {/* Main Layout: Numbers + Photo Left, 4 Articles Right */}

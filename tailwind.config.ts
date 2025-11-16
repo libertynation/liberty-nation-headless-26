@@ -29,9 +29,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        serif: ['Georgia', 'serif'], // Body text - matches thefp.com
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['Lora', 'Georgia', 'serif'], // All headlines - matches thefp.com
+        serif: ['Libre Baskerville', 'Georgia', 'serif'], // Body text - elegant serif
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'], // UI elements
+        display: ['Lora', 'serif'], // ALL headlines/titles - NO EXCEPTIONS
       },
       maxWidth: {
         'site': '1920px',

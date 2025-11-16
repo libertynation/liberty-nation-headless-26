@@ -30,7 +30,7 @@ export default function FeaturedArticle({ post }: FeaturedArticleProps) {
             />
           </div>
         )}
-        <h1 className="font-display font-black text-[36px] sm:text-[48px] md:text-[60px] lg:text-[72px] xl:text-[80px] leading-[0.9] mb-4 sm:mb-5 tracking-tight uppercase text-primary-red transition-colors duration-300 ease-out text-center group-hover:opacity-80">
+        <h1 className="font-serif font-bold text-[36px] sm:text-[48px] md:text-[60px] lg:text-[72px] xl:text-[80px] leading-[1.05] mb-4 sm:mb-5 tracking-tight text-gray-900 transition-colors duration-300 ease-out text-center group-hover:text-primary-red">
           {decodeHtmlEntities(post.title.rendered)}
         </h1>
         <p className="font-serif text-[16px] sm:text-[17px] md:text-[18px] lg:text-[20px] leading-[1.6] mb-4 sm:mb-5 text-text-dark text-center mx-auto max-w-[95%]">

@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function DonatePage() {
   const [amount, setAmount] = useState('50');
@@ -11,7 +13,9 @@ export default function DonatePage() {
   const presetAmounts = ['25', '50', '100', '250', '500'];
 
   return (
-    <main className="min-h-screen bg-white">
+    <>
+      <Header />
+      <main className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="bg-primary-black text-white py-20 relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.05]" style={{
@@ -263,5 +267,7 @@ export default function DonatePage() {
         </div>
       </section>
     </main>
+    <Footer />
+    </>
   );
 }

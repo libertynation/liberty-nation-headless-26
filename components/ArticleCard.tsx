@@ -16,7 +16,7 @@ export default function ArticleCard({ post, variant = 'sidebar' }: ArticleCardPr
   const excerpt = getExcerpt(post);
 
   return (
-    <article className="group text-center border-t-2 border-transparent hover:border-primary-red transition-colors duration-300 pt-4">
+    <article className="group text-center border-t-2 border-transparent hover:border-primary-red transition-colors duration-300 pt-8 sm:pt-10 lg:pt-12">
       <Link href={`/${post.slug}`} className="block" prefetch={true}>
         {imageUrl && (
           <div className="relative w-full aspect-[580/436] overflow-hidden bg-gray-200 mb-3">

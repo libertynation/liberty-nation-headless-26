@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function SubscribePage() {
   const [email, setEmail] = useState('');
@@ -21,7 +23,9 @@ export default function SubscribePage() {
   };
 
   return (
-    <main className="min-h-screen bg-white">
+    <>
+      <Header />
+      <main className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="bg-primary-black text-white py-20 relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.05]" style={{
@@ -271,5 +275,7 @@ export default function SubscribePage() {
         </div>
       </section>
     </main>
+    <Footer />
+    </>
   );
 }

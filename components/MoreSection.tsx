@@ -57,11 +57,11 @@ export default function MoreSection({ posts, title = "MORE" }: MoreSectionProps)
                     </div>
                   )}
 
-                  <h3 className="font-display font-black text-[17px] sm:text-[18px] md:text-[20px] leading-[1.2] mb-2 group-hover:text-primary-red transition-colors duration-300">
+                  <h3 className="font-display font-black text-xl sm:text-2xl md:text-3xl leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
                     {decodeHtmlEntities(post.title.rendered)}
                   </h3>
 
-                  <div className="flex items-center justify-center gap-2 text-[10px] sm:text-[11px] font-sans uppercase tracking-wide">
+                  <div className="flex items-center justify-center gap-2 text-xs font-sans uppercase tracking-wide">
                     {authorSlug && (
                       <Link href={`/author/${authorSlug}`} className="flex items-center gap-2 hover:opacity-80 transition" onClick={(e) => e.stopPropagation()}>
                         {authorAvatar ? (

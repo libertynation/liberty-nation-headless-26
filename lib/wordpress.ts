@@ -298,10 +298,50 @@ export async function getPostsByCategoryWithChildren(categoryId: number, params:
   return fetchAPIWithPagination<WordPressPost[]>(`/posts?${query}`);
 }
 
+export async function getAuthors(params: {
+  per_page?: number;
+  page?: number;
+} = {}): Promise<WordPressAuthor[]> {
+  try {
+    // WordPress /users endpoint requires authentication
+    // Get latest posts and extract unique authors from embedded data
+    const posts = await fetchAPI(`/posts?per_page=100&_embed=true`);
+
+    // Extract unique authors from posts
+    const authorsMap = new Map<number, WordPressAuthor>();
+
+    for (const post of posts) {
+      const authorData = post._embedded?.author?.[0];
+      if (authorData && !authorsMap.has(authorData.id)) {
+        authorsMap.set(authorData.id, authorData);
+      }
+    }
+
+    return Array.from(authorsMap.values());
+  } catch (error) {
+    console.error('Error fetching authors:', error);
+    return [];
+  }
+}
+
 export async function getAuthorBySlug(slug: string): Promise<WordPressAuthor | null> {
   try {
-    const authors = await fetchAPI(`/users?slug=${slug}`);
-    return authors.length > 0 ? authors[0] : null;
+    // WordPress /users endpoint requires authentication
+    // Instead, fetch a post by this author and extract author info from embedded data
+    const posts = await fetchAPI(`/posts?author_name=${slug}&per_page=1&_embed=true`);
+
+    if (posts.length === 0) {
+      return null;
+    }
+
+    const post = posts[0];
+    const authorData = post._embedded?.author?.[0];
+
+    if (!authorData) {
+      return null;
+    }
+
+    return authorData;
   } catch (error) {
     console.error('Error fetching author:', error);
     return null;
@@ -324,6 +364,22 @@ export async function getPostsByAuthor(authorId: number, params: {
 } = {}): Promise<APIResponse<WordPressPost[]>> {
   const searchParams = new URLSearchParams();
   searchParams.set('author', authorId.toString());
+
+  if (params.per_page) searchParams.set('per_page', params.per_page.toString());
+  if (params.page) searchParams.set('page', params.page.toString());
+  if (params._embed !== false) searchParams.set('_embed', 'true');
+
+  const query = searchParams.toString();
+  return fetchAPIWithPagination<WordPressPost[]>(`/posts?${query}`);
+}
+
+export async function getPostsByAuthorSlug(authorSlug: string, params: {
+  per_page?: number;
+  page?: number;
+  _embed?: boolean;
+} = {}): Promise<APIResponse<WordPressPost[]>> {
+  const searchParams = new URLSearchParams();
+  searchParams.set('author_name', authorSlug);
 
   if (params.per_page) searchParams.set('per_page', params.per_page.toString());
   if (params.page) searchParams.set('page', params.page.toString());
@@ -405,12 +461,66 @@ export function getExcerpt(post: WordPressPost): string {
 }
 
 export function getAuthorAvatar(post: WordPressPost): string | null {
-  // Check if we have avatar_urls from the author embed
+  // Priority 1: Check Yoast SEO schema for author image (most reliable source)
+  try {
+    const yoastSchema = (post as any).yoast_head_json?.schema;
+    if (yoastSchema && yoastSchema['@graph']) {
+      // Find the Person object in the schema graph
+      const personNode = yoastSchema['@graph'].find((node: any) => node['@type'] === 'Person');
+      if (personNode?.image?.url) {
+        return personNode.image.url;
+      }
+    }
+  } catch (e) {
+    // Continue to next method if Yoast parsing fails
+  }
+
+  // Priority 2: Check ACF fields for custom author photo
+  const acfPhoto = post._embedded?.author?.[0]?.acf?.photo;
+  if (acfPhoto) {
+    // ACF might store as URL string or object with url property
+    if (typeof acfPhoto === 'string') {
+      return acfPhoto;
+    } else if (acfPhoto?.url) {
+      return acfPhoto.url;
+    }
+  }
+
+  // Priority 3: Check for image field in ACF
+  const acfImage = post._embedded?.author?.[0]?.acf?.image;
+  if (acfImage) {
+    if (typeof acfImage === 'string') {
+      return acfImage;
+    } else if (acfImage?.url) {
+      return acfImage.url;
+    }
+  }
+
+  // Priority 4: Check Co-Authors Plus guest author data (wp:term taxonomy)
+  const guestAuthors = post._embedded?.['wp:term']?.[2]; // Co-Authors Plus uses index 2
+  if (guestAuthors && guestAuthors.length > 0) {
+    const guestAuthor = guestAuthors[0];
+    // Check for custom image in various possible fields
+    if (guestAuthor?.meta?.avatar) {
+      return guestAuthor.meta.avatar;
+    }
+    if (guestAuthor?.acf?.photo) {
+      const photo = guestAuthor.acf.photo;
+      if (typeof photo === 'string') {
+        return photo;
+      } else if (photo?.url) {
+        return photo.url;
+      }
+    }
+  }
+
+  // Priority 5: Check WordPress Gravatar avatar_urls
   const avatarUrls = post._embedded?.author?.[0]?.avatar_urls;
   if (avatarUrls) {
     // Try to get the highest resolution available
     return avatarUrls['96'] || avatarUrls['48'] || avatarUrls['24'] || null;
   }
+
   return null;
 }
 

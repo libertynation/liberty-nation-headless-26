@@ -33,6 +33,14 @@ const nextConfig: NextConfig = {
         protocol: 'http',
         hostname: '*.gravatar.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.youtube.com',
+      },
     ],
     // Image optimization settings
     formats: ['image/avif', 'image/webp'],

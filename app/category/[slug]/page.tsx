@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getCategory, getPostsByCategoryWithChildren, stripHtmlTags, getAuthorName, formatDate } from '@/lib/wordpress';
+import { getCategory, getPostsByCategoryWithChildren, stripHtmlTags, getAuthorName, formatDate, decodeHtmlEntities } from '@/lib/wordpress';
 import { generateCategoryMetadata } from '@/lib/seo';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -101,7 +101,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                           </div>
                         )}
                         <h3 className="font-display font-black text-[22px] leading-[1.2] group-hover:text-primary-red transition-colors duration-300">
-                          {post.title.rendered}
+                          {decodeHtmlEntities(post.title.rendered)}
                         </h3>
                       </Link>
                     </article>
@@ -142,7 +142,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                           </div>
                         )}
                         <h3 className="font-display font-black text-[22px] leading-[1.2] group-hover:text-primary-red transition-colors duration-300">
-                          {post.title.rendered}
+                          {decodeHtmlEntities(post.title.rendered)}
                         </h3>
                       </Link>
                     </article>
@@ -185,7 +185,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                             </div>
 
                             <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.05] mb-4 sm:mb-5 lg:mb-6 tracking-tight group-hover:text-primary-red transition-colors duration-300">
-                              {posts[0].title.rendered}
+                              {decodeHtmlEntities(posts[0].title.rendered)}
                             </h2>
 
                             {posts[0].excerpt && (
@@ -241,7 +241,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                                   )}
 
                                   <h3 className="font-display font-black text-[28px] leading-[1.2] mb-3 tracking-tight group-hover:text-primary-red transition-colors duration-300">
-                                    {p.title.rendered}
+                                    {decodeHtmlEntities(p.title.rendered)}
                                   </h3>
 
                                   {p.excerpt && (
@@ -284,7 +284,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                                       )}
 
                                       <h3 className="font-display font-black text-[24px] leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
-                                        {p.title.rendered}
+                                        {decodeHtmlEntities(p.title.rendered)}
                                       </h3>
 
                                       {p.excerpt && (

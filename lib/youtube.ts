@@ -2,8 +2,8 @@
 import 'server-only';
 
 // Liberty Nation YouTube Channel ID
-// Found from: https://www.youtube.com/@libertynation
-const CHANNEL_ID = 'UCFJNurMd0OqPRdeKgV8R9BA';
+// Use env variable if available, otherwise fall back to default
+const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || 'UCFJNurMd0OqPRdeKgV8R9BA';
 
 // YouTube API key (optional - falls back to RSS feed if not provided)
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
@@ -22,9 +22,17 @@ export interface YouTubeVideo {
  * Uses YouTube Data API if key is available, otherwise uses RSS feed
  */
 export async function getLatestYouTubeVideos(maxResults: number = 3): Promise<YouTubeVideo[]> {
+  console.log('Fetching YouTube videos with:', {
+    hasApiKey: !!YOUTUBE_API_KEY,
+    channelId: CHANNEL_ID,
+    maxResults
+  });
+
   if (YOUTUBE_API_KEY) {
+    console.log('Using YouTube API');
     return getVideosFromAPI(maxResults);
   } else {
+    console.log('Using YouTube RSS feed');
     return getVideosFromRSS(maxResults);
   }
 }
@@ -35,6 +43,7 @@ export async function getLatestYouTubeVideos(maxResults: number = 3): Promise<Yo
 async function getVideosFromAPI(maxResults: number): Promise<YouTubeVideo[]> {
   try {
     const url = `https://www.googleapis.com/youtube/v3/search?key=${YOUTUBE_API_KEY}&channelId=${CHANNEL_ID}&part=snippet&order=date&type=video&maxResults=${maxResults}`;
+    console.log('YouTube API URL (key hidden):', url.replace(YOUTUBE_API_KEY || '', 'KEY_HIDDEN'));
 
     const response = await fetch(url, {
       next: {
@@ -44,11 +53,13 @@ async function getVideosFromAPI(maxResults: number): Promise<YouTubeVideo[]> {
     });
 
     if (!response.ok) {
-      console.error('YouTube API error:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('YouTube API error:', response.status, response.statusText, errorText);
       return [];
     }
 
     const data = await response.json();
+    console.log('YouTube API response:', { itemCount: data.items?.length || 0 });
 
     return data.items.map((item: any) => ({
       id: item.id.videoId,

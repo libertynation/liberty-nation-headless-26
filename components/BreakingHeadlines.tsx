@@ -36,7 +36,7 @@ export default function BreakingHeadlines({ posts }: BreakingHeadlinesProps) {
       />
 
       <div className="max-w-[1600px] mx-auto px-10">
-        <div className="flex items-center gap-8">
+        <div className="flex items-center justify-center gap-8">
           {/* Breaking Label - fades in after borders */}
           <motion.div
             className="flex-shrink-0"

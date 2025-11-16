@@ -44,7 +44,7 @@ export default function AuthorCard({
           {/* Author Info */}
           <div className="flex-1 min-w-0">
             <Link href={`/author/${slug}`}>
-              <h3 className="font-serif text-xl text-gray-900 mb-1 hover:text-gray-700">
+              <h3 className="font-display text-xl font-bold text-gray-900 mb-1 hover:text-gray-700">
                 {name}
               </h3>
             </Link>
@@ -94,7 +94,7 @@ export default function AuthorCard({
           </p>
 
           <Link href={`/author/${slug}`}>
-            <h3 className="font-serif text-2xl md:text-3xl text-gray-900 mb-2 hover:text-gray-700">
+            <h3 className="font-display text-2xl md:text-3xl font-bold text-gray-900 mb-2 hover:text-gray-700">
               {name}
             </h3>
           </Link>

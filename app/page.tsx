@@ -1,5 +1,6 @@
 import { getPosts, getFeaturedImageUrl, getAuthorName, formatDate, getExcerpt, decodeHtmlEntities, type WordPressPost } from '@/lib/wordpress';
 import { generateHomeMetadata } from '@/lib/seo';
+import { getLatestYouTubeVideos } from '@/lib/youtube';
 import Header from '@/components/Header';
 import FeaturedArticle from '@/components/FeaturedArticle';
 import ArticleCard from '@/components/ArticleCard';
@@ -10,12 +11,9 @@ import SectionViewMore from '@/components/SectionViewMore';
 import AnimatedSection from '@/components/AnimatedSection';
 import CategoryButtons from '@/components/CategoryButtons';
 import { Spotlight } from '@/components/Spotlight';
-import ExclusivesSlider from '@/components/ExclusivesSlider';
-import ExclusivesSliderV2 from '@/components/ExclusivesSliderV2';
-import ExclusivesSliderV3 from '@/components/ExclusivesSliderV3';
-import ExclusivesSliderImproved from '@/components/ExclusivesSliderImproved';
 import ExclusivesSliderFinal from '@/components/ExclusivesSliderFinal';
-import CinematicDailyBriefing from '@/components/CinematicDailyBriefing';
+import DailyExclusives from '@/components/DailyExclusives';
+import PoliticsSection from '@/components/PoliticsSection';
 import FadeInSection from '@/components/FadeInSection';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -33,16 +31,21 @@ export default async function HomePage() {
   // ISR will update the page with real data after deployment
   let articlesResponse: WordPressPost[] = [];
   let posts: WordPressPost[] = [];
+  let dailyExclusives: WordPressPost[] = [];
+  let politicsArticles: WordPressPost[] = [];
   let lntvPosts: WordPressPost[] = [];
   let audioPosts: WordPressPost[] = [];
   let cultureArticles: WordPressPost[] = [];
   let opinionArticles: WordPressPost[] = [];
   let breakingPosts: WordPressPost[] = [];
+  let youtubeVideos: Awaited<ReturnType<typeof getLatestYouTubeVideos>> = [];
 
   try {
     [
       articlesResponse,
       posts,
+      dailyExclusives,
+      politicsArticles,
       lntvPosts,
       audioPosts,
       cultureArticles,
@@ -51,6 +54,8 @@ export default async function HomePage() {
     ] = await Promise.all([
       getPosts({ per_page: 1, categories: '5016', orderby: 'date', order: 'desc' }),
       getPosts({ per_page: 30 }),
+      getPosts({ per_page: 7, categories: '5016', orderby: 'date', order: 'desc' }), // Daily Exclusives
+      getPosts({ per_page: 5, categories: '441', orderby: 'date', order: 'desc' }), // U.S. Politics
       getPosts({ per_page: 3, categories: '600', orderby: 'date', order: 'desc' }),
       getPosts({ per_page: 3, categories: '3390', orderby: 'date', order: 'desc' }),
       getPosts({ per_page: 3, categories: '444', orderby: 'date', order: 'desc' }),
@@ -60,6 +65,14 @@ export default async function HomePage() {
   } catch (error) {
     console.error('Error fetching posts during build:', error);
     // During Vercel build, SSL cert issues may occur - empty arrays already initialized, let ISR update
+  }
+
+  // Fetch YouTube videos as fallback for LNTV section if needed
+  try {
+    youtubeVideos = await getLatestYouTubeVideos(3);
+    console.log('Homepage: YouTube videos fetched:', youtubeVideos.length, 'videos');
+  } catch (error) {
+    console.error('Homepage: Error fetching YouTube videos:', error);
   }
 
   const featuredPost = articlesResponse?.[0];
@@ -99,7 +112,7 @@ export default async function HomePage() {
       {/* Main Three-Column Layout */}
       <main className="bg-bg-offwhite">
         {/* Hero Section */}
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-4 sm:py-6 lg:py-4">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 pt-4 sm:pt-4 lg:pt-4 pb-4 sm:pb-6 lg:pb-4">
           <div className="grid grid-cols-1 lg:grid-cols-[26%_48%_26%] gap-6 sm:gap-8 lg:gap-10 items-start">
             {/* Left Column */}
             <aside className="space-y-6 sm:space-y-8">
@@ -193,14 +206,25 @@ export default async function HomePage() {
         </AnimatedSection>
         </FadeInSection>
 
-        {/* LNTV (Videos) Section - FIRST major content section */}
+        {/* Daily Exclusives Section - Magazine-Style Layout */}
+        <FadeInSection delay={0.1}>
+          <DailyExclusives posts={dailyExclusives} />
+        </FadeInSection>
+
+        {/* U.S. Politics Section - The Free Press Style */}
+        <FadeInSection delay={0.2}>
+          <PoliticsSection posts={politicsArticles} />
+        </FadeInSection>
+
+        {/* LNTV (Videos) Section - with YouTube fallback */}
         <FadeInSection delay={0.1}>
           <div className="bg-bg-offwhite py-12 sm:py-16 lg:py-20 relative overflow-hidden">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header */}
             <SectionHeader title="Liberty Nation TV" ctaHref="/category/lntv" ctaText="Watch more videos" />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
-              {lntvPosts.map((post) => (
+              {/* Show LNTV posts if available, otherwise show YouTube videos */}
+              {lntvPosts.length > 0 ? lntvPosts.map((post) => (
                 <article key={post.id} className="group text-center">
                   <Link href={`/${post.slug}`}>
                     {post._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
@@ -228,10 +252,44 @@ export default async function HomePage() {
                         </div>
                       </div>
                     )}
-                    <h3 className="font-display font-black text-[17px] sm:text-[18px] md:text-[20px] leading-[1.2] group-hover:text-primary-red transition-colors duration-300">
+                    <h3 className="font-display font-black text-xl sm:text-2xl md:text-3xl leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
                       {decodeHtmlEntities(post.title.rendered)}
                     </h3>
+
+                    {/* Add author and date */}
+                    <div className="flex items-center justify-center gap-2 text-xs font-sans uppercase tracking-wide">
+                      <span className="text-primary-red font-bold">{getAuthorName(post).toUpperCase()}</span>
+                      <span className="text-black">—</span>
+                      <span className="text-gray-600">{formatDate(post.date)}</span>
+                    </div>
                   </Link>
+                </article>
+              )) : youtubeVideos.map((video) => (
+                <article key={video.id} className="group text-center">
+                  <a href={video.videoUrl} target="_blank" rel="noopener noreferrer">
+                    <div className="relative w-full aspect-[580/436] bg-gray-200 mb-4 overflow-hidden">
+                      <Image
+                        src={video.thumbnailUrl}
+                        alt={video.title}
+                        fill
+                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 400px"
+                      />
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/60 transition-colors duration-300">
+                        <div className="w-16 h-16 bg-primary-red rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                          <div className="w-0 h-0 border-l-[16px] border-l-white border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent ml-1" />
+                        </div>
+                      </div>
+                    </div>
+                    <h3 className="font-display font-black text-xl sm:text-2xl md:text-3xl leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
+                      {video.title}
+                    </h3>
+                    <div className="flex items-center justify-center gap-2 text-xs font-sans uppercase tracking-wide">
+                      <span className="text-primary-red font-bold">LIBERTY NATION</span>
+                      <span className="text-black">—</span>
+                      <span className="text-gray-600">{new Date(video.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    </div>
+                  </a>
                 </article>
               ))}
             </div>
@@ -242,25 +300,117 @@ export default async function HomePage() {
         </div>
         </FadeInSection>
 
-        {/* Culture Section */}
+        {/* Culture Section - The Free Press Style with Featured Article */}
         <FadeInSection delay={0.2}>
           <div className="bg-white py-12 sm:py-16 lg:py-20 relative overflow-hidden">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header */}
-            <SectionHeader title="Culture" ctaHref="/category/culture-and-entertainment-news" ctaText="View all culture articles" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
-              {cultureArticles.map((post) => (
-                <ArticleCard key={post.id} post={post} variant="sidebar" />
-              ))}
+            <div className="mb-10 sm:mb-12">
+              <div className="flex items-center justify-between border-b-2 border-black pb-3">
+                <h2 className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight">
+                  Culture
+                </h2>
+                <Link
+                  href="/category/culture-and-entertainment-news"
+                  className="hidden lg:inline-flex items-center gap-2 text-black font-sans font-bold text-sm uppercase tracking-wide hover:text-primary-red transition-colors duration-300"
+                >
+                  <span>See All</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+              </div>
             </div>
-            <div className="lg:hidden">
-              <SectionViewMore href="/category/culture-and-entertainment-news" actionText="View all culture articles" />
+
+            {cultureArticles.length > 0 && (
+              <div className="space-y-8">
+                {/* Featured Article */}
+                <article className="group pb-8 border-b border-gray-200">
+                  <Link href={`/${cultureArticles[0].slug}`}>
+                    <div className="grid md:grid-cols-[1fr_1.2fr] gap-6 lg:gap-10">
+                      {getFeaturedImageUrl(cultureArticles[0]) && (
+                        <div className="relative w-full aspect-[16/10] overflow-hidden bg-gray-200 shadow-lg">
+                          <Image
+                            src={getFeaturedImageUrl(cultureArticles[0])!}
+                            alt={decodeHtmlEntities(cultureArticles[0].title.rendered)}
+                            fill
+                            className="object-cover transition-all duration-700 ease-out group-hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, 45vw"
+                          />
+                        </div>
+                      )}
+                      <div className="flex flex-col justify-center">
+                        <h3 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl leading-[1.1] mb-4 group-hover:text-primary-red transition-colors duration-300">
+                          {decodeHtmlEntities(cultureArticles[0].title.rendered)}
+                        </h3>
+                        {getExcerpt(cultureArticles[0]) && (
+                          <p className="font-serif text-lg leading-[1.6] text-text-dark mb-4">
+                            {getExcerpt(cultureArticles[0]).substring(0, 160)}...
+                          </p>
+                        )}
+                        <div className="flex items-center gap-3 text-sm font-sans uppercase tracking-wide">
+                          <span className="text-primary-red font-bold">
+                            {getAuthorName(cultureArticles[0]).toUpperCase()}
+                          </span>
+                          <span className="text-black">—</span>
+                          <span className="text-gray-600">{formatDate(cultureArticles[0].date)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </article>
+
+                {/* Supporting Articles - 2 Column Grid */}
+                {cultureArticles.length > 1 && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {cultureArticles.slice(1).map((post) => (
+                      <article key={post.id} className="group">
+                        <Link href={`/${post.slug}`}>
+                          {getFeaturedImageUrl(post) && (
+                            <div className="relative w-full aspect-[16/10] overflow-hidden bg-gray-200 mb-3 shadow-md">
+                              <Image
+                                src={getFeaturedImageUrl(post)!}
+                                alt={decodeHtmlEntities(post.title.rendered)}
+                                fill
+                                className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                                sizes="(max-width: 768px) 100vw, 45vw"
+                              />
+                            </div>
+                          )}
+                          <h4 className="font-display font-black text-2xl sm:text-3xl leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
+                            {decodeHtmlEntities(post.title.rendered)}
+                          </h4>
+                          <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-wide">
+                            <span className="text-primary-red font-bold">
+                              {getAuthorName(post).toUpperCase()}
+                            </span>
+                            <span className="text-black">—</span>
+                            <span className="text-gray-600">{formatDate(post.date)}</span>
+                          </div>
+                        </Link>
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="lg:hidden mt-8 text-center">
+              <Link
+                href="/category/culture-and-entertainment-news"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-black text-white font-sans font-bold text-sm uppercase tracking-wide hover:bg-primary-red transition-all duration-300"
+              >
+                <span>See All Culture Articles</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Link>
             </div>
           </div>
         </div>
         </FadeInSection>
 
-        {/* LN Exclusives Section */}
+        {/* Editor's Choice Section */}
         <FadeInSection delay={0.3}>
           <ExclusivesSliderFinal posts={exclusivesArticles} />
         </FadeInSection>
@@ -270,39 +420,73 @@ export default async function HomePage() {
           <div className="bg-white py-12 sm:py-16 lg:py-20 relative overflow-hidden border-t-2 border-b-2 border-black">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header */}
-            <SectionHeader title="Opinion & Analysis" ctaHref="/category/opinion" ctaText="Read all opinion pieces" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
-              {opinionArticles.map((post, index) => (
-                <article key={post.id} className="group relative bg-bg-offwhite border-2 border-border-gray hover:border-primary-red transition-all duration-300 p-6">
-                  {/* Top corner accent */}
-                  <div className="absolute top-0 left-0 w-12 h-[3px] bg-primary-red" />
+            <div className="mb-10 sm:mb-12">
+              <div className="flex items-center justify-between border-b-2 border-black pb-3">
+                <h2 className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight">
+                  Opinion & Analysis
+                </h2>
+                <Link
+                  href="/category/opinion"
+                  className="hidden lg:inline-flex items-center gap-2 text-black font-sans font-bold text-sm uppercase tracking-wide hover:text-primary-red transition-colors duration-300"
+                >
+                  <span>See All</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
 
-                  <Link href={`/${post.slug}`}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="text-primary-red font-sans text-[10px] font-bold uppercase tracking-widest">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
+              {opinionArticles.map((post) => {
+                const imageUrl = getFeaturedImageUrl(post);
+                const author = getAuthorName(post);
+                const date = formatDate(post.date);
+
+                return (
+                  <article key={post.id} className="group">
+                    <Link href={`/${post.slug}`}>
+                      {imageUrl && (
+                        <div className="relative w-full aspect-[16/10] overflow-hidden bg-gray-200 mb-4 shadow-md">
+                          <Image
+                            src={imageUrl}
+                            alt={decodeHtmlEntities(post.title.rendered)}
+                            fill
+                            className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 400px"
+                          />
+                        </div>
+                      )}
+
+                      <div className="text-primary-red font-sans text-xs font-bold uppercase tracking-widest mb-3">
                         OPINION
                       </div>
-                      <div className="flex-1 h-[1px] bg-primary-red/20" />
-                    </div>
-                    <h3 className="font-serif font-bold text-[22px] sm:text-[24px] leading-tight mb-4 group-hover:text-primary-red transition-colors duration-300">
-                      {decodeHtmlEntities(post.title.rendered)}
-                    </h3>
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 bg-primary-red rounded-full flex items-center justify-center">
-                        <span className="font-sans font-black text-white text-xs">
-                          {post._embedded?.author?.[0]?.name?.charAt(0) || 'L'}
-                        </span>
+
+                      <h3 className="font-display font-black text-2xl sm:text-3xl leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
+                        {decodeHtmlEntities(post.title.rendered)}
+                      </h3>
+
+                      <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-wide">
+                        <span className="text-primary-red font-bold">{author.toUpperCase()}</span>
+                        <span className="text-black">—</span>
+                        <span className="text-gray-600">{date}</span>
                       </div>
-                      <div className="font-sans text-[11px] font-bold uppercase tracking-wide text-text-gray">
-                        {post._embedded?.author?.[0]?.name?.toUpperCase() || 'LIBERTY NATION'}
-                      </div>
-                    </div>
-                  </Link>
-                </article>
-              ))}
+                    </Link>
+                  </article>
+                );
+              })}
             </div>
-            <div className="lg:hidden">
-              <SectionViewMore href="/category/opinion" actionText="Read all opinion pieces" />
+
+            <div className="lg:hidden mt-8 text-center">
+              <Link
+                href="/category/opinion"
+                className="inline-flex items-center gap-3 px-8 py-4 bg-black text-white font-sans font-bold text-sm uppercase tracking-wide hover:bg-primary-red transition-all duration-300"
+              >
+                <span>Read All Opinion Pieces</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Link>
             </div>
           </div>
         </div>
@@ -352,9 +536,14 @@ export default async function HomePage() {
                         </div>
                       </div>
                     )}
-                    <h3 className="font-display font-black text-[17px] sm:text-[18px] md:text-[20px] leading-[1.2] group-hover:text-primary-red transition-colors duration-300">
+                    <h3 className="font-display font-black text-xl sm:text-2xl md:text-3xl leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
                       {decodeHtmlEntities(post.title.rendered)}
                     </h3>
+                    <div className="flex items-center justify-center gap-2 text-xs font-sans uppercase tracking-wide">
+                      <span className="text-primary-red font-bold">{getAuthorName(post).toUpperCase()}</span>
+                      <span className="text-black">—</span>
+                      <span className="text-gray-600">{formatDate(post.date)}</span>
+                    </div>
                   </Link>
                 </article>
               ))}

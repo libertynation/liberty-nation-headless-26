@@ -295,7 +295,7 @@ export default function Header() {
       </div>
 
       {/* Header */}
-      <header className="z-[1000] py-4">
+      <header className="z-[1000] py-2">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 flex justify-between items-center">
           {/* Left: Menu + Logo */}
           <div className="flex items-center gap-4 sm:gap-6">
@@ -310,7 +310,7 @@ export default function Header() {
             </button>
 
             <Link href="/" className="flex items-center flex-shrink min-w-0">
-              <div className="relative w-[180px] sm:w-[240px] md:w-[320px] lg:w-[380px] xl:w-[440px] h-[50px] sm:h-[60px] md:h-[70px] lg:h-[80px] xl:h-[90px]">
+              <div className="relative w-[220px] sm:w-[280px] md:w-[380px] lg:w-[460px] xl:w-[540px] h-[60px] sm:h-[72px] md:h-[86px] lg:h-[100px] xl:h-[114px]">
                 <Image
                   src="/liberty-nation-logo.png"
                   alt="Liberty Nation News"

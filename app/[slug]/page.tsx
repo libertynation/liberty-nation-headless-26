@@ -9,6 +9,7 @@ import Footer from '@/components/Footer';
 import ShareButtons from '@/components/ShareButtons';
 import FollowTopicButton from '@/components/FollowTopicButton';
 import AuthorCard from '@/components/AuthorCard';
+import AnimatedSectionHeader from '@/components/AnimatedSectionHeader';
 
 // ISR: Revalidate every 60 seconds for news site - fast updates critical
 export const revalidate = 60;
@@ -416,7 +417,20 @@ export default async function DynamicPage({ params }: PageProps) {
 
   const imageUrl = getFeaturedImageUrl(post);
   const author = getAuthorName(post);
-  const authorSlug = post._embedded?.author?.[0]?.slug || '';
+
+  // Get author slug - try embedded author first, then create from guest author name
+  let authorSlug = post._embedded?.author?.[0]?.slug || '';
+  if (!authorSlug) {
+    // Try to get guest author slug from wp:term
+    const guestAuthorSlug = post._embedded?.['wp:term']?.[2]?.[0]?.slug;
+    if (guestAuthorSlug) {
+      authorSlug = guestAuthorSlug;
+    } else {
+      // Create slug from author name as fallback
+      authorSlug = author.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    }
+  }
+
   const authorBio = post._embedded?.author?.[0]?.description || `${author} is a contributing writer for Liberty Nation, covering politics, culture, and current events with a focus on constitutional liberty and American values.`;
   const authorAvatar = getAuthorAvatar(post);
   const authorTitle = getAuthorTitle(post);
@@ -431,6 +445,7 @@ export default async function DynamicPage({ params }: PageProps) {
   let youtubeVideos: Awaited<ReturnType<typeof getLatestYouTubeVideos>> = [];
   try {
     youtubeVideos = await getLatestYouTubeVideos(3);
+    console.log('YouTube videos fetched:', youtubeVideos.length, 'videos');
   } catch (error) {
     console.error('Error fetching YouTube videos:', error);
   }
@@ -449,8 +464,20 @@ export default async function DynamicPage({ params }: PageProps) {
   }
   const relatedArticles = relatedArticlesResponse.slice(0, 3);
 
-  // Get ACF fields for shorts section
+  // Get ACF fields for shorts section and audio
   const authorQuote = post.acf?.author_quote || null;
+  // Check multiple possible audio field names
+  const audioUrl = post.acf?.audio_url ||
+                   post.acf?.audio ||
+                   post.acf?.audio_file ||
+                   post.acf?.podcast_url ||
+                   post.acf?.article_audio ||
+                   null;
+
+  // Debug: log if we have ACF data but no audio
+  if (post.acf && !audioUrl) {
+    console.log('Post ACF fields available:', Object.keys(post.acf));
+  }
 
   return (
     <>
@@ -459,15 +486,33 @@ export default async function DynamicPage({ params }: PageProps) {
       <article className="bg-bg-offwhite">
         {/* SECTION 1: Title Only - Full Width */}
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 pt-12 pb-8">
-          {/* Title - Large typography like The Free Press */}
-          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.1] font-normal mb-0 text-gray-900 tracking-tight">
+          {/* Title - LARGE typography using Lora */}
+          <h1 className="font-display text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-[1.05] font-bold mb-0 text-gray-900 tracking-tight">
             {decodeHtmlEntities(post.title.rendered)}
           </h1>
+
+          {/* Audio Player - At top after title if available */}
+          {audioUrl && (
+            <div className="mt-8 bg-white border-2 border-gray-200 rounded-lg p-6 shadow-md max-w-[900px]">
+              <div className="flex items-center gap-4 mb-4">
+                <svg className="w-6 h-6 text-primary-red" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                </svg>
+                <h3 className="font-sans font-bold text-lg text-text-dark uppercase tracking-wide">
+                  Listen to this article
+                </h3>
+              </div>
+              <audio controls className="w-full" preload="metadata">
+                <source src={audioUrl} type="audio/mpeg" />
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+          )}
         </div>
 
         {/* SECTION 2: Split Layout - Featured Image Left, Metadata Right */}
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 pb-12">
-          <div className={`grid grid-cols-1 gap-12 items-start ${shouldShowFeaturedImage ? 'lg:grid-cols-2' : 'lg:grid-cols-1'}`}>
+          <div className={`grid grid-cols-1 gap-12 ${shouldShowFeaturedImage ? 'lg:grid-cols-2' : 'lg:grid-cols-1'}`}>
             {/* LEFT: Featured Image */}
             {shouldShowFeaturedImage && (
               <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-200">
@@ -482,70 +527,71 @@ export default async function DynamicPage({ params }: PageProps) {
               </div>
             )}
 
-            {/* RIGHT: Metadata & Author Info */}
-            <div className={`flex flex-col gap-6 justify-center ${!shouldShowFeaturedImage ? 'max-w-[800px]' : ''}`}>
-              {/* Author Quote (priority) or Excerpt/Dek (fallback) */}
-              {(authorQuote || post.excerpt.rendered) && (
-                <p className="font-serif text-xl md:text-2xl leading-[1.5] text-gray-700">
-                  {authorQuote ? authorQuote : decodeHtmlEntities(stripHtmlTags(post.excerpt.rendered))}
-                </p>
-              )}
+            {/* RIGHT: Metadata & Author Info - Flex column with space-between to push share buttons to bottom */}
+            <div className={`flex flex-col ${!shouldShowFeaturedImage ? 'max-w-[800px]' : ''}`}>
+              {/* Top Content */}
+              <div className="flex flex-col gap-8">
+                {/* Author Quote (priority) or Excerpt/Dek (fallback) - ENHANCED */}
+                {(authorQuote || post.excerpt.rendered) && (
+                  <p className="font-serif text-2xl md:text-3xl lg:text-4xl leading-[1.4] text-gray-800 font-normal">
+                    {authorQuote ? authorQuote : decodeHtmlEntities(stripHtmlTags(post.excerpt.rendered))}
+                  </p>
+                )}
 
-              {/* Author Name */}
-              <div>
-                <Link href={`/author/${authorSlug}`}>
-                  <h2 className="font-serif text-xl md:text-2xl text-gray-800 hover:text-gray-900 mb-2">
-                    By {author}
-                  </h2>
-                </Link>
-              </div>
+                {/* Author Name - ENHANCED */}
+                <div>
+                  <Link href={`/author/${authorSlug}`} className="group">
+                    <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-primary-red group-hover:text-text-dark mb-2 transition-colors duration-300 font-bold leading-[1.2]">
+                      By {author}
+                    </h2>
+                  </Link>
+                  {authorTitle && (
+                    <p className="font-sans text-base md:text-lg text-gray-600 mt-2">{authorTitle}</p>
+                  )}
+                </div>
 
-              {/* Date & Category */}
-              <div className="flex items-center gap-3 text-sm font-sans text-gray-600 uppercase tracking-wide">
-                <span>{date}</span>
-                {category && (
-                  <>
-                    <span>—</span>
-                    <Link href={`/category/${category.toLowerCase().replace(/\s+/g, '-')}`}>
-                      <span className="hover:text-primary-red transition">{category}</span>
-                    </Link>
-                  </>
+                {/* Date & Category */}
+                <div className="flex items-center gap-3 text-sm md:text-base font-sans text-gray-600 uppercase tracking-wide">
+                  <span>{date}</span>
+                  {category && (
+                    <>
+                      <span>—</span>
+                      <Link href={`/category/${category.toLowerCase().replace(/\s+/g, '-')}`}>
+                        <span className="hover:text-primary-red transition">{category}</span>
+                      </Link>
+                    </>
+                  )}
+                </div>
+
+                {/* Author Card - Compact variant in metadata section */}
+                {authorSlug && (
+                  <div className="border-t border-gray-300 pt-6">
+                    <AuthorCard
+                      name={author}
+                      slug={authorSlug}
+                      title={authorTitle}
+                      bio={authorBio}
+                      avatar={authorAvatar}
+                      variant="compact"
+                    />
+                  </div>
                 )}
               </div>
 
-              {/* Author Card - Compact variant in metadata section */}
-              {authorSlug && (
-                <div className="border-t border-gray-300 pt-6">
-                  <AuthorCard
-                    name={author}
-                    slug={authorSlug}
-                    title={authorTitle}
-                    bio={authorBio}
-                    avatar={authorAvatar}
-                    variant="compact"
-                  />
-                </div>
-              )}
-
-              {/* Follow & Share Buttons */}
-              <div className="flex items-center gap-4 pt-4 border-t border-gray-300">
+              {/* Bottom: Follow & Share Buttons - FLUSH TO BOTTOM, aligned with bottom of image */}
+              <div className="flex items-center gap-4 pt-8 mt-auto border-t-2 border-gray-300">
                 <FollowTopicButton
                   author={author}
                   category={category}
                   title={post.title.rendered}
                 />
-                <ShareButtons
-                  title={post.title.rendered}
-                  url={`https://www.libertynation.com/${post.slug}`}
-                />
+                <div className="scale-110">
+                  <ShareButtons
+                    title={post.title.rendered}
+                    url={`https://www.libertynation.com/${post.slug}`}
+                  />
+                </div>
               </div>
-
-              {/* Engagement Metrics Placeholder - Can add later */}
-              {/* <div className="flex items-center gap-4 text-sm text-gray-600">
-                <span>📖 5 min read</span>
-                <span>💬 493</span>
-                <span>❤️ 193</span>
-              </div> */}
             </div>
           </div>
         </div>
@@ -621,8 +667,9 @@ export default async function DynamicPage({ params }: PageProps) {
             )}
 
             {/* Video Grid - YouTube Videos */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {youtubeVideos.map((video) => {
+            {youtubeVideos.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {youtubeVideos.map((video) => {
                 const videoDate = new Date(video.publishedAt).toLocaleDateString('en-US', {
                   month: 'short',
                   day: 'numeric',
@@ -656,7 +703,14 @@ export default async function DynamicPage({ params }: PageProps) {
                   </article>
                 );
               })}
-            </div>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="font-serif text-xl text-gray-400">
+                  Loading latest videos...
+                </p>
+              </div>
+            )}
 
             {/* View All Videos CTA */}
             <div className="text-center mt-12">
@@ -677,18 +731,11 @@ export default async function DynamicPage({ params }: PageProps) {
         {relatedArticles.length > 0 && (
           <div className="bg-white py-16 md:py-20">
             <div className="max-w-[1400px] mx-auto px-6 md:px-12">
-              {/* Section Header */}
-              <div className="mb-12">
-                <div className="flex items-center gap-4 mb-2">
-                  <div className="w-1 h-12 bg-primary-red" />
-                  <h2 className="font-display font-bold text-4xl md:text-5xl text-text-dark uppercase tracking-tight">
-                    More from {category || 'Liberty Nation'}
-                  </h2>
-                </div>
-                <p className="font-serif text-lg text-text-gray ml-5 pl-4">
-                  Continue reading stories that matter
-                </p>
-              </div>
+              {/* Section Header with Animated Borders */}
+              <AnimatedSectionHeader
+                title={`More from ${category || 'Liberty Nation'}`}
+                subtitle="Continue reading stories that matter"
+              />
 
               {/* Related Articles Grid - Real Data */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-10">

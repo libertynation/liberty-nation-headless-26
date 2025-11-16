@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -16,19 +16,60 @@
   --border-dark: #d1d1d1;
 }
 
+/* STRICT GLOBAL TYPOGRAPHY - Matching thefp.com structure */
 body {
-  font-family: Georgia, serif;
+  font-family: 'Libre Baskerville', Georgia, serif;
   color: var(--text-dark);
   background: var(--bg-white);
-  line-height: 1.6;
+  line-height: 1.7;
   font-size: 18px;
 }
 
+/* ALL headings use Lora - NO EXCEPTIONS */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Lora', Georgia, serif;
+  font-family: 'Lora', serif;
   font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-dark);
+}
+
+/* Specific heading sizes */
+h1 {
+  font-size: 3.5rem; /* 56px */
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: 2.5rem; /* 40px */
+  margin-top: 3rem;
+  margin-bottom: 1.25rem;
+}
+
+h3 {
+  font-size: 1.875rem; /* 30px */
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+h4 {
+  font-size: 1.5rem; /* 24px */
+  margin-top: 2rem;
+  margin-bottom: 0.875rem;
+}
+
+h5, h6 {
+  font-size: 1.25rem; /* 20px */
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* ALL paragraphs use Libre Baskerville */
+p {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
   color: var(--text-dark);
 }
 
