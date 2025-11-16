@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { typography, transitions, spacing, borders } from '@/lib/design-tokens';
 
 interface SectionHeaderProps {
   title: string;
@@ -30,14 +31,14 @@ export default function SectionHeader({ title, ctaHref, ctaText, className = '' 
   }, []);
 
   return (
-    <div ref={ref} className={`relative mb-4 sm:mb-5 lg:mb-6 ${className}`}>
+    <div ref={ref} className={`relative ${spacing.mb.lg} ${className}`}>
       {/* Divider aligned to bottom of text */}
-      <div className="absolute inset-x-0 bottom-0 h-[2px] bg-black" />
+      <div className={`absolute inset-x-0 bottom-0 h-[2px] ${borders.color.dark}`} />
 
       {/* Title that slides left across the divider when in view (desktop only) */}
       <h2
-        className={`relative z-10 inline-block font-sans font-black text-2xl sm:text-3xl md:text-4xl lg:text-5xl uppercase tracking-tight leading-tight whitespace-nowrap
-          transition-all duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)]
+        className={`relative z-10 inline-block font-sans font-black ${typography.display.lg} uppercase tracking-tight leading-tight whitespace-nowrap
+          ${transitions.slowest} ease-[cubic-bezier(0.16,1,0.3,1)]
           pb-[2px]
           lg:will-change-transform
           ${inView ? 'lg:translate-x-0 lg:opacity-100' : 'lg:translate-x-[75%] lg:opacity-0'}`}
@@ -47,19 +48,19 @@ export default function SectionHeader({ title, ctaHref, ctaText, className = '' 
 
       {/* CTA fades in on the right using existing space; desktop only */}
       <div
-        className={`hidden lg:block absolute bottom-0 right-0 z-10 transition-all duration-700 ease-out ${
+        className={`hidden lg:block absolute bottom-0 right-0 z-10 ${transitions.slowest} ease-out ${
           inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
         }`}
       >
         <Link
           href={ctaHref}
-          className="group inline-flex items-center gap-3 px-6 py-3 border-2 border-black bg-white hover:bg-black transition-all duration-300"
+          className={`group inline-flex items-center gap-3 px-6 py-3 ${borders.medium} ${borders.color.dark} bg-white hover:bg-black ${transitions.all}`}
         >
-          <span className="font-sans font-bold text-xs uppercase tracking-widest text-black group-hover:text-white transition-colors duration-300">
+          <span className={`font-sans font-bold text-xs uppercase tracking-widest text-black group-hover:text-white ${transitions.color}`}>
             {ctaText}
           </span>
           <svg
-            className="w-5 h-5 text-black group-hover:text-white transition-all duration-300 group-hover:translate-x-1"
+            className={`w-5 h-5 text-black group-hover:text-white ${transitions.all} group-hover:translate-x-1`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

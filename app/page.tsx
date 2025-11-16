@@ -136,16 +136,16 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Breaking Headlines Section - TASK 3 */}
+        {/* Breaking Headlines Section */}
         <FadeInSection delay={0.1}>
-          <div className="mt-8 sm:mt-12 lg:mt-16 mb-8 sm:mb-12 lg:mb-16">
+          <div className={`${spacing.section.lg}`}>
             <BreakingHeadlines posts={breakingPosts} />
           </div>
         </FadeInSection>
 
         {/* Daily Briefing Signup Section */}
         <FadeInSection delay={0.3}>
-          <AnimatedSection bgColor="red" className="border-t border-b border-border-gray bg-bg-offwhite py-12 sm:py-16 lg:py-20 my-8 sm:my-12 lg:my-16">
+          <AnimatedSection bgColor="red" className={`border-t border-b border-border-gray bg-bg-offwhite ${spacing.section.lg} ${spacing.section.lg}`}>
           <div className="max-w-max mx-auto px-4 sm:px-6 lg:px-8">
             <div className="white-card bg-white px-6 sm:px-8 md:px-10 lg:px-12 py-6 sm:py-8 md:py-10 rounded-sm shadow-lg text-center text-black transition-all duration-[1200ms]">
               <div className="inline-flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 bg-black/10 px-4 sm:px-6 py-2 rounded-full text-black">
@@ -219,29 +219,29 @@ export default async function HomePage() {
 
         {/* LNTV (Videos) Section - with YouTube fallback */}
         <FadeInSection delay={0.1}>
-          <div className="bg-bg-offwhite py-12 sm:py-16 lg:py-20 relative overflow-hidden">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className={`bg-bg-offwhite ${spacing.section.lg} relative overflow-hidden`}>
+          <div className={`max-w-[1400px] mx-auto ${spacing.container.default}`}>
             {/* Section Header */}
             <SectionHeader title="Liberty Nation TV" ctaHref="/category/lntv" ctaText="Watch more videos" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
+            <div className={`${grids.articles.triple} ${spacing.gap.lg}`}>
               {/* Show LNTV posts if available, otherwise show YouTube videos */}
               {lntvPosts.length > 0 ? lntvPosts.map((post) => (
                 <article key={post.id} className="group text-center">
                   <Link href={`/${post.slug}`}>
                     {post._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
-                      <div className="relative w-full aspect-[580/436] bg-gray-200 mb-4 overflow-hidden">
+                      <div className={`relative w-full ${aspectRatios.hero} bg-gray-200 ${spacing.mb.sm} overflow-hidden`}>
                         <Image
                           src={post._embedded['wp:featuredmedia'][0].source_url}
                           alt={decodeHtmlEntities(post.title.rendered)}
                           fill
-                          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                          className={`object-cover ${transitions.transform} ease-out group-hover:scale-105`}
                           sizes="(max-width: 768px) 100vw, 400px"
                         />
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/60 transition-colors duration-300">
-                          <div className="w-16 h-16 bg-primary-red rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                        <div className={`absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/60 ${transitions.color}`}>
+                          <div className={`w-16 h-16 bg-primary-red rounded-full flex items-center justify-center ${transitions.normal} group-hover:scale-110`}>
                             <div className="w-0 h-0 border-l-[16px] border-l-white border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent ml-1" />
                           </div>
-                          <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 ease-out">
+                          <div className={`absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 ${transitions.all} ease-out`}>
                             <svg
                               className="w-8 h-8 text-white drop-shadow-lg"
                               fill="currentColor"
@@ -253,12 +253,12 @@ export default async function HomePage() {
                         </div>
                       </div>
                     )}
-                    <h3 className="font-display font-black text-xl sm:text-2xl md:text-3xl leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
+                    <h3 className={`font-display font-black ${typography.card.medium} ${spacing.mb.sm} group-hover:text-primary-red ${transitions.color}`}>
                       {decodeHtmlEntities(post.title.rendered)}
                     </h3>
 
                     {/* Add author and date */}
-                    <div className="flex items-center justify-center gap-2 text-xs font-sans uppercase tracking-wide">
+                    <div className={`flex items-center justify-center ${authorMeta.containerGap.tight} ${typography.meta.small} font-sans uppercase tracking-wide`}>
                       <span className="text-primary-red font-bold">{getAuthorName(post).toUpperCase()}</span>
                       <span className="text-black">—</span>
                       <span className="text-gray-600">{formatDate(post.date)}</span>
@@ -268,24 +268,24 @@ export default async function HomePage() {
               )) : youtubeVideos.map((video) => (
                 <article key={video.id} className="group text-center">
                   <a href={video.videoUrl} target="_blank" rel="noopener noreferrer">
-                    <div className="relative w-full aspect-[580/436] bg-gray-200 mb-4 overflow-hidden">
+                    <div className={`relative w-full ${aspectRatios.hero} bg-gray-200 ${spacing.mb.sm} overflow-hidden`}>
                       <Image
                         src={video.thumbnailUrl}
                         alt={video.title}
                         fill
-                        className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                        className={`object-cover ${transitions.transform} ease-out group-hover:scale-105`}
                         sizes="(max-width: 768px) 100vw, 400px"
                       />
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/60 transition-colors duration-300">
-                        <div className="w-16 h-16 bg-primary-red rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
+                      <div className={`absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/60 ${transitions.color}`}>
+                        <div className={`w-16 h-16 bg-primary-red rounded-full flex items-center justify-center ${transitions.normal} group-hover:scale-110`}>
                           <div className="w-0 h-0 border-l-[16px] border-l-white border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent ml-1" />
                         </div>
                       </div>
                     </div>
-                    <h3 className="font-display font-black text-xl sm:text-2xl md:text-3xl leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
+                    <h3 className={`font-display font-black ${typography.card.medium} ${spacing.mb.sm} group-hover:text-primary-red ${transitions.color}`}>
                       {video.title}
                     </h3>
-                    <div className="flex items-center justify-center gap-2 text-xs font-sans uppercase tracking-wide">
+                    <div className={`flex items-center justify-center ${authorMeta.containerGap.tight} ${typography.meta.small} font-sans uppercase tracking-wide`}>
                       <span className="text-primary-red font-bold">LIBERTY NATION</span>
                       <span className="text-black">—</span>
                       <span className="text-gray-600">{new Date(video.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
