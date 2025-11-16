@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { spacing, typography, transitions } from '@/lib/design-tokens';
 
 export default function DonatePage() {
   const [amount, setAmount] = useState('50');
@@ -17,18 +18,13 @@ export default function DonatePage() {
       <Header />
       <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-primary-black text-white py-20 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.05]" style={{
-          backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
-          backgroundSize: '32px 32px'
-        }} />
-
-        <div className="max-w-[1200px] mx-auto px-8 relative z-10">
-          <div className="max-w-[800px] mx-auto text-center">
-            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl mb-6">
-              Support Liberty Nation
+      <section className={`bg-black text-white ${spacing.section.xl} relative overflow-hidden`}>
+        <div className="max-w-[900px] mx-auto px-8 relative z-10">
+          <div className="text-center">
+            <h1 className={`font-serif font-bold ${typography.display.hero} mb-8 leading-[1.05]`}>
+              Support Independent Journalism
             </h1>
-            <p className="font-sans text-xl md:text-2xl text-gray-300 leading-relaxed">
+            <p className={`font-serif ${typography.body.xl} text-gray-300 leading-[1.7] max-w-[700px] mx-auto`}>
               Your contribution helps us deliver independent, unbiased journalism that champions freedom and the American way of life.
             </p>
           </div>
@@ -36,14 +32,17 @@ export default function DonatePage() {
       </section>
 
       {/* Donation Form Section */}
-      <section className="py-20">
+      <section className={`${spacing.section.xl}`}>
         <div className="max-w-[900px] mx-auto px-8">
           {/* Impact Statement */}
-          <div className="text-center mb-16">
-            <h2 className="font-serif text-4xl text-primary-black mb-4">
-              Make a Difference Today
-            </h2>
-            <p className="font-sans text-lg text-gray-600 max-w-[700px] mx-auto leading-relaxed">
+          <div className="mb-16">
+            <div className="relative mb-8">
+              <div className="absolute inset-x-0 bottom-0 h-[3px] bg-black" />
+              <h2 className="relative z-10 inline-block font-sans font-black text-3xl md:text-4xl lg:text-5xl uppercase tracking-tight pb-1">
+                Make a Difference Today
+              </h2>
+            </div>
+            <p className={`font-serif ${typography.body.lg} text-gray-700 leading-[1.8] max-w-[700px]`}>
               Every donation, no matter the size, helps us continue our mission of delivering truth without bias. Your support makes independent journalism possible.
             </p>
           </div>
@@ -179,53 +178,44 @@ export default function DonatePage() {
         </div>
       </section>
 
-      {/* Why Donate Section */}
-      <section className="bg-gray-50 py-20">
-        <div className="max-w-[1200px] mx-auto px-8">
-          <h2 className="font-serif text-4xl text-primary-black mb-12 text-center">
-            Why Your Support Matters
-          </h2>
+      {/* Why Donate Section - Editorial Style */}
+      <section className={`bg-bg-offwhite ${spacing.section.xl}`}>
+        <div className="max-w-[900px] mx-auto px-8">
+          <div className="relative mb-16">
+            <div className="absolute inset-x-0 bottom-0 h-[3px] bg-black" />
+            <h2 className="relative z-10 inline-block font-sans font-black text-3xl md:text-4xl lg:text-5xl uppercase tracking-tight pb-1">
+              Why Your Support Matters
+            </h2>
+          </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 border border-gray-200">
-              <div className="mb-4">
-                <svg className="w-12 h-12 text-primary-red mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <h3 className="font-serif text-2xl text-primary-black mb-3 text-center">
+          <div className="space-y-12">
+            <div className="border-l-4 border-primary-red pl-8 py-2">
+              <h3 className={`font-serif font-bold ${typography.h2} text-text-dark mb-4`}>
                 Editorial Independence
               </h3>
-              <p className="font-sans text-gray-600 text-center leading-relaxed">
-                Your donations allow us to remain independent from corporate interests and political pressure, ensuring unbiased reporting.
+              <p className={`font-serif ${typography.body.lg} text-gray-700 leading-[1.8]`}>
+                Your donations allow us to remain independent from corporate interests and political pressure.
+                We answer only to you, our readers, ensuring unbiased reporting on the issues that matter most to freedom-loving Americans.
               </p>
             </div>
 
-            <div className="bg-white p-8 border border-gray-200">
-              <div className="mb-4">
-                <svg className="w-12 h-12 text-primary-red mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="font-serif text-2xl text-primary-black mb-3 text-center">
+            <div className="border-l-4 border-primary-red pl-8 py-2">
+              <h3 className={`font-serif font-bold ${typography.h2} text-text-dark mb-4`}>
                 Quality Journalism
               </h3>
-              <p className="font-sans text-gray-600 text-center leading-relaxed">
-                We invest in experienced journalists, thorough research, and fact-checking to deliver the highest quality news and analysis.
+              <p className={`font-serif ${typography.body.lg} text-gray-700 leading-[1.8]`}>
+                We invest in experienced journalists, thorough research, and rigorous fact-checking.
+                Every dollar supports investigative reporting that holds power accountable and brings truth to light.
               </p>
             </div>
 
-            <div className="bg-white p-8 border border-gray-200">
-              <div className="mb-4">
-                <svg className="w-12 h-12 text-primary-red mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <h3 className="font-serif text-2xl text-primary-black mb-3 text-center">
+            <div className="border-l-4 border-primary-red pl-8 py-2">
+              <h3 className={`font-serif font-bold ${typography.h2} text-text-dark mb-4`}>
                 Community Impact
               </h3>
-              <p className="font-sans text-gray-600 text-center leading-relaxed">
-                Your support helps us reach more Americans with news that matters, fostering an informed and engaged citizenry.
+              <p className={`font-serif ${typography.body.lg} text-gray-700 leading-[1.8]`}>
+                Your support helps us reach more Americans with news that matters. Together, we're building
+                an informed citizenry capable of defending constitutional liberty for generations to come.
               </p>
             </div>
           </div>
@@ -233,26 +223,29 @@ export default function DonatePage() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-20">
-        <div className="max-w-[1200px] mx-auto px-8">
-          <h2 className="font-serif text-4xl text-primary-black mb-12 text-center">
-            What Our Supporters Say
-          </h2>
+      <section className={`bg-white ${spacing.section.xl}`}>
+        <div className="max-w-[900px] mx-auto px-8">
+          <div className="relative mb-16">
+            <div className="absolute inset-x-0 bottom-0 h-[3px] bg-black" />
+            <h2 className="relative z-10 inline-block font-sans font-black text-3xl md:text-4xl lg:text-5xl uppercase tracking-tight pb-1">
+              What Our Supporters Say
+            </h2>
+          </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-gray-50 p-8 border-l-4 border-primary-red">
-              <p className="font-sans text-gray-700 italic mb-4 leading-relaxed">
+          <div className="space-y-8">
+            <blockquote className="border-l-4 border-primary-red pl-8 py-4">
+              <p className={`font-serif ${typography.body.xl} text-gray-800 leading-[1.8] mb-4`}>
                 "Liberty Nation provides the honest, unbiased reporting I can't find anywhere else. My monthly donation is an investment in truth."
               </p>
-              <p className="font-sans font-bold text-primary-black">— Sarah M., Texas</p>
-            </div>
+              <cite className="font-sans font-bold text-sm uppercase tracking-wide text-gray-600 not-italic">— Sarah M., Texas</cite>
+            </blockquote>
 
-            <div className="bg-gray-50 p-8 border-l-4 border-primary-red">
-              <p className="font-sans text-gray-700 italic mb-4 leading-relaxed">
+            <blockquote className="border-l-4 border-primary-red pl-8 py-4">
+              <p className={`font-serif ${typography.body.xl} text-gray-800 leading-[1.8] mb-4`}>
                 "Supporting Liberty Nation means supporting real journalism. They're not afraid to ask tough questions and report the facts."
               </p>
-              <p className="font-sans font-bold text-primary-black">— James R., Florida</p>
-            </div>
+              <cite className="font-sans font-bold text-sm uppercase tracking-wide text-gray-600 not-italic">— James R., Florida</cite>
+            </blockquote>
           </div>
         </div>
       </section>
