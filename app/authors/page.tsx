@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getAuthors } from '@/lib/wordpress';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { spacing, typography, transitions } from '@/lib/design-tokens';
 
 // ISR: Revalidate every 60 seconds for news site - fast updates critical
 export const revalidate = 60;
@@ -28,19 +29,19 @@ export default async function AuthorsPage() {
 
       <main className="bg-bg-offwhite">
         {/* Page Header */}
-        <div className="bg-white border-b-4 border-primary-red py-16">
-          <div className="max-w-[1200px] mx-auto px-8 text-center">
-            <h1 className="font-display font-bold text-5xl md:text-6xl mb-6 tracking-tight text-text-dark">
+        <div className={`bg-black text-white ${spacing.section.xl}`}>
+          <div className="max-w-[900px] mx-auto px-8 text-center">
+            <h1 className={`font-serif font-bold ${typography.display.hero} mb-8 leading-[1.05]`}>
               Our Authors
             </h1>
-            <p className="font-serif text-xl leading-[1.7] text-gray-700 max-w-[700px] mx-auto">
+            <p className={`font-serif ${typography.body.xl} text-gray-300 leading-[1.7] max-w-[700px] mx-auto`}>
               Meet the independent voices behind Liberty Nation. Our diverse team of writers, journalists, and analysts deliver fearless reporting and insightful commentary.
             </p>
           </div>
         </div>
 
         {/* Authors Grid */}
-        <div className="py-16">
+        <div className={spacing.section.xl}>
           <div className="max-w-[1200px] mx-auto px-8">
             {activeAuthors.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -117,20 +118,22 @@ export default async function AuthorsPage() {
         </div>
 
         {/* Call to Action */}
-        <div className="bg-white py-16 border-t border-gray-200">
-          <div className="max-w-[800px] mx-auto px-8 text-center">
-            <h2 className="font-display font-bold text-3xl md:text-4xl mb-4 text-text-dark">
-              Want to Write for Liberty Nation?
-            </h2>
-            <p className="font-serif text-lg leading-relaxed text-gray-700 mb-8">
-              We're always looking for talented writers who share our commitment to independent journalism and constitutional principles.
-            </p>
-            <Link
-              href="/contact"
-              className="inline-block bg-primary-red text-white px-8 py-4 font-sans font-bold text-sm uppercase hover:bg-text-dark transition rounded-sm"
-            >
-              Get in Touch
-            </Link>
+        <div className={`bg-white border-t-4 border-primary-red ${spacing.section.xl}`}>
+          <div className="max-w-[900px] mx-auto px-8">
+            <div className="border-l-4 border-primary-red pl-8 py-2">
+              <h2 className={`font-serif font-bold ${typography.h2} text-text-dark mb-4`}>
+                Want to Write for Liberty Nation?
+              </h2>
+              <p className={`font-serif ${typography.body.lg} text-gray-700 leading-[1.8] mb-8`}>
+                We're always looking for talented writers who share our commitment to independent journalism and constitutional principles.
+              </p>
+              <Link
+                href="/contact"
+                className="inline-block bg-primary-red text-white px-8 py-4 font-sans font-bold text-sm uppercase hover:bg-[#e02835] transition"
+              >
+                Get in Touch
+              </Link>
+            </div>
           </div>
         </div>
       </main>
