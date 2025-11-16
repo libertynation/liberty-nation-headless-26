@@ -18,6 +18,7 @@ import FadeInSection from '@/components/FadeInSection';
 import Image from 'next/image';
 import Link from 'next/link';
 import SectionHeader from '@/components/SectionHeader';
+import { grids, spacing, typography, transitions, aspectRatios, authorMeta } from '@/lib/design-tokens';
 
 // ISR: Revalidate every 60 seconds for news site - fast updates critical
 export const revalidate = 60;
@@ -112,22 +113,22 @@ export default async function HomePage() {
       {/* Main Three-Column Layout */}
       <main className="bg-bg-offwhite">
         {/* Hero Section */}
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 pt-4 sm:pt-4 lg:pt-4 pb-4 sm:pb-6 lg:pb-4">
-          <div className="grid grid-cols-1 lg:grid-cols-[26%_48%_26%] gap-6 sm:gap-8 lg:gap-10 items-start">
+        <div className={`max-w-[1600px] mx-auto ${spacing.container.default} ${spacing.section.sm}`}>
+          <div className={`${grids.threeColumn.container} ${grids.threeColumn.gap} ${grids.threeColumn.alignment}`}>
             {/* Left Column */}
-            <aside className="space-y-6 sm:space-y-8">
+            <aside className={`flex flex-col ${spacing.gap.md}`}>
               {leftColumnPosts.map((post) => (
                 <ArticleCard key={post.id} post={post} variant="sidebar" />
               ))}
             </aside>
 
-            {/* Center Featured - with padding to align */}
-            <div className="pt-0 lg:pt-2">
+            {/* Center Featured */}
+            <div>
               <FeaturedArticle post={featuredPost} />
             </div>
 
             {/* Right Column */}
-            <aside className="space-y-6 sm:space-y-8">
+            <aside className={`flex flex-col ${spacing.gap.md}`}>
               {rightColumnPosts.map((post) => (
                 <ArticleCard key={post.id} post={post} variant="sidebar" />
               ))}

@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ArticleCard from '@/components/ArticleCard';
 import Pagination from '@/components/Pagination';
+import { typography, transitions, spacing, aspectRatios, shadows } from '@/lib/design-tokens';
 
 // ISR: Revalidate every 60 seconds for news site - fast updates critical
 export const revalidate = 60;
@@ -267,33 +268,33 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
                             {/* Section Break */}
                             <div className="mb-16">
 
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                              <div className={`grid grid-cols-1 md:grid-cols-2 ${spacing.gap.lg}`}>
                                 {posts.slice(4, 10).map((p) => (
-                                  <article key={p.id} className="group bg-white p-6 shadow-md hover:shadow-xl hover:shadow-primary-red/5 transition-all duration-500 border-l-4 border-transparent hover:border-primary-red">
+                                  <article key={p.id} className={`group bg-white p-6 ${shadows.card} ${shadows.cardHover} hover:shadow-primary-red/5 ${transitions.all}`}>
                                     <Link href={`/${p.slug}`}>
                                       {p._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
-                                        <div className="relative w-full aspect-video overflow-hidden bg-gray-200 mb-4">
+                                        <div className={`relative w-full ${aspectRatios.video} overflow-hidden bg-gray-200 ${spacing.mb.sm}`}>
                                           <Image
                                             src={p._embedded['wp:featuredmedia'][0].source_url}
                                             alt={p.title.rendered}
                                             fill
-                                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                                            className={`object-cover ${transitions.transform} group-hover:scale-105`}
                                             sizes="(max-width: 768px) 100vw, 480px"
                                           />
                                         </div>
                                       )}
 
-                                      <h3 className="font-display font-black text-[24px] leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
+                                      <h3 className={`font-display font-black ${typography.card.medium} ${spacing.mb.sm} group-hover:text-primary-red ${transitions.color}`}>
                                         {decodeHtmlEntities(p.title.rendered)}
                                       </h3>
 
                                       {p.excerpt && (
-                                        <p className="font-serif text-[16px] leading-[1.6] text-text-dark mb-3 line-clamp-2">
+                                        <p className={`font-serif ${typography.body.md} text-text-dark ${spacing.mb.sm} line-clamp-2`}>
                                           {stripHtmlTags(p.excerpt.rendered).substring(0, 100)}...
                                         </p>
                                       )}
 
-                                      <div className="flex items-center gap-2 text-[11px] font-sans uppercase tracking-widest">
+                                      <div className={`flex items-center gap-2 ${typography.meta.small} font-sans uppercase tracking-widest`}>
                                         <span className="text-primary-red font-bold">{getAuthorName(p).toUpperCase()}</span>
                                         <span className="w-1 h-1 bg-text-gray rounded-full" />
                                         <span className="text-text-gray">{formatDate(p.date)}</span>

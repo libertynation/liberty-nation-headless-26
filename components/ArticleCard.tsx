@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { WordPressPost, getFeaturedImageUrl, getAuthorName, formatDate, getExcerpt, decodeHtmlEntities, getAuthorAvatar, getAuthorSlug } from '@/lib/wordpress';
+import { typography, transitions, spacing, authorMeta, aspectRatios } from '@/lib/design-tokens';
 
 interface ArticleCardProps {
   post: WordPressPost;
@@ -16,38 +17,38 @@ export default function ArticleCard({ post, variant = 'sidebar' }: ArticleCardPr
   const excerpt = getExcerpt(post);
 
   return (
-    <article className="group text-center border-t-2 border-transparent hover:border-primary-red transition-colors duration-300 pt-8 sm:pt-10 lg:pt-12">
+    <article className={`group text-center ${spacing.section.md}`}>
       <Link href={`/${post.slug}`} className="block" prefetch={true}>
         {imageUrl && (
-          <div className="relative w-full aspect-[580/436] overflow-hidden bg-gray-200 mb-3">
+          <div className={`relative w-full ${aspectRatios.hero} overflow-hidden bg-gray-200 ${spacing.mb.sm}`}>
             <Image
               src={imageUrl}
               alt={post.title.rendered}
               fill
-              className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+              className={`object-cover ${transitions.scale.subtle}`}
               sizes="(max-width: 768px) 100vw, 280px"
               loading="lazy"
               quality={85}
             />
-            <div className="absolute inset-0 bg-primary-red opacity-0 group-hover:opacity-10 transition-opacity duration-500 ease-out" />
+            <div className={`absolute inset-0 bg-primary-red opacity-0 group-hover:opacity-10 ${transitions.slow} ease-out`} />
           </div>
         )}
 
-        <h3 className="font-display font-black text-[24px] sm:text-[28px] md:text-[34px] leading-[1.1] mb-3 tracking-tight group-hover:text-primary-red transition-colors duration-300 ease-out">
+        <h3 className={`font-display font-black ${typography.card.large} ${spacing.mb.sm} tracking-tight group-hover:text-primary-red ${transitions.color}`}>
           {decodeHtmlEntities(post.title.rendered)}
         </h3>
 
         {excerpt && (
-          <p className="font-serif text-[15px] sm:text-[16px] md:text-[17px] leading-[1.5] text-text-dark mb-3">
+          <p className={`font-serif ${typography.excerpt.standard} text-text-dark ${spacing.mb.sm}`}>
             {excerpt.substring(0, 135)}...
           </p>
         )}
 
-        <div className="flex items-center justify-center gap-2 sm:gap-3 text-[11px] sm:text-[12px] md:text-[13px] font-sans uppercase tracking-wide">
+        <div className={`flex items-center justify-center ${authorMeta.containerGap.normal} ${typography.meta.default} font-sans uppercase tracking-wide`}>
           {authorSlug && (
-            <Link href={`/author/${authorSlug}`} className="flex items-center gap-2 hover:opacity-80 transition" onClick={(e) => e.stopPropagation()} prefetch={false}>
+            <Link href={`/author/${authorSlug}`} className={`flex items-center ${authorMeta.gap} hover:opacity-80 ${transitions.fast}`} onClick={(e) => e.stopPropagation()} prefetch={false}>
               {authorAvatar ? (
-                <div className="w-6 h-6 rounded-full overflow-hidden">
+                <div className={`${authorMeta.avatar.small} rounded-full overflow-hidden`}>
                   <Image
                     src={authorAvatar}
                     alt={author}
@@ -58,18 +59,18 @@ export default function ArticleCard({ post, variant = 'sidebar' }: ArticleCardPr
                   />
                 </div>
               ) : (
-                <div className="w-6 h-6 bg-primary-red rounded-full flex items-center justify-center text-white font-bold text-[10px]">
+                <div className={`${authorMeta.avatar.small} bg-primary-red rounded-full flex items-center justify-center text-white font-bold text-[10px]`}>
                   {author.charAt(0)}
                 </div>
               )}
-              <span className="text-primary-red font-bold hover:underline">{author.toUpperCase()}</span>
+              <span className={authorMeta.name}>{author.toUpperCase()}</span>
             </Link>
           )}
           {!authorSlug && (
             <span className="text-primary-red font-bold">{author.toUpperCase()}</span>
           )}
-          <span className="text-black">—</span>
-          <span className="text-black">{date}</span>
+          <span className={authorMeta.separator}>—</span>
+          <span className={authorMeta.date}>{date}</span>
         </div>
       </Link>
     </article>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { WordPressPost, getFeaturedImageUrl, getAuthorName, formatDate, getExcerpt, decodeHtmlEntities, getAuthorAvatar, getAuthorSlug } from '@/lib/wordpress';
+import { typography, transitions, spacing, authorMeta, aspectRatios, shadows } from '@/lib/design-tokens';
 
 interface FeaturedArticleProps {
   post: WordPressPost;
@@ -18,29 +19,29 @@ export default function FeaturedArticle({ post }: FeaturedArticleProps) {
     <article className="group">
       <Link href={`/${post.slug}`} prefetch={true}>
         {imageUrl && (
-          <div className="relative w-full aspect-[580/436] overflow-hidden bg-gray-200 mb-4 sm:mb-5 shadow-md group-hover:shadow-xl transition-shadow duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+          <div className={`relative w-full ${aspectRatios.hero} overflow-hidden bg-gray-200 ${spacing.mb.lg} ${shadows.card} ${shadows.cardHover} ${transitions.shadow}`}>
             <Image
               src={imageUrl}
               alt={post.title.rendered}
               fill
-              className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-102"
+              className={`object-cover ${transitions.scale.subtle}`}
               priority
               sizes="(max-width: 768px) 100vw, (max-width: 1440px) 60vw, 800px"
               quality={90}
             />
           </div>
         )}
-        <h1 className="font-serif font-bold text-[36px] sm:text-[48px] md:text-[60px] lg:text-[72px] xl:text-[80px] leading-[1.05] mb-4 sm:mb-5 tracking-tight text-gray-900 transition-colors duration-300 ease-out text-center group-hover:text-primary-red">
+        <h1 className={`font-serif font-bold ${typography.display.hero} ${spacing.mb.lg} tracking-tight text-gray-900 ${transitions.color} text-center group-hover:text-primary-red`}>
           {decodeHtmlEntities(post.title.rendered)}
         </h1>
-        <p className="font-serif text-[16px] sm:text-[17px] md:text-[18px] lg:text-[20px] leading-[1.6] mb-4 sm:mb-5 text-text-dark text-center mx-auto max-w-[95%]">
+        <p className={`font-serif ${typography.excerpt.large} ${spacing.mb.lg} text-text-dark text-center mx-auto max-w-[95%]`}>
           {excerpt.substring(0, 180)}...
         </p>
-        <div className="flex items-center justify-center gap-2 sm:gap-3 text-[12px] sm:text-[13px] md:text-[14px] font-sans uppercase tracking-wide">
+        <div className={`flex items-center justify-center ${authorMeta.containerGap.normal} ${typography.meta.default} font-sans uppercase tracking-wide`}>
           {authorSlug && (
-            <Link href={`/author/${authorSlug}`} className="flex items-center gap-2 hover:opacity-80 transition" onClick={(e) => e.stopPropagation()} prefetch={false}>
+            <Link href={`/author/${authorSlug}`} className={`flex items-center ${authorMeta.gap} hover:opacity-80 ${transitions.fast}`} onClick={(e) => e.stopPropagation()} prefetch={false}>
               {authorAvatar ? (
-                <div className="w-7 h-7 rounded-full overflow-hidden">
+                <div className={`${authorMeta.avatar.medium} rounded-full overflow-hidden`}>
                   <Image
                     src={authorAvatar}
                     alt={author}
@@ -51,18 +52,18 @@ export default function FeaturedArticle({ post }: FeaturedArticleProps) {
                   />
                 </div>
               ) : (
-                <div className="w-7 h-7 bg-primary-red rounded-full flex items-center justify-center text-white font-bold text-xs">
+                <div className={`${authorMeta.avatar.medium} bg-primary-red rounded-full flex items-center justify-center text-white font-bold text-xs`}>
                   {author.charAt(0)}
                 </div>
               )}
-              <span className="text-primary-red font-bold hover:underline">{author.toUpperCase()}</span>
+              <span className={authorMeta.name}>{author.toUpperCase()}</span>
             </Link>
           )}
           {!authorSlug && (
             <span className="text-primary-red font-bold">{author.toUpperCase()}</span>
           )}
-          <span className="text-black">—</span>
-          <span className="text-black">{date}</span>
+          <span className={authorMeta.separator}>—</span>
+          <span className={authorMeta.date}>{date}</span>
         </div>
       </Link>
     </article>

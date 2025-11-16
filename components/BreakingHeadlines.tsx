@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { WordPressPost } from '@/lib/types';
 import { decodeHtmlEntities } from '@/lib/utils';
 import { motion } from 'motion/react';
+import { spacing, typography, transitions } from '@/lib/design-tokens';
 
 interface BreakingHeadlinesProps {
   posts: WordPressPost[];
@@ -16,7 +17,7 @@ export default function BreakingHeadlines({ posts }: BreakingHeadlinesProps) {
   const displayPosts = posts.slice(0, 5);
 
   return (
-    <div className="bg-bg-offwhite py-8 relative">
+    <div className={`bg-bg-offwhite ${spacing.section.md} relative`}>
       {/* Top border - animates in from left */}
       <motion.div
         className="absolute top-0 left-0 right-0 h-[2px] bg-black"
@@ -35,8 +36,8 @@ export default function BreakingHeadlines({ posts }: BreakingHeadlinesProps) {
         transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
       />
 
-      <div className="max-w-[1600px] mx-auto px-10">
-        <div className="flex items-center justify-center gap-8">
+      <div className={`max-w-[1600px] mx-auto ${spacing.container.default}`}>
+        <div className={`flex items-center justify-center ${spacing.gap.md}`}>
           {/* Breaking Label - fades in after borders */}
           <motion.div
             className="flex-shrink-0"
@@ -52,7 +53,7 @@ export default function BreakingHeadlines({ posts }: BreakingHeadlinesProps) {
 
           {/* 5 Column Grid - Equal width columns, centered text */}
           <motion.div
-            className="grid grid-cols-5 gap-6 flex-1"
+            className={`grid grid-cols-5 ${spacing.gap.sm} flex-1`}
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -64,7 +65,7 @@ export default function BreakingHeadlines({ posts }: BreakingHeadlinesProps) {
                 href={`/${post.slug}`}
                 className="text-center group"
               >
-                <p className="font-display text-lg font-black text-gray-900 group-hover:text-primary-red transition-colors duration-200 leading-tight line-clamp-3">
+                <p className={`font-display text-lg font-black text-gray-900 group-hover:text-primary-red ${transitions.fast} leading-tight line-clamp-3`}>
                   {decodeHtmlEntities(post.title.rendered)}
                 </p>
               </Link>
