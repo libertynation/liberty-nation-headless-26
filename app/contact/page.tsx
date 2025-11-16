@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { spacing, typography, transitions } from '@/lib/design-tokens';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -41,19 +42,19 @@ export default function ContactPage() {
 
       <main className="bg-bg-offwhite">
         {/* Hero Section */}
-        <div className="bg-white border-b border-border-gray">
-          <div className="max-w-[800px] mx-auto px-8 py-20 text-center">
-            <h1 className="font-display font-bold text-5xl md:text-6xl mb-6 text-text-dark">
+        <div className={`bg-black text-white ${spacing.section.xl}`}>
+          <div className="max-w-[900px] mx-auto px-8 text-center">
+            <h1 className={`font-serif font-bold ${typography.display.hero} mb-8 leading-[1.05]`}>
               Contact Us
             </h1>
-            <p className="font-serif text-xl text-text-gray leading-relaxed">
+            <p className={`font-serif ${typography.body.xl} text-gray-300 leading-[1.7] max-w-[700px] mx-auto`}>
               We value your feedback, story tips, and questions. Get in touch with our editorial team.
             </p>
           </div>
         </div>
 
         {/* Contact Form and Info */}
-        <div className="max-w-[1000px] mx-auto px-8 py-16">
+        <div className={`max-w-[1000px] mx-auto px-8 ${spacing.section.xl}`}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div className="bg-white border border-border-gray p-8">
@@ -243,15 +244,17 @@ export default function ContactPage() {
         </div>
 
         {/* Additional Info */}
-        <div className="bg-white border-t border-border-gray py-16">
-          <div className="max-w-[800px] mx-auto px-8 text-center">
-            <h2 className="font-sans font-black text-2xl uppercase mb-4 text-text-dark">
-              Response Time
-            </h2>
-            <p className="font-serif text-lg text-text-gray leading-relaxed">
-              We strive to respond to all inquiries within 48 hours. For urgent news tips,
-              please mark your email subject line with "URGENT" for priority handling.
-            </p>
+        <div className={`bg-white border-t-4 border-primary-red ${spacing.section.xl}`}>
+          <div className="max-w-[900px] mx-auto px-8">
+            <div className="border-l-4 border-primary-red pl-8 py-2">
+              <h2 className={`font-serif font-bold ${typography.h2} text-text-dark mb-4`}>
+                Response Time
+              </h2>
+              <p className={`font-serif ${typography.body.lg} text-gray-700 leading-[1.8]`}>
+                We strive to respond to all inquiries within 48 hours. For urgent news tips,
+                please mark your email subject line with "URGENT" for priority handling.
+              </p>
+            </div>
           </div>
         </div>
       </main>
