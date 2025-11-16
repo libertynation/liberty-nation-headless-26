@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { spacing } from '@/lib/design-tokens';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy | Liberty Nation',
@@ -13,7 +14,7 @@ export default function PrivacyPolicyPage() {
       <Header />
       <main className="min-h-screen bg-white">
         {/* Hero Section */}
-        <section className="bg-primary-black text-white py-16">
+        <section className={`bg-black text-white ${spacing.section.lg}`}>
           <div className="max-w-[1200px] mx-auto px-8">
             <h1 className="font-serif text-4xl md:text-5xl mb-4">
               Privacy Policy
@@ -25,7 +26,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         {/* Content */}
-        <section className="py-16">
+        <section className={spacing.section.xl}>
           <div className="max-w-[900px] mx-auto px-8">
             <div className="prose prose-lg max-w-none">
               <h2 className="font-serif text-3xl text-primary-black mb-6">Overview</h2>
