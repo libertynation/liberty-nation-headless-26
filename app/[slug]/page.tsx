@@ -527,31 +527,29 @@ export default async function DynamicPage({ params }: PageProps) {
               </div>
             )}
 
-            {/* RIGHT: Metadata & Author Info - Flex column with space-between to push share buttons to bottom */}
-            <div className={`flex flex-col ${!shouldShowFeaturedImage ? 'max-w-[800px]' : ''}`}>
+            {/* RIGHT: Metadata & Author Info */}
+            <div className={`flex flex-col justify-between ${!shouldShowFeaturedImage ? 'max-w-[800px]' : ''}`}>
               {/* Top Content */}
-              <div className="flex flex-col gap-8">
-                {/* Author Quote (priority) or Excerpt/Dek (fallback) - ENHANCED */}
+              <div className="flex flex-col gap-6">
+                {/* Excerpt/Dek - Refined sizing */}
                 {(authorQuote || post.excerpt.rendered) && (
-                  <p className="font-serif text-2xl md:text-3xl lg:text-4xl leading-[1.4] text-gray-800 font-normal">
+                  <p className="font-serif text-xl md:text-2xl lg:text-[26px] leading-[1.5] text-gray-700">
                     {authorQuote ? authorQuote : decodeHtmlEntities(stripHtmlTags(post.excerpt.rendered))}
                   </p>
                 )}
 
-                {/* Author Name - ENHANCED */}
-                <div>
+                {/* Author Byline - thefp.com style */}
+                <div className="flex items-center gap-3">
+                  <span className="font-sans text-sm uppercase tracking-wide text-gray-500">By</span>
                   <Link href={`/author/${authorSlug}`} className="group">
-                    <h2 className="font-display text-3xl md:text-4xl lg:text-5xl text-primary-red group-hover:text-text-dark mb-2 transition-colors duration-300 font-bold leading-[1.2]">
-                      By {author}
-                    </h2>
+                    <span className="font-display text-xl md:text-2xl text-primary-red group-hover:underline transition-colors font-bold">
+                      {author}
+                    </span>
                   </Link>
-                  {authorTitle && (
-                    <p className="font-sans text-base md:text-lg text-gray-600 mt-2">{authorTitle}</p>
-                  )}
                 </div>
 
                 {/* Date & Category */}
-                <div className="flex items-center gap-3 text-sm md:text-base font-sans text-gray-600 uppercase tracking-wide">
+                <div className="flex items-center gap-3 text-sm font-sans text-gray-500 uppercase tracking-wide">
                   <span>{date}</span>
                   {category && (
                     <>
@@ -563,9 +561,10 @@ export default async function DynamicPage({ params }: PageProps) {
                   )}
                 </div>
 
-                {/* Author Card - Compact variant in metadata section */}
-                {authorSlug && (
-                  <div className="border-t border-gray-300 pt-6">
+                {/* Divider */}
+                <div className="border-t border-gray-200 pt-5">
+                  {/* Author Card - Compact inline with avatar */}
+                  {authorSlug && (
                     <AuthorCard
                       name={author}
                       slug={authorSlug}
@@ -574,23 +573,21 @@ export default async function DynamicPage({ params }: PageProps) {
                       avatar={authorAvatar}
                       variant="compact"
                     />
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
 
-              {/* Bottom: Follow & Share Buttons - FLUSH TO BOTTOM, aligned with bottom of image */}
-              <div className="flex items-center gap-4 pt-8 mt-auto border-t-2 border-gray-300">
+              {/* Bottom: Follow & Share Buttons */}
+              <div className="flex items-center gap-4 pt-6 mt-6 border-t border-gray-200">
                 <FollowTopicButton
                   author={author}
                   category={category}
                   title={post.title.rendered}
                 />
-                <div className="scale-110">
-                  <ShareButtons
-                    title={post.title.rendered}
-                    url={`https://www.libertynation.com/${post.slug}`}
-                  />
-                </div>
+                <ShareButtons
+                  title={post.title.rendered}
+                  url={`https://www.libertynation.com/${post.slug}`}
+                />
               </div>
             </div>
           </div>

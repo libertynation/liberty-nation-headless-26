@@ -105,77 +105,91 @@ export default function Header() {
         </div>
 
         <nav className="px-6 flex-1 flex flex-col">
-          {/* SEARCH / AUTHOR COMMAND - At Top */}
-          <div className="mb-8 pt-8">
-            <div className="relative">
-              {/* Toggle Icon - Left side */}
+          {/* SEARCH / AUTHOR TOGGLE - Clean Editorial Style */}
+          <div className="pt-6 pb-6 border-b border-white/10">
+            {/* Toggle Pills */}
+            <div className="flex mb-4">
               <button
-                onClick={() => setSearchMode(searchMode === 'search' ? 'author' : 'search')}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition z-10"
-                aria-label={searchMode === 'search' ? 'Switch to authors' : 'Switch to search'}
+                onClick={() => setSearchMode('search')}
+                className={`flex-1 py-2 px-4 font-sans text-xs uppercase tracking-widest transition-all duration-300 ${
+                  searchMode === 'search'
+                    ? 'bg-white text-black font-bold'
+                    : 'bg-transparent text-gray-400 hover:text-white border border-white/20'
+                }`}
               >
-                {searchMode === 'search' ? (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                )}
+                Search
               </button>
+              <button
+                onClick={() => setSearchMode('author')}
+                className={`flex-1 py-2 px-4 font-sans text-xs uppercase tracking-widest transition-all duration-300 ${
+                  searchMode === 'author'
+                    ? 'bg-white text-black font-bold'
+                    : 'bg-transparent text-gray-400 hover:text-white border border-white/20'
+                }`}
+              >
+                Authors
+              </button>
+            </div>
 
-              {/* Input/Select Area */}
-              {searchMode === 'search' ? (
-                <form className="relative" onSubmit={(e) => { e.preventDefault(); /* handle search */ }}>
-                  <input
-                    type="text"
-                    placeholder="Search articles..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-white/5 border-2 border-white/10 font-sans text-base text-white placeholder:text-gray-500 focus:outline-none focus:border-primary-red transition rounded-sm"
-                  />
-                </form>
-              ) : (
+            {/* Input/Select Area */}
+            {searchMode === 'search' ? (
+              <form className="relative" onSubmit={(e) => { e.preventDefault(); if (searchQuery) window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`; }}>
+                <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search articles..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/20 font-sans text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-white focus:bg-white/10 transition-all duration-300"
+                />
+              </form>
+            ) : (
+              <div className="relative">
+                <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
                 <select
-                  className="w-full pl-12 pr-4 py-4 bg-white/5 border-2 border-white/10 font-sans text-base text-white focus:outline-none focus:border-primary-red appearance-none cursor-pointer transition rounded-sm"
+                  className="w-full pl-12 pr-10 py-3 bg-white/5 border border-white/20 font-sans text-sm text-white focus:outline-none focus:border-white focus:bg-white/10 appearance-none cursor-pointer transition-all duration-300"
                   onChange={(e) => { if (e.target.value) window.location.href = e.target.value; }}
                   defaultValue=""
                 >
-                  <option value="" className="bg-black">Select an author...</option>
-                  <option value="https://www.libertynation.com/author/leesa-k-donner/" className="bg-black">Leesa K. Donner</option>
-                  <option value="https://www.libertynation.com/author/mark-angelides/" className="bg-black">Mark Angelides</option>
-                  <option value="https://www.libertynation.com/author/graham-j-noble/" className="bg-black">Graham J Noble</option>
-                  <option value="https://www.libertynation.com/author/jimfite/" className="bg-black">James Fite</option>
-                  <option value="https://www.libertynation.com/author/tim-donner/" className="bg-black">Tim Donner</option>
-                  <option value="https://www.libertynation.com/author/sarah-cowgill/" className="bg-black">Sarah Cowgill</option>
-                  <option value="https://www.libertynation.com/author/andrew/" className="bg-black">Andrew Moran</option>
-                  <option value="https://www.libertynation.com/author/scott-d-cosenza/" className="bg-black">Scott D. Cosenza, Esq.</option>
-                  <option value="https://www.libertynation.com/author/dave-patterson/" className="bg-black">Dave Patterson</option>
-                  <option value="https://www.libertynation.com/author/joeschaeffer/" className="bg-black">Joe Schaeffer</option>
-                  <option value="https://www.libertynation.com/author/tess-lynne/" className="bg-black">Kelli Ballard</option>
-                  <option value="https://www.libertynation.com/author/johnklar/" className="bg-black">John Klar</option>
-                  <option value="https://www.libertynation.com/author/laura-valkovic/" className="bg-black">Laura Valkovic</option>
-                  <option value="https://www.libertynation.com/author/corey-smith/" className="bg-black">Corey Smith</option>
-                  <option value="https://www.libertynation.com/author/kirsten/" className="bg-black">Kirsten Brooker</option>
-                  <option value="https://www.libertynation.com/author/elizabeth-lawrence/" className="bg-black">Elizabeth Lawrence</option>
-                  <option value="https://www.libertynation.com/author/michele-white/" className="bg-black">Michele White</option>
-                  <option value="https://www.libertynation.com/author/guest-author/" className="bg-black">Guest Authors</option>
-                  <option value="https://www.libertynation.com/f-andrew-wolf-jr-guest-author/" className="bg-black">F. Andrew Wolf, Jr</option>
+                  <option value="" className="bg-gray-900">Select an author...</option>
+                  <option value="/author/leesa-k-donner" className="bg-gray-900">Leesa K. Donner</option>
+                  <option value="/author/mark-angelides" className="bg-gray-900">Mark Angelides</option>
+                  <option value="/author/graham-j-noble" className="bg-gray-900">Graham J Noble</option>
+                  <option value="/author/james-fite" className="bg-gray-900">James Fite</option>
+                  <option value="/author/tim-donner" className="bg-gray-900">Tim Donner</option>
+                  <option value="/author/sarah-cowgill" className="bg-gray-900">Sarah Cowgill</option>
+                  <option value="/author/andrew-moran" className="bg-gray-900">Andrew Moran</option>
+                  <option value="/author/scott-d-cosenza" className="bg-gray-900">Scott D. Cosenza, Esq.</option>
+                  <option value="/author/dave-patterson" className="bg-gray-900">Dave Patterson</option>
+                  <option value="/author/joe-schaeffer" className="bg-gray-900">Joe Schaeffer</option>
+                  <option value="/author/kelli-ballard" className="bg-gray-900">Kelli Ballard</option>
+                  <option value="/author/john-klar" className="bg-gray-900">John Klar</option>
+                  <option value="/author/laura-valkovic" className="bg-gray-900">Laura Valkovic</option>
+                  <option value="/author/corey-smith" className="bg-gray-900">Corey Smith</option>
+                  <option value="/author/kirsten-brooker" className="bg-gray-900">Kirsten Brooker</option>
+                  <option value="/author/elizabeth-lawrence" className="bg-gray-900">Elizabeth Lawrence</option>
+                  <option value="/author/michele-white" className="bg-gray-900">Michele White</option>
                 </select>
-              )}
-            </div>
+                <svg className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            )}
           </div>
 
           {/* MAIN MENU */}
-          <div className="space-y-2">
+          <div className="space-y-1 pt-6">
             {/* Home */}
-            <Link href="https://www.libertynation.com/" className="block py-4 font-display font-bold text-2xl text-white hover:text-primary-red transition tracking-tight">
+            <Link href="/" onClick={() => setMenuOpen(false)} className="block py-3 font-display font-bold text-xl text-white hover:text-primary-red transition-colors duration-200">
               Home
             </Link>
 
             {/* News */}
-            <Link href="https://www.libertynation.com/articles/" className="block py-4 font-display font-bold text-2xl text-white hover:text-primary-red transition tracking-tight">
+            <Link href="/category/articles" onClick={() => setMenuOpen(false)} className="block py-3 font-display font-bold text-xl text-white hover:text-primary-red transition-colors duration-200">
               News
             </Link>
 
@@ -183,33 +197,30 @@ export default function Header() {
             <div>
               <button
                 onClick={() => toggleSection('video')}
-                className="w-full flex items-center justify-between py-4 font-display font-bold text-2xl text-white hover:text-primary-red transition tracking-tight"
+                className="w-full flex items-center justify-between py-3 font-display font-bold text-xl text-white hover:text-primary-red transition-colors duration-200"
               >
                 Video
-                <svg className={`w-5 h-5 transition-transform duration-300 ${expandedSection === 'video' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`w-4 h-4 transition-transform duration-300 ${expandedSection === 'video' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
               <div className={`overflow-hidden transition-all duration-300 ${expandedSection === 'video' ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                <div className="pl-6 pb-3 pt-1 space-y-1 border-l-2 border-white/10">
-                  <Link href="https://www.libertynation.com/lntv/" className="block py-2 font-sans text-base text-gray-400 hover:text-white transition">
+                <div className="pl-4 pb-2 pt-1 space-y-1 border-l border-white/20 ml-2">
+                  <Link href="/category/lntv" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
                     Liberty Nation TV
                   </Link>
-                  <Link href="https://www.libertynation.com/lntv/the-conservative-five/" className="block py-2 font-sans text-base text-gray-400 hover:text-white transition">
+                  <Link href="/category/the-conservative-five" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
                     The Conservative 5
                   </Link>
-                  <Link href="https://www.libertynation.com/lntv/videocasts/" className="block py-2 font-sans text-base text-gray-400 hover:text-white transition">
+                  <Link href="/category/videocasts" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
                     Videocasts
-                  </Link>
-                  <Link href="https://www.libertynation.com/lntv/swamponomics/" className="block py-2 font-sans text-base text-gray-400 hover:text-white transition">
-                    Swamponomics
                   </Link>
                 </div>
               </div>
             </div>
 
             {/* Radio */}
-            <Link href="https://www.libertynation.com/audio/ln-radio/" className="block py-4 font-display font-bold text-2xl text-white hover:text-primary-red transition tracking-tight">
+            <Link href="/category/audio" onClick={() => setMenuOpen(false)} className="block py-3 font-display font-bold text-xl text-white hover:text-primary-red transition-colors duration-200">
               Radio
             </Link>
 
@@ -217,26 +228,23 @@ export default function Header() {
             <div>
               <button
                 onClick={() => toggleSection('liberty-vault')}
-                className="w-full flex items-center justify-between py-4 font-display font-bold text-2xl text-white hover:text-primary-red transition tracking-tight"
+                className="w-full flex items-center justify-between py-3 font-display font-bold text-xl text-white hover:text-primary-red transition-colors duration-200"
               >
                 Liberty Vault
-                <svg className={`w-5 h-5 transition-transform duration-300 ${expandedSection === 'liberty-vault' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className={`w-4 h-4 transition-transform duration-300 ${expandedSection === 'liberty-vault' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
               <div className={`overflow-hidden transition-all duration-300 ${expandedSection === 'liberty-vault' ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                <div className="pl-6 pb-3 pt-1 space-y-1 border-l-2 border-white/10">
-                  <Link href="https://www.libertynation.com/ln-liberty-vault/the-supreme-court/" className="block py-2 font-sans text-base text-gray-400 hover:text-white transition">
+                <div className="pl-4 pb-2 pt-1 space-y-1 border-l border-white/20 ml-2">
+                  <Link href="/liberty-vault" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
                     The Supreme Court
                   </Link>
-                  <Link href="https://www.libertynation.com/ln-liberty-vault/federalist-papers/" className="block py-2 font-sans text-base text-gray-400 hover:text-white transition">
+                  <Link href="/liberty-vault" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
                     Federalist Papers
                   </Link>
-                  <Link href="https://www.libertynation.com/ln-liberty-vault/founding-documents/" className="block py-2 font-sans text-base text-gray-400 hover:text-white transition">
+                  <Link href="/liberty-vault" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
                     Founding Documents
-                  </Link>
-                  <Link href="https://www.libertynation.com/ln-liberty-vault/speeches/" className="block py-2 font-sans text-base text-gray-400 hover:text-white transition">
-                    Great American Speeches
                   </Link>
                 </div>
               </div>
@@ -244,23 +252,20 @@ export default function Header() {
           </div>
 
           {/* Spacer to push secondary menu to bottom */}
-          <div className="flex-1"></div>
+          <div className="flex-1 min-h-[40px]"></div>
 
           {/* SECONDARY MENU */}
-          <div className="border-t border-gray-800/50 pt-6 mt-6 space-y-2">
-            <Link href="/subscribe" className="block py-2 font-sans text-xs uppercase tracking-wider text-gray-400 hover:text-white transition">
+          <div className="border-t border-white/10 pt-5 pb-2 space-y-1">
+            <Link href="/subscribe" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
               Subscribe Now
             </Link>
-            <Link href="https://www.libertynation.com/author/" className="block py-2 font-sans text-xs uppercase tracking-wider text-gray-400 hover:text-white transition">
+            <Link href="/authors" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
               Our Authors
             </Link>
-            <Link href="https://www.libertynation.com/about/" className="block py-2 font-sans text-xs uppercase tracking-wider text-gray-400 hover:text-white transition">
+            <Link href="/about" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
               About Us
             </Link>
-            <Link href="https://www.libertynation.com/ln-genz/" className="block py-2 font-sans text-xs uppercase tracking-wider text-gray-400 hover:text-white transition">
-              LN GenZ
-            </Link>
-            <Link href="https://www.libertynation.com/contact/" className="block py-2 font-sans text-xs uppercase tracking-wider text-gray-400 hover:text-white transition">
+            <Link href="/contact" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
               Contact Us
             </Link>
           </div>

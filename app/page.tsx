@@ -558,25 +558,21 @@ export default async function HomePage() {
 
         {/* Donate Section */}
         <FadeInSection delay={0.1}>
-          <div className="bg-gradient-to-br from-black via-gray-900 to-black py-12 sm:py-16 lg:py-20 my-8 sm:my-12 lg:my-16 relative overflow-hidden">
-          {/* Video Background - Right aligned with multiple gradient overlays for smooth blending */}
+          <div className="bg-gradient-to-br from-black via-gray-900 to-black py-16 sm:py-20 lg:py-24 my-8 sm:my-12 lg:my-16 relative overflow-hidden min-h-[400px] max-h-[600px]">
+          {/* Video Background - Contained within section */}
           <div className="absolute inset-0 overflow-hidden">
-            <div className="relative h-full w-full">
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="absolute right-0 h-full w-auto min-w-full object-cover opacity-60"
-              >
-                <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Untitled%20video-FU26yq0MK1y0rKSt7TYfo68XneAQ14.mp4" type="video/mp4" />
-              </video>
-              {/* Multiple gradient overlays for seamless edge blending */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 via-70% to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-l from-black/90 via-transparent to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-transparent" />
-            </div>
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover opacity-50"
+            >
+              <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Untitled%20video-FU26yq0MK1y0rKSt7TYfo68XneAQ14.mp4" type="video/mp4" />
+            </video>
+            {/* Gradient overlays for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-black/40" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/60" />
           </div>
 
           {/* Aceternity Spotlight Effect */}

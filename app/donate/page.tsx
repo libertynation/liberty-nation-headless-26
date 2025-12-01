@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import InteriorPageHeader from '@/components/InteriorPageHeader';
 import { spacing, typography, transitions } from '@/lib/design-tokens';
 
 export default function DonatePage() {
@@ -18,18 +19,11 @@ export default function DonatePage() {
       <Header />
       <main className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className={`bg-black text-white ${spacing.section.xl} relative overflow-hidden`}>
-        <div className="max-w-[900px] mx-auto px-8 relative z-10">
-          <div className="text-center">
-            <h1 className={`font-serif font-bold ${typography.display.hero} mb-8 leading-[1.05]`}>
-              Support Independent Journalism
-            </h1>
-            <p className={`font-serif ${typography.body.xl} text-gray-300 leading-[1.7] max-w-[700px] mx-auto`}>
-              Your contribution helps us deliver independent, unbiased journalism that champions freedom and the American way of life.
-            </p>
-          </div>
-        </div>
-      </section>
+      <InteriorPageHeader
+        title="Support Independent Journalism"
+        description="Your contribution helps us deliver independent, unbiased journalism that champions freedom and the American way of life."
+        variant="black"
+      />
 
       {/* Donation Form Section */}
       <section className={`${spacing.section.xl}`}>
@@ -75,7 +69,7 @@ export default function DonatePage() {
 
             {/* Amount Selection */}
             <div className="mb-8">
-              <h3 className="font-sans font-bold text-lg text-primary-black mb-4 text-center">
+              <h3 className="font-sans font-bold text-lg text-gray-900 mb-4 text-center">
                 Select Amount
               </h3>
               <div className="grid grid-cols-3 md:grid-cols-5 gap-3 mb-4">
@@ -123,7 +117,7 @@ export default function DonatePage() {
                   {frequency === 'monthly' ? (
                     <>
                       Your ${amount}/month contribution provides{' '}
-                      <span className="font-bold text-primary-black">
+                      <span className="font-bold text-gray-900">
                         ${Number(amount) * 12} per year
                       </span>{' '}
                       to support independent journalism.
@@ -131,7 +125,7 @@ export default function DonatePage() {
                   ) : (
                     <>
                       Your ${amount} contribution helps fund{' '}
-                      <span className="font-bold text-primary-black">
+                      <span className="font-bold text-gray-900">
                         {Math.floor(Number(amount) / 5)} articles
                       </span>{' '}
                       of independent journalism.
@@ -190,7 +184,7 @@ export default function DonatePage() {
 
           <div className="space-y-12">
             <div className="border-l-4 border-primary-red pl-8 py-2">
-              <h3 className={`font-serif font-bold ${typography.h2} text-text-dark mb-4`}>
+              <h3 className={`font-display font-bold ${typography.h2} text-gray-900 mb-4`}>
                 Editorial Independence
               </h3>
               <p className={`font-serif ${typography.body.lg} text-gray-700 leading-[1.8]`}>
@@ -200,7 +194,7 @@ export default function DonatePage() {
             </div>
 
             <div className="border-l-4 border-primary-red pl-8 py-2">
-              <h3 className={`font-serif font-bold ${typography.h2} text-text-dark mb-4`}>
+              <h3 className={`font-display font-bold ${typography.h2} text-gray-900 mb-4`}>
                 Quality Journalism
               </h3>
               <p className={`font-serif ${typography.body.lg} text-gray-700 leading-[1.8]`}>
@@ -210,7 +204,7 @@ export default function DonatePage() {
             </div>
 
             <div className="border-l-4 border-primary-red pl-8 py-2">
-              <h3 className={`font-serif font-bold ${typography.h2} text-text-dark mb-4`}>
+              <h3 className={`font-display font-bold ${typography.h2} text-gray-900 mb-4`}>
                 Community Impact
               </h3>
               <p className={`font-serif ${typography.body.lg} text-gray-700 leading-[1.8]`}>

@@ -17,7 +17,7 @@ export default function ArticleCard({ post, variant = 'sidebar' }: ArticleCardPr
   const excerpt = getExcerpt(post);
 
   return (
-    <article className={`group text-center ${spacing.section.md}`}>
+    <article className="group text-center">
       <Link href={`/${post.slug}`} className="block" prefetch={true}>
         {imageUrl && (
           <div className={`relative w-full ${aspectRatios.hero} overflow-hidden bg-gray-200 ${spacing.mb.sm}`}>
