@@ -301,112 +301,43 @@ export default async function HomePage() {
         </div>
         </FadeInSection>
 
-        {/* Culture Section - The Free Press Style with Featured Article */}
+        {/* Dailies Section - Less prominent than other sections */}
         <FadeInSection delay={0.2}>
-          <div className="bg-white py-12 sm:py-16 lg:py-20 relative overflow-hidden">
+          <div className="bg-bg-offwhite py-10 sm:py-12 lg:py-14">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Section Header */}
-            <div className="mb-10 sm:mb-12">
-              <div className="flex items-center justify-between border-b-2 border-black pb-3">
-                <h2 className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight">
-                  Culture
-                </h2>
-                <Link
-                  href="/category/culture-and-entertainment-news"
-                  className="hidden lg:inline-flex items-center gap-2 text-black font-sans font-bold text-sm uppercase tracking-wide hover:text-primary-red transition-colors duration-300"
-                >
-                  <span>See All</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </Link>
-              </div>
-            </div>
+            {/* Section Header - Using SectionHeader component */}
+            <SectionHeader title="Dailies" ctaHref="/category/articles" ctaText="See All" />
 
+            {/* Simple 4-column grid for dailies */}
             {cultureArticles.length > 0 && (
-              <div className="space-y-8">
-                {/* Featured Article */}
-                <article className="group pb-8 border-b border-gray-200">
-                  <Link href={`/${cultureArticles[0].slug}`}>
-                    <div className="grid md:grid-cols-[1fr_1.2fr] gap-6 lg:gap-10">
-                      {getFeaturedImageUrl(cultureArticles[0]) && (
-                        <div className="relative w-full aspect-[16/10] overflow-hidden bg-gray-200 shadow-lg">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {cultureArticles.slice(0, 4).map((post) => (
+                  <article key={post.id} className="group">
+                    <Link href={`/${post.slug}`}>
+                      {getFeaturedImageUrl(post) && (
+                        <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-200 mb-3">
                           <Image
-                            src={getFeaturedImageUrl(cultureArticles[0])!}
-                            alt={decodeHtmlEntities(cultureArticles[0].title.rendered)}
+                            src={getFeaturedImageUrl(post)!}
+                            alt={decodeHtmlEntities(post.title.rendered)}
                             fill
-                            className="object-cover transition-all duration-700 ease-out group-hover:scale-105"
-                            sizes="(max-width: 768px) 100vw, 45vw"
+                            className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                            sizes="(max-width: 768px) 50vw, 25vw"
                           />
                         </div>
                       )}
-                      <div className="flex flex-col justify-center">
-                        <h3 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl leading-[1.1] mb-4 group-hover:text-primary-red transition-colors duration-300">
-                          {decodeHtmlEntities(cultureArticles[0].title.rendered)}
-                        </h3>
-                        {getExcerpt(cultureArticles[0]) && (
-                          <p className="font-serif text-lg leading-[1.6] text-text-dark mb-4">
-                            {getExcerpt(cultureArticles[0]).substring(0, 160)}...
-                          </p>
-                        )}
-                        <div className="flex items-center gap-3 text-sm font-sans uppercase tracking-wide">
-                          <span className="text-primary-red font-bold">
-                            {getAuthorName(cultureArticles[0]).toUpperCase()}
-                          </span>
-                          <span className="text-black">—</span>
-                          <span className="text-gray-600">{formatDate(cultureArticles[0].date)}</span>
-                        </div>
+                      <h4 className="font-display font-bold text-base sm:text-lg leading-tight mb-2 group-hover:text-primary-red transition-colors duration-300">
+                        {decodeHtmlEntities(post.title.rendered)}
+                      </h4>
+                      <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-wide">
+                        <span className="text-primary-red font-bold">
+                          {getAuthorName(post).toUpperCase()}
+                        </span>
                       </div>
-                    </div>
-                  </Link>
-                </article>
-
-                {/* Supporting Articles - 2 Column Grid */}
-                {cultureArticles.length > 1 && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {cultureArticles.slice(1).map((post) => (
-                      <article key={post.id} className="group">
-                        <Link href={`/${post.slug}`}>
-                          {getFeaturedImageUrl(post) && (
-                            <div className="relative w-full aspect-[16/10] overflow-hidden bg-gray-200 mb-3 shadow-md">
-                              <Image
-                                src={getFeaturedImageUrl(post)!}
-                                alt={decodeHtmlEntities(post.title.rendered)}
-                                fill
-                                className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                                sizes="(max-width: 768px) 100vw, 45vw"
-                              />
-                            </div>
-                          )}
-                          <h4 className="font-display font-black text-2xl sm:text-3xl leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
-                            {decodeHtmlEntities(post.title.rendered)}
-                          </h4>
-                          <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-wide">
-                            <span className="text-primary-red font-bold">
-                              {getAuthorName(post).toUpperCase()}
-                            </span>
-                            <span className="text-black">—</span>
-                            <span className="text-gray-600">{formatDate(post.date)}</span>
-                          </div>
-                        </Link>
-                      </article>
-                    ))}
-                  </div>
-                )}
+                    </Link>
+                  </article>
+                ))}
               </div>
             )}
-
-            <div className="lg:hidden mt-8 text-center">
-              <Link
-                href="/category/culture-and-entertainment-news"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-black text-white font-sans font-bold text-sm uppercase tracking-wide hover:bg-primary-red transition-all duration-300"
-              >
-                <span>See All Culture Articles</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </Link>
-            </div>
           </div>
         </div>
         </FadeInSection>
@@ -418,27 +349,12 @@ export default async function HomePage() {
 
         {/* Opinion & Analysis Section */}
         <FadeInSection delay={0.1}>
-          <div className="bg-white py-12 sm:py-16 lg:py-20 relative overflow-hidden border-t-2 border-b-2 border-black">
+          <div className="bg-white py-12 sm:py-16 lg:py-20">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Section Header */}
-            <div className="mb-10 sm:mb-12">
-              <div className="flex items-center justify-between border-b-2 border-black pb-3">
-                <h2 className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight">
-                  Opinion & Analysis
-                </h2>
-                <Link
-                  href="/category/opinion"
-                  className="hidden lg:inline-flex items-center gap-2 text-black font-sans font-bold text-sm uppercase tracking-wide hover:text-primary-red transition-colors duration-300"
-                >
-                  <span>See All</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </Link>
-              </div>
-            </div>
+            {/* Section Header - Using SectionHeader component */}
+            <SectionHeader title="Opinion & Analysis" ctaHref="/category/opinion" ctaText="See All" />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {opinionArticles.map((post) => {
                 const imageUrl = getFeaturedImageUrl(post);
                 const author = getAuthorName(post);
@@ -448,7 +364,7 @@ export default async function HomePage() {
                   <article key={post.id} className="group">
                     <Link href={`/${post.slug}`}>
                       {imageUrl && (
-                        <div className="relative w-full aspect-[16/10] overflow-hidden bg-gray-200 mb-4 shadow-md">
+                        <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-200 mb-4">
                           <Image
                             src={imageUrl}
                             alt={decodeHtmlEntities(post.title.rendered)}
@@ -459,35 +375,23 @@ export default async function HomePage() {
                         </div>
                       )}
 
-                      <div className="text-primary-red font-sans text-xs font-bold uppercase tracking-widest mb-3">
+                      <div className="text-primary-red font-sans text-xs font-bold uppercase tracking-widest mb-2">
                         OPINION
                       </div>
 
-                      <h3 className="font-display font-black text-2xl sm:text-3xl leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
+                      <h3 className="font-display font-bold text-xl sm:text-2xl leading-tight mb-3 group-hover:text-primary-red transition-colors duration-300">
                         {decodeHtmlEntities(post.title.rendered)}
                       </h3>
 
                       <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-wide">
                         <span className="text-primary-red font-bold">{author.toUpperCase()}</span>
-                        <span className="text-black">—</span>
-                        <span className="text-gray-600">{date}</span>
+                        <span className="text-gray-400">—</span>
+                        <span className="text-gray-500">{date}</span>
                       </div>
                     </Link>
                   </article>
                 );
               })}
-            </div>
-
-            <div className="lg:hidden mt-8 text-center">
-              <Link
-                href="/category/opinion"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-black text-white font-sans font-bold text-sm uppercase tracking-wide hover:bg-primary-red transition-all duration-300"
-              >
-                <span>Read All Opinion Pieces</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </Link>
             </div>
           </div>
         </div>
@@ -556,53 +460,41 @@ export default async function HomePage() {
         </div>
         </FadeInSection>
 
-        {/* Donate Section */}
+        {/* Donate Section - Fixed height container */}
         <FadeInSection delay={0.1}>
-          <div className="bg-gradient-to-br from-black via-gray-900 to-black py-16 sm:py-20 lg:py-24 my-8 sm:my-12 lg:my-16 relative overflow-hidden min-h-[400px] max-h-[600px]">
-          {/* Video Background - Contained within section */}
-          <div className="absolute inset-0 overflow-hidden">
+          <div className="bg-black py-16 sm:py-20 lg:py-24 relative" style={{ height: 'auto', maxHeight: '550px', minHeight: '400px' }}>
+          {/* Video Background - Strictly contained */}
+          <div className="absolute inset-0 overflow-hidden" style={{ height: '100%' }}>
             <video
               autoPlay
               loop
               muted
               playsInline
-              className="absolute inset-0 w-full h-full object-cover opacity-50"
+              className="w-full h-full object-cover opacity-40"
+              style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', minWidth: '100%', minHeight: '100%' }}
             >
               <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Untitled%20video-FU26yq0MK1y0rKSt7TYfo68XneAQ14.mp4" type="video/mp4" />
             </video>
-            {/* Gradient overlays for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-black/40" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/60" />
+            {/* Dark overlay for text readability */}
+            <div className="absolute inset-0 bg-black/60" />
           </div>
 
-          {/* Aceternity Spotlight Effect */}
+          {/* Spotlight Effect */}
           <Spotlight />
 
-          {/* Original Subtle Red Glow Elements */}
-          <div className="absolute top-0 left-0 w-64 h-64 bg-primary-red opacity-10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-primary-red opacity-10 rounded-full blur-3xl" />
-
-          <div className="max-w-[900px] mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-            <div className="inline-block mb-3 sm:mb-4">
-              <span className="font-sans font-black text-xs sm:text-sm uppercase text-primary-red bg-primary-red/20 px-3 sm:px-4 py-2 tracking-widest">
-                SUPPORT INDEPENDENT JOURNALISM
-              </span>
-            </div>
-            <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl mb-4 sm:mb-5 lg:mb-6 uppercase text-white leading-tight">
+          <div className="max-w-[800px] mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+            <span className="inline-block font-sans font-bold text-xs uppercase text-primary-red tracking-widest mb-4">
+              Support Independent Journalism
+            </span>
+            <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl mb-4 uppercase text-white leading-tight">
               Defend Free Speech
             </h2>
-            <p className="font-serif text-base sm:text-lg md:text-xl text-gray-300 mb-6 sm:mb-8 leading-relaxed max-w-[700px] mx-auto">
-              In a world of censorship and propaganda, Liberty Nation stands for truth, freedom, and the Constitution.
-              Your support keeps us independent and fearless.
+            <p className="font-serif text-base sm:text-lg text-gray-300 mb-6 leading-relaxed max-w-[600px] mx-auto">
+              Your support keeps Liberty Nation independent and fearless in defending truth and the Constitution.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/donate" className="bg-primary-red text-white px-10 py-4 font-sans font-black text-base uppercase hover:bg-[#e02835] transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105">
-                Donate Now
-              </Link>
-            </div>
-            <p className="font-sans text-sm text-gray-400 mt-6">
-              Tax-deductible contributions support our mission to defend liberty and promote free thinking.
-            </p>
+            <Link href="/donate" className="inline-block bg-primary-red text-white px-8 py-3 font-sans font-bold text-sm uppercase hover:bg-white hover:text-primary-red transition-all duration-300">
+              Donate Now
+            </Link>
           </div>
         </div>
         </FadeInSection>

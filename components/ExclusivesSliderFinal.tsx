@@ -27,83 +27,43 @@ export default function ExclusivesSliderFinal({ posts }: ExclusivesSliderFinalPr
   if (!displayPosts || displayPosts.length === 0) return null;
 
   return (
-    <div className="bg-white py-20 relative overflow-hidden">
-      <div className="max-w-[1400px] mx-auto px-8">
+    <div className="bg-bg-offwhite py-12 sm:py-16 lg:py-20">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex items-center gap-6 mb-12">
-          <div className="flex-1 border-t-2 border-black" />
-          <h2 className="font-sans font-black text-5xl uppercase tracking-tight">Editor's Choice</h2>
+        <div className="flex items-end justify-between mb-8">
+          <h2 className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight">Editor's Choice</h2>
         </div>
+        <div className="h-[2px] bg-black mb-10" />
 
-        {/* Main Layout: Numbers + Photo Left, 4 Articles Right */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-0">
-          {/* Left: Numbers + Featured Image with Continuous Red Background */}
-          <div className="relative flex items-start">
-            {/* Numbers on left side with red background on active */}
-            <div className="flex flex-col gap-0 mr-0">
-              {displayPosts.map((_, index) => {
-                const isActive = currentIndex === index;
-                return (
-                  <motion.div
-                    key={index}
-                    onClick={() => setCurrentIndex(index)}
-                    className="relative cursor-pointer py-6 px-6 flex items-center justify-center"
-                    style={{ flex: 1 }}
-                  >
-                    {/* Red background that slides down smoothly */}
-                    <motion.div
-                      className="absolute inset-0 bg-primary-red"
-                      initial={false}
-                      animate={{
-                        scaleY: isActive ? 1 : 0,
-                      }}
-                      transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1], delay: isActive ? index * 0.08 : 0 }}
-                      style={{ transformOrigin: 'top' }}
-                    />
-                    {/* Number with color transition */}
-                    <motion.span
-                      className="font-sans font-black text-5xl relative z-10"
-                      animate={{
-                        color: isActive ? '#ffffff' : '#000000',
-                      }}
-                      transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
-                    >
-                      {index + 1}
-                    </motion.span>
-                  </motion.div>
-                );
-              })}
-            </div>
-
-            {/* Featured Image with 30px red padding */}
-            <div className="relative flex-1 bg-primary-red p-[30px]">
-              {/* Animated Featured Image */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentIndex}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.5 }}
-                  className="relative w-full aspect-[580/436] overflow-hidden bg-gray-200"
-                >
-                  {getFeaturedImageUrl(displayPosts[currentIndex]) && (
-                    <Image
-                      src={getFeaturedImageUrl(displayPosts[currentIndex]) || ''}
-                      alt={displayPosts[currentIndex].title.rendered}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 1024px) 100vw, 60vw"
-                      priority
-                    />
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </div>
+        {/* Main Layout: Image Left, Articles Right - Image fills height */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+          {/* Left: Featured Image with red border - stretch to match right */}
+          <div className="relative bg-primary-red p-4 lg:p-6 flex">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIndex}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="relative w-full h-full min-h-[300px] lg:min-h-0 overflow-hidden bg-gray-200"
+              >
+                {getFeaturedImageUrl(displayPosts[currentIndex]) && (
+                  <Image
+                    src={getFeaturedImageUrl(displayPosts[currentIndex]) || ''}
+                    alt={displayPosts[currentIndex].title.rendered}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    priority
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
 
-          {/* Right: 4 Articles - Red background connects from image */}
-          <div className="flex flex-col justify-between gap-0">
+          {/* Right: 4 Articles stacked - tighter spacing */}
+          <div className="flex flex-col">
             {displayPosts.map((post, index) => {
               const isActive = currentIndex === index;
 
@@ -111,59 +71,44 @@ export default function ExclusivesSliderFinal({ posts }: ExclusivesSliderFinalPr
                 <div
                   key={post.id}
                   onClick={() => setCurrentIndex(index)}
-                  className="cursor-pointer relative flex-1 flex items-center overflow-hidden"
-                  style={{ flex: 1 }}
+                  className="cursor-pointer relative flex-1 flex items-center overflow-hidden border-b border-gray-200 last:border-b-0"
                 >
                   {/* Red background that morphs down smoothly */}
                   <motion.div
                     className="absolute inset-0 bg-primary-red"
                     initial={false}
-                    animate={{
-                      scaleY: isActive ? 1 : 0,
-                    }}
-                    transition={{
-                      duration: 0.9,
-                      ease: [0.4, 0, 0.2, 1],
-                      delay: isActive ? index * 0.08 : 0
-                    }}
+                    animate={{ scaleY: isActive ? 1 : 0 }}
+                    transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
                     style={{ transformOrigin: 'top' }}
                   />
 
-                  {/* Content with smooth color transition */}
-                  <div className="relative z-10 p-6 w-full">
+                  {/* Content */}
+                  <div className="relative z-10 px-4 lg:px-6 py-4 w-full">
                     <Link href={`/${post.slug}`}>
                       <motion.h3
-                        className="font-serif font-bold text-xl leading-tight mb-2"
-                        animate={{
-                          color: isActive ? '#ffffff' : '#000000',
-                        }}
-                        transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+                        className="font-display font-bold text-lg lg:text-xl leading-tight mb-1"
+                        animate={{ color: isActive ? '#ffffff' : '#000000' }}
+                        transition={{ duration: 0.6 }}
                       >
                         {decodeHtmlEntities(post.title.rendered)}
                       </motion.h3>
-                      <div className="flex items-center gap-2 text-xs font-sans uppercase">
+                      <div className="flex items-center gap-2 text-xs font-sans uppercase tracking-wide">
                         <motion.span
-                          className="font-semibold"
-                          animate={{
-                            color: isActive ? '#ffffff' : '#4B5563',
-                          }}
-                          transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+                          className="font-bold"
+                          animate={{ color: isActive ? '#ffffff' : '#dc2626' }}
+                          transition={{ duration: 0.6 }}
                         >
                           {getAuthorName(post).toUpperCase()}
                         </motion.span>
                         <motion.span
-                          animate={{
-                            color: isActive ? '#ffffff' : '#9CA3AF',
-                          }}
-                          transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+                          animate={{ color: isActive ? 'rgba(255,255,255,0.6)' : '#9CA3AF' }}
+                          transition={{ duration: 0.6 }}
                         >
-                          •
+                          —
                         </motion.span>
                         <motion.span
-                          animate={{
-                            color: isActive ? '#ffffff' : '#4B5563',
-                          }}
-                          transition={{ duration: 0.9, ease: [0.4, 0, 0.2, 1] }}
+                          animate={{ color: isActive ? 'rgba(255,255,255,0.8)' : '#6B7280' }}
+                          transition={{ duration: 0.6 }}
                         >
                           {formatDate(post.date)}
                         </motion.span>
@@ -177,23 +122,18 @@ export default function ExclusivesSliderFinal({ posts }: ExclusivesSliderFinalPr
         </div>
 
         {/* Progress Indicators */}
-        <div className="mt-8 flex gap-2">
+        <div className="mt-6 flex gap-2">
           {displayPosts.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className="h-1.5 flex-1 bg-gray-300 rounded-full overflow-hidden"
+              className="h-1 flex-1 bg-gray-300 overflow-hidden"
             >
               <motion.div
                 className="h-full bg-primary-red"
                 initial={{ width: '0%' }}
-                animate={{
-                  width: currentIndex === index ? '100%' : '0%',
-                }}
-                transition={{
-                  duration: currentIndex === index ? 6 : 0.3,
-                  ease: 'linear',
-                }}
+                animate={{ width: currentIndex === index ? '100%' : '0%' }}
+                transition={{ duration: currentIndex === index ? 6 : 0.3, ease: 'linear' }}
               />
             </button>
           ))}

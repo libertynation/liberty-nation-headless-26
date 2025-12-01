@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
-import { typography, transitions, spacing, borders } from '@/lib/design-tokens';
+import { motion } from 'motion/react';
 
 interface SectionHeaderProps {
   title: string;
@@ -24,50 +24,72 @@ export default function SectionHeader({ title, ctaHref, ctaText, className = '' 
           setInView(true);
         }
       },
-      { threshold: 0.2, rootMargin: '-10% 0px -10% 0px' }
+      { threshold: 0.3, rootMargin: '0px' }
     );
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
   return (
-    <div ref={ref} className={`relative ${spacing.mb.lg} ${className}`}>
-      {/* Divider aligned to bottom of text */}
-      <div className={`absolute inset-x-0 bottom-0 h-[2px] ${borders.color.dark}`} />
-
-      {/* Title that slides left across the divider when in view (desktop only) */}
-      <h2
-        className={`relative z-10 inline-block font-sans font-black ${typography.display.lg} uppercase tracking-tight leading-tight whitespace-nowrap
-          ${transitions.slowest} ease-[cubic-bezier(0.16,1,0.3,1)]
-          pb-[2px]
-          lg:will-change-transform
-          ${inView ? 'lg:translate-x-0 lg:opacity-100' : 'lg:translate-x-[75%] lg:opacity-0'}`}
-      >
-        {title}
-      </h2>
-
-      {/* CTA fades in on the right using existing space; desktop only */}
-      <div
-        className={`hidden lg:block absolute bottom-0 right-0 z-10 ${transitions.slowest} ease-out ${
-          inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-        }`}
-      >
-        <Link
-          href={ctaHref}
-          className={`group inline-flex items-center gap-3 px-6 py-3 ${borders.medium} ${borders.color.dark} bg-white hover:bg-black ${transitions.all}`}
+    <div ref={ref} className={`relative mb-8 ${className}`}>
+      {/* Container for title and button on same baseline */}
+      <div className="flex items-end justify-between">
+        {/* Title with slide animation */}
+        <motion.h2
+          className="font-sans font-black text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight leading-none pb-3"
+          initial={{ x: 100, opacity: 0 }}
+          animate={inView ? { x: 0, opacity: 1 } : { x: 100, opacity: 0 }}
+          transition={{
+            duration: 0.8,
+            ease: [0.25, 0.46, 0.45, 0.94] // Organic ease-out
+          }}
         >
-          <span className={`font-sans font-bold text-xs uppercase tracking-widest text-black group-hover:text-white ${transitions.color}`}>
-            {ctaText}
-          </span>
-          <svg
-            className={`w-5 h-5 text-black group-hover:text-white ${transitions.all} group-hover:translate-x-1`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+          {title}
+        </motion.h2>
+
+        {/* Button with flip-down animation - appears after title */}
+        <motion.div
+          className="hidden lg:block pb-3"
+          initial={{ rotateX: -90, opacity: 0 }}
+          animate={inView ? { rotateX: 0, opacity: 1 } : { rotateX: -90, opacity: 0 }}
+          transition={{
+            duration: 0.6,
+            delay: 0.5, // Starts after title animation
+            ease: [0.34, 1.56, 0.64, 1] // Spring-like bounce
+          }}
+          style={{ transformOrigin: 'top center', perspective: 1000 }}
+        >
+          <Link
+            href={ctaHref}
+            className="group inline-flex items-center gap-2 px-5 py-2 border-2 border-black bg-white hover:bg-black transition-all duration-300"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-          </svg>
-        </Link>
+            <span className="font-sans font-bold text-xs uppercase tracking-widest text-black group-hover:text-white transition-colors duration-300">
+              {ctaText}
+            </span>
+            <svg
+              className="w-4 h-4 text-black group-hover:text-white transition-all duration-300 group-hover:translate-x-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
+        </motion.div>
+      </div>
+
+      {/* HR that slides across when in view */}
+      <div className="relative h-[2px] bg-gray-200 overflow-hidden">
+        <motion.div
+          className="absolute inset-y-0 left-0 bg-black"
+          initial={{ width: '0%' }}
+          animate={inView ? { width: '100%' } : { width: '0%' }}
+          transition={{
+            duration: 1.2,
+            ease: [0.25, 0.46, 0.45, 0.94], // Slow organic slide
+            delay: 0.1
+          }}
+        />
       </div>
     </div>
   );
