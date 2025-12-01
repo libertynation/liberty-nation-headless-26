@@ -215,7 +215,7 @@ export const authorMeta = {
 export const grids = {
   // Three column layouts (homepage style)
   threeColumn: {
-    container: 'grid grid-cols-1 lg:grid-cols-[26%_48%_26%]',
+    container: 'grid grid-cols-1 lg:grid-cols-hero-3col',
     gap: 'gap-6 sm:gap-8 lg:gap-10',
     alignment: 'items-start',
   },

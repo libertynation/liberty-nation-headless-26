@@ -1,0 +1,6 @@
+:80 {
+    basic_auth {
+        admin $2a$14$9YfcPrJKgMB90VUw80UCTeUUj0EnJfs9t2kgymBhxKVgUJuJ958bq
+    }
+    reverse_proxy localhost:7788
+}

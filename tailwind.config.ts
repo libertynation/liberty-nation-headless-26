@@ -5,9 +5,16 @@ const config: Config = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./lib/**/*.{js,ts,jsx,tsx}",
+  ],
+  safelist: [
+    'lg:grid-cols-hero-3col',
   ],
   theme: {
     extend: {
+      gridTemplateColumns: {
+        'hero-3col': '26% 48% 26%',
+      },
       colors: {
         primary: {
           black: '#161613',
