@@ -123,10 +123,30 @@ export interface WordPressAuthor {
   link?: string;
 }
 
+// Guest Author from Co-Authors Plus taxonomy
+export interface GuestAuthor {
+  id: number;
+  count: number;
+  description: string;
+  link: string;
+  name: string;
+  slug: string;
+  taxonomy: string;
+  acf?: {
+    title?: string;
+    avatar?: string;
+    twitter?: string;
+    facebook?: string;
+    linkedin?: string;
+    [key: string]: any;
+  };
+}
+
 export interface APIResponse<T> {
   data: T;
   total?: number;
   totalPages?: number;
+  totalItems?: number;
 }
 
 async function fetchAPI(endpoint: string, options: RequestInit = {}) {
@@ -324,33 +344,191 @@ export async function getAuthors(params: {
   }
 }
 
+// Fetch guest authors from Co-Authors Plus taxonomy
+export async function getGuestAuthors(params: {
+  per_page?: number;
+  page?: number;
+} = {}): Promise<GuestAuthor[]> {
+  const { per_page = 100, page = 1 } = params;
+
+  try {
+    const guestAuthors = await fetchAPI(`/guest-author?per_page=${per_page}&page=${page}`);
+    return guestAuthors;
+  } catch (error) {
+    console.error('Error fetching guest authors:', error);
+    return [];
+  }
+}
+
+// Get all authors (both regular WP users from posts and guest authors)
+export async function getAllAuthors(): Promise<Array<{
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  postCount: number;
+  avatar?: string;
+  title?: string;
+  isGuestAuthor: boolean;
+}>> {
+  try {
+    // Fetch guest authors from the taxonomy endpoint
+    const guestAuthors = await getGuestAuthors({ per_page: 100 });
+
+    // Also get regular WP users from posts
+    const regularAuthors = await getAuthors({ per_page: 100 });
+
+    // Combine and deduplicate by slug
+    const authorsMap = new Map<string, {
+      id: number;
+      name: string;
+      slug: string;
+      description: string;
+      postCount: number;
+      avatar?: string;
+      title?: string;
+      isGuestAuthor: boolean;
+    }>();
+
+    // Add guest authors first (they have more complete data usually)
+    for (const author of guestAuthors) {
+      if (!authorsMap.has(author.slug)) {
+        authorsMap.set(author.slug, {
+          id: author.id,
+          name: author.name,
+          slug: author.slug,
+          description: author.description || '',
+          postCount: author.count || 0,
+          avatar: author.acf?.avatar,
+          title: author.acf?.title,
+          isGuestAuthor: true,
+        });
+      }
+    }
+
+    // Add regular authors if not already present
+    for (const author of regularAuthors) {
+      if (!authorsMap.has(author.slug)) {
+        authorsMap.set(author.slug, {
+          id: author.id,
+          name: author.name,
+          slug: author.slug,
+          description: author.description || '',
+          postCount: 0, // We don't have this from the embedded data
+          avatar: author.avatar_urls?.['96'] || author.avatar_urls?.['48'],
+          title: author.acf?.title,
+          isGuestAuthor: false,
+        });
+      }
+    }
+
+    return Array.from(authorsMap.values());
+  } catch (error) {
+    console.error('Error fetching all authors:', error);
+    return [];
+  }
+}
+
 export async function getAuthorBySlug(slug: string): Promise<WordPressAuthor | null> {
   try {
-    // First, get a post by this author to find their ID
-    const posts = await fetchAPI(`/posts?author_name=${slug}&per_page=1&_embed=true`);
-
-    if (posts.length === 0) {
-      return null;
-    }
-
-    const post = posts[0];
-    const authorData = post._embedded?.author?.[0];
-
-    if (!authorData || !authorData.id) {
-      return null;
-    }
-
-    // Now fetch the full author data including ACF fields from /users endpoint
+    // Priority 1: Check guest-author taxonomy (Co-Authors Plus plugin)
+    // This is the primary author system used by Liberty Nation
     try {
-      const fullAuthorData = await fetchAPI(`/users/${authorData.id}`);
-      return fullAuthorData;
-    } catch (userError) {
-      // If /users endpoint fails (auth required), fall back to embedded data
-      console.warn('Could not fetch full author data, using embedded data:', userError);
-      return authorData;
+      // Include acf_format=standard to ensure ACF fields are returned
+      const guestAuthors = await fetchAPI(`/guest-author?slug=${encodeURIComponent(slug)}&acf_format=standard`);
+      if (guestAuthors && guestAuthors.length > 0) {
+        const ga = guestAuthors[0];
+        console.log('Guest author data:', JSON.stringify(ga, null, 2));
+        // Convert guest-author format to WordPressAuthor format
+        // Get photo from ACF - check multiple possible field names
+        const avatarUrl = ga.acf?.photo?.url || ga.acf?.photo || ga.acf?.avatar?.url || ga.acf?.avatar || null;
+        return {
+          id: ga.id,
+          name: ga.name,
+          slug: ga.slug,
+          description: ga.description || '',
+          avatar_urls: avatarUrl ? { '96': avatarUrl, '48': avatarUrl, '24': avatarUrl } : undefined,
+          acf: ga.acf,
+          link: ga.link,
+        };
+      }
+    } catch (guestAuthorError) {
+      // Guest author endpoint failed, continue to fallbacks
+      console.log('Guest author lookup failed, trying fallbacks');
     }
+
+    // Priority 2: Search through recent posts to find author with matching slug
+    // This catches regular WordPress users who appear in post embeds
+    try {
+      const posts = await fetchAPI(`/posts?per_page=50&_embed=true`);
+      for (const post of posts) {
+        // Check guest-author in wp:term (index 2)
+        const guestAuthorTerm = post._embedded?.['wp:term']?.[2]?.[0];
+        if (guestAuthorTerm && guestAuthorTerm.slug === slug) {
+          return {
+            id: guestAuthorTerm.id,
+            name: guestAuthorTerm.name,
+            slug: guestAuthorTerm.slug,
+            description: guestAuthorTerm.description || '',
+            acf: (guestAuthorTerm as any).acf,
+            link: (guestAuthorTerm as any).link,
+          };
+        }
+
+        // Check regular author embed
+        const authorData = post._embedded?.author?.[0];
+        if (authorData && authorData.slug === slug && !('code' in authorData)) {
+          return authorData;
+        }
+
+        // Check if slug matches generated slug from Yoast author name
+        const yoastAuthor = post.yoast_head_json?.author;
+        if (yoastAuthor) {
+          const generatedSlug = yoastAuthor.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+          if (generatedSlug === slug) {
+            // Found! Create an author object from Yoast data
+            return {
+              id: 0, // We don't have the real ID
+              name: yoastAuthor,
+              slug: generatedSlug,
+              description: '', // No bio available from Yoast
+            };
+          }
+        }
+      }
+    } catch (postsError) {
+      console.log('Posts search failed for author');
+    }
+
+    // Priority 3: Try users endpoint (requires authentication, may fail)
+    try {
+      const users = await fetchAPI(`/users?slug=${encodeURIComponent(slug)}`);
+      if (users && users.length > 0) {
+        return users[0];
+      }
+    } catch (usersError) {
+      // Users endpoint failed (likely 401), this is expected
+      console.log('Users endpoint requires authentication');
+    }
+
+    // Priority 4: Generate author from slug (fallback for Yoast-only authors)
+    // If no author was found, create a synthetic author from the slug
+    // The posts will be filtered by Yoast author name in getPostsByAuthorSlug
+    const nameFromSlug = slug
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+
+    // Return a minimal author object that will let the page render
+    // The actual posts will be found by matching Yoast author names
+    return {
+      id: 0,
+      name: nameFromSlug,
+      slug: slug,
+      description: '',
+    };
   } catch (error) {
-    console.error('Error fetching author:', error);
+    console.error('Error fetching author by slug:', error);
     return null;
   }
 }
@@ -385,15 +563,111 @@ export async function getPostsByAuthorSlug(authorSlug: string, params: {
   page?: number;
   _embed?: boolean;
 } = {}): Promise<APIResponse<WordPressPost[]>> {
-  const searchParams = new URLSearchParams();
-  searchParams.set('author_name', authorSlug);
+  const perPage = params.per_page || 12;
+  const page = params.page || 1;
 
-  if (params.per_page) searchParams.set('per_page', params.per_page.toString());
-  if (params.page) searchParams.set('page', params.page.toString());
-  if (params._embed !== false) searchParams.set('_embed', 'true');
+  // Priority 1: Try guest-author taxonomy (Co-Authors Plus)
+  try {
+    const guestAuthors = await fetchAPI(`/guest-author?slug=${encodeURIComponent(authorSlug)}`);
+    if (guestAuthors && guestAuthors.length > 0) {
+      const guestAuthorId = guestAuthors[0].id;
+      const searchParams = new URLSearchParams();
+      searchParams.set('per_page', perPage.toString());
+      searchParams.set('page', page.toString());
+      searchParams.set('_embed', 'true');
+      searchParams.set('guest-author', guestAuthorId.toString());
+      return fetchAPIWithPagination<WordPressPost[]>(`/posts?${searchParams.toString()}`);
+    }
+  } catch (error) {
+    console.log('Guest author posts lookup failed, trying Yoast author search');
+  }
 
-  const query = searchParams.toString();
-  return fetchAPIWithPagination<WordPressPost[]>(`/posts?${query}`);
+  // Priority 2: Search posts by Yoast author name (primary method for this site)
+  // Most authors on Liberty Nation are identified by Yoast SEO author field
+  try {
+    // Step 1: Fetch posts WITHOUT embed (much smaller response ~50KB vs 4MB)
+    // yoast_head_json.author is available without _embed
+    const batchSize = 100;
+    const matchingPostIds: number[] = [];
+    let currentPage = 1;
+    let hasMorePosts = true;
+    let estimatedTotal = 0;
+
+    // First pass: Find all matching post IDs (fast, no embed)
+    while (hasMorePosts && matchingPostIds.length < 500) { // Cap at 500 posts max
+      const response = await fetchAPIWithPagination<WordPressPost[]>(
+        `/posts?per_page=${batchSize}&page=${currentPage}`
+      );
+
+      const posts = response.data;
+      if (!posts || posts.length === 0) {
+        hasMorePosts = false;
+        break;
+      }
+
+      // Filter posts where Yoast author matches
+      for (const post of posts) {
+        const postAuthor = post.yoast_head_json?.author;
+        if (postAuthor) {
+          const postAuthorSlug = postAuthor.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+          if (postAuthorSlug === authorSlug) {
+            matchingPostIds.push(post.id);
+          }
+        }
+      }
+
+      if (posts.length < batchSize || (response.totalPages && currentPage >= response.totalPages)) {
+        hasMorePosts = false;
+      }
+      currentPage++;
+
+      // Stop if we have enough for pagination
+      if (matchingPostIds.length >= (page * perPage) + perPage) {
+        estimatedTotal = matchingPostIds.length + (hasMorePosts ? 50 : 0);
+        break;
+      }
+
+      // Safety limit
+      if (currentPage > 30) {
+        hasMorePosts = false;
+      }
+    }
+
+    estimatedTotal = estimatedTotal || matchingPostIds.length;
+
+    if (matchingPostIds.length === 0) {
+      return { data: [], totalPages: 0, totalItems: 0 };
+    }
+
+    // Step 2: Get the IDs we need for this page
+    const startIndex = (page - 1) * perPage;
+    const pagePostIds = matchingPostIds.slice(startIndex, startIndex + perPage);
+
+    if (pagePostIds.length === 0) {
+      return { data: [], totalPages: Math.ceil(matchingPostIds.length / perPage), totalItems: matchingPostIds.length };
+    }
+
+    // Step 3: Fetch just those posts with embed (small request)
+    const postsWithEmbed = await fetchAPI(
+      `/posts?include=${pagePostIds.join(',')}&_embed=true&per_page=${pagePostIds.length}`
+    );
+
+    // Sort by the original order (include doesn't preserve order)
+    const sortedPosts = pagePostIds
+      .map(id => postsWithEmbed.find((p: WordPressPost) => p.id === id))
+      .filter(Boolean) as WordPressPost[];
+
+    return {
+      data: sortedPosts,
+      totalPages: Math.ceil(estimatedTotal / perPage),
+      totalItems: estimatedTotal,
+    };
+  } catch (error) {
+    console.error('Error fetching posts by Yoast author:', error);
+  }
+
+  // Return empty result if nothing found
+  return { data: [], totalPages: 0, totalItems: 0 };
 }
 
 // Helper functions to extract embedded data
@@ -506,7 +780,7 @@ export function getAuthorAvatar(post: WordPressPost): string | null {
   // Priority 4: Check Co-Authors Plus guest author data (wp:term taxonomy)
   const guestAuthors = post._embedded?.['wp:term']?.[2]; // Co-Authors Plus uses index 2
   if (guestAuthors && guestAuthors.length > 0) {
-    const guestAuthor = guestAuthors[0];
+    const guestAuthor = guestAuthors[0] as any;
     // Check for custom image in various possible fields
     if (guestAuthor?.meta?.avatar) {
       return guestAuthor.meta.avatar;
@@ -537,8 +811,26 @@ export function getAuthorTitle(post: WordPressPost): string | null {
 }
 
 export function getAuthorSlug(post: WordPressPost): string | null {
-  // Get the author slug from the embedded author data
-  return post._embedded?.author?.[0]?.slug || null;
+  // Priority 1: Try to get guest-author slug from wp:term (index 2)
+  // This is used by Co-Authors Plus plugin
+  const guestAuthorSlug = post._embedded?.['wp:term']?.[2]?.[0]?.slug;
+  if (guestAuthorSlug) {
+    return guestAuthorSlug;
+  }
+
+  // Priority 2: Try embedded author data (regular WordPress user)
+  const authorSlug = post._embedded?.author?.[0]?.slug;
+  if (authorSlug && !('code' in (post._embedded?.author?.[0] || {}))) {
+    return authorSlug;
+  }
+
+  // Priority 3: Generate slug from author name (Yoast or embedded)
+  const authorName = getAuthorName(post);
+  if (authorName && authorName !== 'Unknown Author') {
+    return authorName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  }
+
+  return null;
 }
 
 // Function to strip WordPress shortcodes from content

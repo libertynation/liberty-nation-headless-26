@@ -1,4 +1,4 @@
-import { getPosts, getFeaturedImageUrl, getAuthorName, formatDate, getExcerpt, decodeHtmlEntities, type WordPressPost } from '@/lib/wordpress';
+import { getPosts, getFeaturedImageUrl, getAuthorName, formatDate, getExcerpt, decodeHtmlEntities, stripHtmlTags, type WordPressPost } from '@/lib/wordpress';
 import { generateHomeMetadata } from '@/lib/seo';
 import { getLatestYouTubeVideos } from '@/lib/youtube';
 import Header from '@/components/Header';
@@ -148,11 +148,11 @@ export default async function HomePage() {
           <AnimatedSection bgColor="red" className={`border-t border-b border-border-gray bg-bg-offwhite ${spacing.section.lg} ${spacing.section.lg}`}>
           <div className="max-w-max mx-auto px-4 sm:px-6 lg:px-8">
             <div className="white-card bg-white px-6 sm:px-8 md:px-10 lg:px-12 py-6 sm:py-8 md:py-10 rounded-sm shadow-lg text-center text-black transition-all duration-[1200ms]">
-              <div className="inline-flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 bg-black/10 px-4 sm:px-6 py-2 rounded-full text-black">
-                <svg className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse text-black" fill="currentColor" viewBox="0 0 24 24">
+              <div className="badge-dark inline-flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 bg-black/10 px-4 sm:px-6 py-2 rounded-full text-black">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                 </svg>
-                <span className="font-sans font-black text-xs sm:text-sm uppercase tracking-widest text-black">
+                <span className="font-sans font-black text-xs sm:text-sm uppercase tracking-widest">
                   Daily Briefing
                 </span>
               </div>
@@ -217,88 +217,114 @@ export default async function HomePage() {
           <PoliticsSection posts={politicsArticles} />
         </FadeInSection>
 
-        {/* LNTV (Videos) Section - with YouTube fallback */}
+        {/* LNTV (Videos) Section - thefp.com inspired dark editorial style */}
         <FadeInSection delay={0.1}>
-          <div className={`bg-bg-offwhite ${spacing.section.lg} relative overflow-hidden`}>
-          <div className={`max-w-[1400px] mx-auto ${spacing.container.default}`}>
-            {/* Section Header */}
-            <SectionHeader title="Liberty Nation TV" ctaHref="/category/lntv" ctaText="Watch more videos" />
-            <div className={`${grids.articles.triple} ${spacing.gap.lg}`}>
-              {/* Show LNTV posts if available, otherwise show YouTube videos */}
-              {lntvPosts.length > 0 ? lntvPosts.map((post) => (
-                <article key={post.id} className="group text-center">
-                  <Link href={`/${post.slug}`}>
-                    {post._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
-                      <div className={`relative w-full ${aspectRatios.hero} bg-gray-200 ${spacing.mb.sm} overflow-hidden`}>
+          <div className="bg-[#0f172a] py-16 md:py-20 lg:py-24 relative overflow-hidden">
+            {/* Subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30 pointer-events-none" />
+
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+              {/* Section Header - Editorial style */}
+              <div className="text-center mb-10 md:mb-14">
+                <h2 className="font-display font-black text-3xl md:text-4xl lg:text-5xl text-white uppercase tracking-tight mb-4">
+                  Liberty Nation TV
+                </h2>
+                <p className="font-serif text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
+                  Watch the latest video commentary and analysis
+                </p>
+              </div>
+
+              {/* Featured Quote - thefp.com style */}
+              {lntvPosts.length > 0 && lntvPosts[0]?.excerpt?.rendered && (
+                <div className="max-w-3xl mx-auto mb-12 md:mb-16">
+                  <div className="bg-white/5 backdrop-blur-sm border-l-4 border-primary-red p-6 md:p-8 hover:bg-white/10 transition-all duration-300">
+                    <div className="flex gap-4">
+                      <span className="text-primary-red text-4xl md:text-5xl font-serif leading-none">"</span>
+                      <div>
+                        <p className="font-serif text-lg md:text-xl lg:text-2xl text-white/90 italic leading-relaxed">
+                          {decodeHtmlEntities(stripHtmlTags(lntvPosts[0].excerpt.rendered)).substring(0, 150)}...
+                        </p>
+                        <p className="font-sans text-sm uppercase tracking-widest text-gray-400 mt-4">
+                          — {getAuthorName(lntvPosts[0])}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Video Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+                {/* Show LNTV posts if available, otherwise show YouTube videos */}
+                {lntvPosts.length > 0 ? lntvPosts.map((post) => (
+                  <article key={post.id} className="group">
+                    <Link href={`/${post.slug}`}>
+                      {post._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
+                        <div className="relative w-full aspect-video bg-gray-800 mb-4 overflow-hidden rounded-sm">
+                          <Image
+                            src={post._embedded['wp:featuredmedia'][0].source_url}
+                            alt={decodeHtmlEntities(post.title.rendered)}
+                            fill
+                            className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, 400px"
+                          />
+                          <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center">
+                            <div className="w-14 h-14 md:w-16 md:h-16 bg-primary-red rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-lg">
+                              <div className="w-0 h-0 border-l-[14px] border-l-white border-t-[9px] border-t-transparent border-b-[9px] border-b-transparent ml-1" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      <h3 className="font-display font-bold text-lg md:text-xl text-white group-hover:text-primary-red transition-colors duration-300 mb-2 leading-tight">
+                        {decodeHtmlEntities(post.title.rendered)}
+                      </h3>
+                      <p className="font-sans text-xs uppercase tracking-wide text-gray-400">
+                        {formatDate(post.date)}
+                      </p>
+                    </Link>
+                  </article>
+                )) : youtubeVideos.map((video) => (
+                  <article key={video.id} className="group">
+                    <a href={video.videoUrl} target="_blank" rel="noopener noreferrer">
+                      <div className="relative w-full aspect-video bg-gray-800 mb-4 overflow-hidden rounded-sm">
                         <Image
-                          src={post._embedded['wp:featuredmedia'][0].source_url}
-                          alt={decodeHtmlEntities(post.title.rendered)}
+                          src={video.thumbnailUrl}
+                          alt={video.title}
                           fill
-                          className={`object-cover ${transitions.transform} ease-out group-hover:scale-105`}
+                          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                           sizes="(max-width: 768px) 100vw, 400px"
                         />
-                        <div className={`absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/60 ${transitions.color}`}>
-                          <div className={`w-16 h-16 bg-primary-red rounded-full flex items-center justify-center ${transitions.normal} group-hover:scale-110`}>
-                            <div className="w-0 h-0 border-l-[16px] border-l-white border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent ml-1" />
-                          </div>
-                          <div className={`absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 ${transitions.all} ease-out`}>
-                            <svg
-                              className="w-8 h-8 text-white drop-shadow-lg"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-                            </svg>
+                        <div className="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-colors duration-300 flex items-center justify-center">
+                          <div className="w-14 h-14 md:w-16 md:h-16 bg-primary-red rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-lg">
+                            <div className="w-0 h-0 border-l-[14px] border-l-white border-t-[9px] border-t-transparent border-b-[9px] border-b-transparent ml-1" />
                           </div>
                         </div>
                       </div>
-                    )}
-                    <h3 className={`font-display font-black ${typography.card.medium} ${spacing.mb.sm} group-hover:text-primary-red ${transitions.color}`}>
-                      {decodeHtmlEntities(post.title.rendered)}
-                    </h3>
+                      <h3 className="font-display font-bold text-lg md:text-xl text-white group-hover:text-primary-red transition-colors duration-300 mb-2 leading-tight">
+                        {video.title}
+                      </h3>
+                      <p className="font-sans text-xs uppercase tracking-wide text-gray-400">
+                        {new Date(video.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase()}
+                      </p>
+                    </a>
+                  </article>
+                ))}
+              </div>
 
-                    {/* Add author and date */}
-                    <div className={`flex items-center justify-center ${authorMeta.containerGap.tight} ${typography.meta.small} font-sans uppercase tracking-wide`}>
-                      <span className="text-primary-red font-bold">{getAuthorName(post).toUpperCase()}</span>
-                      <span className="text-black">—</span>
-                      <span className="text-gray-600">{formatDate(post.date)}</span>
-                    </div>
-                  </Link>
-                </article>
-              )) : youtubeVideos.map((video) => (
-                <article key={video.id} className="group text-center">
-                  <a href={video.videoUrl} target="_blank" rel="noopener noreferrer">
-                    <div className={`relative w-full ${aspectRatios.hero} bg-gray-200 ${spacing.mb.sm} overflow-hidden`}>
-                      <Image
-                        src={video.thumbnailUrl}
-                        alt={video.title}
-                        fill
-                        className={`object-cover ${transitions.transform} ease-out group-hover:scale-105`}
-                        sizes="(max-width: 768px) 100vw, 400px"
-                      />
-                      <div className={`absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/60 ${transitions.color}`}>
-                        <div className={`w-16 h-16 bg-primary-red rounded-full flex items-center justify-center ${transitions.normal} group-hover:scale-110`}>
-                          <div className="w-0 h-0 border-l-[16px] border-l-white border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent ml-1" />
-                        </div>
-                      </div>
-                    </div>
-                    <h3 className={`font-display font-black ${typography.card.medium} ${spacing.mb.sm} group-hover:text-primary-red ${transitions.color}`}>
-                      {video.title}
-                    </h3>
-                    <div className={`flex items-center justify-center ${authorMeta.containerGap.tight} ${typography.meta.small} font-sans uppercase tracking-wide`}>
-                      <span className="text-primary-red font-bold">LIBERTY NATION</span>
-                      <span className="text-black">—</span>
-                      <span className="text-gray-600">{new Date(video.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                    </div>
-                  </a>
-                </article>
-              ))}
-            </div>
-            <div className="lg:hidden">
-              <SectionViewMore href="/category/lntv" actionText="Watch more videos" />
+              {/* CTA Button */}
+              <div className="text-center mt-10 md:mt-14">
+                <Link
+                  href="/category/lntv"
+                  className="inline-flex items-center gap-2 bg-primary-red text-white px-8 py-3 font-sans font-bold text-sm uppercase tracking-wider hover:bg-white hover:text-primary-red transition-all duration-300 group"
+                >
+                  <span>Watch All Videos</span>
+                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
         </FadeInSection>
 
         {/* Dailies Section - Less prominent than other sections */}
@@ -460,18 +486,18 @@ export default async function HomePage() {
         </div>
         </FadeInSection>
 
-        {/* Donate Section - Fixed height container */}
+        {/* Donate Section - Fixed height container with contained video */}
         <FadeInSection delay={0.1}>
-          <div className="bg-black py-16 sm:py-20 lg:py-24 relative" style={{ height: 'auto', maxHeight: '550px', minHeight: '400px' }}>
-          {/* Video Background - Strictly contained */}
-          <div className="absolute inset-0 overflow-hidden" style={{ height: '100%' }}>
+          <div className="bg-black relative overflow-hidden h-[450px]">
+          {/* Video Background - Strictly contained within section bounds */}
+          <div className="absolute inset-0 overflow-hidden">
             <video
               autoPlay
               loop
               muted
               playsInline
               className="w-full h-full object-cover opacity-40"
-              style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', minWidth: '100%', minHeight: '100%' }}
+              style={{ maxHeight: '450px' }}
             >
               <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Untitled%20video-FU26yq0MK1y0rKSt7TYfo68XneAQ14.mp4" type="video/mp4" />
             </video>
@@ -482,19 +508,22 @@ export default async function HomePage() {
           {/* Spotlight Effect */}
           <Spotlight />
 
-          <div className="max-w-[800px] mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-            <span className="inline-block font-sans font-bold text-xs uppercase text-primary-red tracking-widest mb-4">
-              Support Independent Journalism
-            </span>
-            <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl mb-4 uppercase text-white leading-tight">
-              Defend Free Speech
-            </h2>
-            <p className="font-serif text-base sm:text-lg text-gray-300 mb-6 leading-relaxed max-w-[600px] mx-auto">
-              Your support keeps Liberty Nation independent and fearless in defending truth and the Constitution.
-            </p>
-            <Link href="/donate" className="inline-block bg-primary-red text-white px-8 py-3 font-sans font-bold text-sm uppercase hover:bg-white hover:text-primary-red transition-all duration-300">
-              Donate Now
-            </Link>
+          {/* Content - centered vertically and horizontally */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="max-w-[800px] mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+              <span className="inline-block font-sans font-bold text-xs uppercase text-primary-red tracking-widest mb-4">
+                Support Independent Journalism
+              </span>
+              <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl mb-4 uppercase text-white leading-tight">
+                Defend Free Speech
+              </h2>
+              <p className="font-serif text-base sm:text-lg text-gray-300 mb-6 leading-relaxed max-w-[600px] mx-auto">
+                Your support keeps Liberty Nation independent and fearless in defending truth and the Constitution.
+              </p>
+              <Link href="/donate" className="inline-block bg-primary-red text-white px-8 py-3 font-sans font-bold text-sm uppercase hover:bg-white hover:text-primary-red transition-all duration-300">
+                Donate Now
+              </Link>
+            </div>
           </div>
         </div>
         </FadeInSection>

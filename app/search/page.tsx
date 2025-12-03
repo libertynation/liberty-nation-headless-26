@@ -82,7 +82,7 @@ export default function SearchPage() {
       <main className="max-w-6xl mx-auto px-4 py-12">
         {/* Search Header */}
         <div className="mb-12">
-          <h1 className="font-headline text-5xl md:text-6xl font-black uppercase mb-8 tracking-tight">
+          <h1 className="font-display text-5xl md:text-6xl font-black uppercase mb-8 tracking-tight">
             Search
           </h1>
 

@@ -36,28 +36,35 @@ export default async function CategoryButtons() {
   }
 
   return (
-    <div className="bg-white py-10 sm:py-12 border-t-2 border-black">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="font-sans font-black text-2xl sm:text-3xl uppercase tracking-tight">
-            Explore Topics
-          </h2>
-        </div>
+    <div className="bg-white relative">
+      {/* Top border */}
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-black" />
+      {/* Bottom border */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
 
-        {/* Category Grid - Clean editorial style */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-          {displayCategories.map((category) => (
-            <Link
-              key={category.id}
-              href={`/category/${category.slug}`}
-              className="group text-center py-4 px-3 border-2 border-gray-200 hover:border-black hover:bg-black transition-all duration-300"
-            >
-              <h3 className="font-sans font-bold text-sm text-gray-900 group-hover:text-white transition-colors duration-300 leading-tight">
-                {category.name}
-              </h3>
-            </Link>
-          ))}
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6">
+        <div className="flex items-center gap-6">
+          {/* Explore Topics Label - Black box with white text */}
+          <div className="flex-shrink-0">
+            <span className="font-sans font-black text-xl uppercase text-white bg-black px-6 py-4 inline-block tracking-tight">
+              EXPLORE TOPICS
+            </span>
+          </div>
+
+          {/* Category Grid - Inline with label, items-center for vertical alignment */}
+          <div className="flex-1 grid grid-cols-4 lg:grid-cols-8 gap-3 items-center">
+            {displayCategories.map((category) => (
+              <Link
+                key={category.id}
+                href={`/category/${category.slug}`}
+                className="group text-center py-4 px-3 border-2 border-gray-200 hover:border-black hover:bg-black transition-all duration-300 flex items-center justify-center"
+              >
+                <h3 className="font-sans font-bold text-sm text-gray-900 group-hover:text-white transition-colors duration-300 leading-tight">
+                  {category.name}
+                </h3>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>

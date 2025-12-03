@@ -63,8 +63,8 @@ async function getVideosFromAPI(maxResults: number): Promise<YouTubeVideo[]> {
 
     return data.items.map((item: any) => ({
       id: item.id.videoId,
-      title: item.snippet.title,
-      description: item.snippet.description,
+      title: decodeHTMLEntities(item.snippet.title),
+      description: decodeHTMLEntities(item.snippet.description),
       thumbnailUrl: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.medium?.url || item.snippet.thumbnails.default.url,
       publishedAt: item.snippet.publishedAt,
       videoUrl: `https://www.youtube.com/watch?v=${item.id.videoId}`

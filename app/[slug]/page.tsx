@@ -93,7 +93,7 @@ export default async function DynamicPage({ params }: PageProps) {
       <>
         <Header />
         <main className="max-w-4xl mx-auto px-4 py-12">
-          <h1 className="font-headline text-5xl md:text-6xl font-bold uppercase mb-8 tracking-tight">
+          <h1 className="font-display text-5xl md:text-6xl font-bold uppercase mb-8 tracking-tight">
             About Liberty Nation
           </h1>
           <div className="prose prose-lg max-w-none font-serif">
@@ -103,7 +103,7 @@ export default async function DynamicPage({ params }: PageProps) {
             <p className="text-[19px] leading-[1.7] mb-6">
               Our mission is to promote free thinking, free speech, and the principles that made America great. We believe in limited government, individual liberty, free markets, and the Constitution.
             </p>
-            <h2 className="font-headline text-3xl font-bold uppercase mt-12 mb-6">Our Values</h2>
+            <h2 className="font-display text-3xl font-bold uppercase mt-12 mb-6">Our Values</h2>
             <ul className="space-y-3">
               <li className="text-[19px] leading-[1.7]"><strong>Free Speech:</strong> We defend the right to express ideas freely.</li>
               <li className="text-[19px] leading-[1.7]"><strong>Liberty:</strong> Individual freedom is paramount.</li>
@@ -122,14 +122,14 @@ export default async function DynamicPage({ params }: PageProps) {
       <>
         <Header />
         <main className="max-w-4xl mx-auto px-4 py-12">
-          <h1 className="font-headline text-5xl md:text-6xl font-bold uppercase mb-8 tracking-tight">
+          <h1 className="font-display text-5xl md:text-6xl font-bold uppercase mb-8 tracking-tight">
             Contact Us
           </h1>
           <div className="prose prose-lg max-w-none font-serif">
             <p className="text-[19px] leading-[1.7] mb-6">
               We'd love to hear from you. Whether you have a story tip, feedback, or just want to say hello, we're here to listen.
             </p>
-            <h2 className="font-headline text-3xl font-bold uppercase mt-12 mb-6">Get In Touch</h2>
+            <h2 className="font-display text-3xl font-bold uppercase mt-12 mb-6">Get In Touch</h2>
             <p className="text-[19px] leading-[1.7] mb-6">
               Email: <a href="mailto:contact@libertynation.com" className="text-primary-red hover:underline">contact@libertynation.com</a>
             </p>
@@ -277,7 +277,7 @@ export default async function DynamicPage({ params }: PageProps) {
       <>
         <Header />
         <main className="max-w-md mx-auto px-4 py-12">
-          <h1 className="font-headline text-4xl md:text-5xl font-bold uppercase mb-8 tracking-tight text-center">
+          <h1 className="font-display text-4xl md:text-5xl font-bold uppercase mb-8 tracking-tight text-center">
             Sign In
           </h1>
           <div className="bg-white border-2 border-border-gray rounded-lg p-8">
@@ -339,7 +339,7 @@ export default async function DynamicPage({ params }: PageProps) {
         <main className="max-w-7xl mx-auto px-4 py-12">
           {/* Category Header */}
           <div className="mb-12 pb-8 border-b-2 border-border-gray">
-            <h1 className="font-headline text-5xl md:text-6xl font-bold uppercase mb-4 tracking-tight">
+            <h1 className="font-display text-5xl md:text-6xl font-bold uppercase mb-4 tracking-tight">
               {categoryData.name}
             </h1>
             <p className="font-sans text-text-gray">
@@ -485,44 +485,51 @@ export default async function DynamicPage({ params }: PageProps) {
 
       <article className="bg-bg-offwhite">
         {/* SECTION 1: Title Only - Full Width */}
-        <div className="max-w-[1400px] mx-auto px-6 md:px-12 pt-12 pb-8">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 pt-12 pb-12">
           {/* Title - LARGE typography using Lora */}
           <h1 className="font-display text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-[1.05] font-bold mb-0 text-gray-900 tracking-tight">
             {decodeHtmlEntities(post.title.rendered)}
           </h1>
 
-          {/* Audio Player - At top after title if available */}
+          {/* Audio Player - Prominent placement below title */}
           {audioUrl && (
-            <div className="mt-8 bg-white border-2 border-gray-200 rounded-lg p-6 shadow-md max-w-[900px]">
-              <div className="flex items-center gap-4 mb-4">
-                <svg className="w-6 h-6 text-primary-red" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-                </svg>
-                <h3 className="font-sans font-bold text-lg text-text-dark uppercase tracking-wide">
-                  Listen to this article
-                </h3>
+            <div className="mt-10 max-w-[900px]">
+              <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-6 shadow-xl">
+                <div className="flex items-center gap-4 mb-4">
+                  {/* Audio wave animation */}
+                  <div className="audio-wave flex items-end gap-1 h-6">
+                    <div className="audio-bar-1 w-1 h-full bg-primary-red rounded-full"></div>
+                    <div className="audio-bar-2 w-1 h-4 bg-primary-red rounded-full"></div>
+                    <div className="audio-bar-3 w-1 h-5 bg-primary-red rounded-full"></div>
+                    <div className="audio-bar-4 w-1 h-3 bg-primary-red rounded-full"></div>
+                    <div className="audio-bar-5 w-1 h-full bg-primary-red rounded-full"></div>
+                  </div>
+                  <h3 className="font-sans font-bold text-base uppercase tracking-widest text-white/90">
+                    Listen to this article
+                  </h3>
+                </div>
+                <audio controls className="w-full [&::-webkit-media-controls-panel]:bg-gray-700" preload="metadata">
+                  <source src={audioUrl} type="audio/mpeg" />
+                  Your browser does not support the audio element.
+                </audio>
               </div>
-              <audio controls className="w-full" preload="metadata">
-                <source src={audioUrl} type="audio/mpeg" />
-                Your browser does not support the audio element.
-              </audio>
             </div>
           )}
         </div>
 
         {/* SECTION 2: Split Layout - Featured Image Left, Metadata Right */}
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 pb-12">
-          <div className={`grid grid-cols-1 gap-12 ${shouldShowFeaturedImage ? 'lg:grid-cols-2' : 'lg:grid-cols-1'}`}>
-            {/* LEFT: Featured Image */}
+          <div className={`grid grid-cols-1 gap-10 ${shouldShowFeaturedImage ? 'lg:grid-cols-[3fr_2fr]' : 'lg:grid-cols-1'}`}>
+            {/* LEFT: Featured Image - Larger (60% width) */}
             {shouldShowFeaturedImage && (
-              <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-200">
+              <div className="relative w-full aspect-[16/10] overflow-hidden bg-gray-200">
                 <Image
                   src={imageUrl}
                   alt={post.title.rendered}
                   fill
                   className="object-cover"
                   priority
-                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  sizes="(max-width: 1024px) 100vw, 60vw"
                 />
               </div>
             )}
@@ -538,16 +545,7 @@ export default async function DynamicPage({ params }: PageProps) {
                   </p>
                 )}
 
-                {/* Author Byline - thefp.com style */}
-                <div className="flex items-center gap-3">
-                  <span className="font-sans text-sm uppercase tracking-wide text-gray-500">By</span>
-                  <Link href={`/author/${authorSlug}`} className="group">
-                    <span className="font-display text-xl md:text-2xl text-primary-red group-hover:underline transition-colors font-bold">
-                      {author}
-                    </span>
-                  </Link>
-                </div>
-
+                
                 {/* Date & Category */}
                 <div className="flex items-center gap-3 text-sm font-sans text-gray-500 uppercase tracking-wide">
                   <span>{date}</span>
@@ -561,9 +559,16 @@ export default async function DynamicPage({ params }: PageProps) {
                   )}
                 </div>
 
-                {/* Divider */}
-                <div className="border-t border-gray-200 pt-5">
-                  {/* Author Card - Compact inline with avatar */}
+                {/* Author Byline - thefp.com style */}
+                <div className="border-t border-gray-200 pt-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="font-sans text-sm uppercase tracking-wide text-gray-500">By</span>
+                    <Link href={`/author/${authorSlug}`} className="group">
+                      <span className="font-display text-xl md:text-2xl text-primary-red group-hover:underline transition-colors font-bold">
+                        {author}
+                      </span>
+                    </Link>
+                  </div>
                   {authorSlug && (
                     <AuthorCard
                       name={author}
@@ -572,13 +577,14 @@ export default async function DynamicPage({ params }: PageProps) {
                       bio={authorBio}
                       avatar={authorAvatar}
                       variant="compact"
+                      showName={false}
                     />
                   )}
                 </div>
               </div>
 
               {/* Bottom: Follow & Share Buttons */}
-              <div className="flex items-center gap-4 pt-6 mt-6 border-t border-gray-200">
+              <div className="flex items-center gap-4 pt-4 mt-4 border-t border-gray-200">
                 <FollowTopicButton
                   author={author}
                   category={category}
@@ -595,9 +601,9 @@ export default async function DynamicPage({ params }: PageProps) {
 
         {/* SECTION 3: Readable Content Section (max-w-[900px] - Wider for better reading) */}
         <div className="max-w-[900px] mx-auto px-6 md:px-8 py-12">
-          {/* Content - Clean readable typography with elegant blockquotes */}
+          {/* Content - Clean readable typography with elegant blockquotes and drop cap */}
           <div
-            className="prose prose-xl max-w-none font-serif
+            className="prose prose-xl max-w-none font-serif article-content
               prose-headings:font-serif prose-headings:font-bold prose-headings:text-gray-900
               prose-h2:text-4xl prose-h2:mt-14 prose-h2:mb-6 prose-h2:leading-tight
               prose-h3:text-3xl prose-h3:mt-12 prose-h3:mb-5
@@ -777,43 +783,6 @@ export default async function DynamicPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* SECTION 6: Newsletter Signup CTA */}
-        <div className="bg-gradient-to-br from-gray-50 to-white py-16 md:py-20 border-t border-b border-gray-200">
-          <div className="max-w-[900px] mx-auto px-6 md:px-12 text-center">
-            <div className="bg-white px-8 md:px-12 py-10 md:py-12 rounded-sm shadow-xl border-2 border-gray-200">
-              <div className="inline-flex items-center gap-3 mb-4 bg-primary-red/10 px-6 py-2 rounded-full">
-                <svg className="w-5 h-5 text-primary-red" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
-                </svg>
-                <span className="font-sans font-bold text-sm uppercase tracking-widest text-primary-red">
-                  Daily Briefing
-                </span>
-              </div>
-
-              <h2 className="font-display font-bold text-3xl md:text-4xl mb-4 uppercase leading-tight text-text-dark">
-                Never Miss a Story
-              </h2>
-                <p className="font-serif text-lg md:text-xl mb-8 leading-relaxed text-text-dark max-w-2xl mx-auto">
-                  Get the day's most important stories delivered to your inbox every morning. No spam, ever.
-                </p>
-
-                <form className="flex flex-col sm:flex-row gap-3 max-w-[600px] mx-auto">
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="flex-1 px-6 py-4 border-2 border-gray-300 font-sans text-base focus:outline-none focus:border-primary-red transition rounded-sm"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="bg-primary-red text-white px-8 py-4 font-sans font-bold text-sm uppercase hover:bg-text-dark transition whitespace-nowrap rounded-sm"
-                  >
-                    Subscribe
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
       </article>
 
       <Footer />

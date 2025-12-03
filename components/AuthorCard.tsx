@@ -8,6 +8,7 @@ interface AuthorCardProps {
   bio?: string;
   avatar?: string | null;
   variant?: 'default' | 'compact';
+  showName?: boolean; // Whether to show the name (default true, set false if name already shown elsewhere)
 }
 
 export default function AuthorCard({
@@ -16,7 +17,8 @@ export default function AuthorCard({
   title,
   bio,
   avatar,
-  variant = 'default'
+  variant = 'default',
+  showName = true
 }: AuthorCardProps) {
   if (variant === 'compact') {
     return (
@@ -24,12 +26,12 @@ export default function AuthorCard({
         {/* Author Avatar */}
         <Link href={`/author/${slug}`} className="flex-shrink-0">
           {avatar ? (
-            <div className="w-14 h-14 rounded-full overflow-hidden border border-gray-200">
+            <div className="w-20 h-20 rounded-full overflow-hidden border border-gray-200">
               <Image
                 src={avatar}
                 alt={name}
-                width={56}
-                height={56}
+                width={86}
+                height={86}
                 className="object-cover w-full h-full"
               />
             </div>
@@ -42,13 +44,15 @@ export default function AuthorCard({
 
         {/* Author Info */}
         <div className="flex-1 min-w-0">
-          <Link href={`/author/${slug}`}>
-            <h3 className="font-display text-lg font-bold text-gray-900 hover:text-primary-red transition-colors leading-tight">
-              {name}
-            </h3>
-          </Link>
+          {showName && (
+            <Link href={`/author/${slug}`}>
+              <h3 className="font-display text-lg font-bold text-gray-900 hover:text-primary-red transition-colors leading-tight">
+                {name}
+              </h3>
+            </Link>
+          )}
           {bio && (
-            <p className="font-serif text-sm leading-relaxed text-gray-600 mt-1 line-clamp-2">
+            <p className="font-serif text-lg leading-relaxed text-gray-600 mt-1 line-clamp-2">
               {bio}
             </p>
           )}
@@ -64,11 +68,11 @@ export default function AuthorCard({
         About the Author
       </p>
 
-      <div className="flex items-start gap-6">
+      <div className="flex items-center gap-6">
         {/* Author Avatar - Larger for prominence */}
         <Link href={`/author/${slug}`} className="flex-shrink-0">
           {avatar ? (
-            <div className="w-24 h-24 rounded-full overflow-hidden border border-gray-200 shadow-sm">
+            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border border-gray-200 shadow-sm">
               <Image
                 src={avatar}
                 alt={name}
@@ -78,22 +82,22 @@ export default function AuthorCard({
               />
             </div>
           ) : (
-            <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-display font-bold text-3xl border border-gray-200">
+            <div className="w-20 h-20 md:w-24 md:h-24 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-display font-bold text-2xl md:text-3xl border border-gray-200">
               {name.charAt(0).toUpperCase()}
             </div>
           )}
         </Link>
 
         {/* Author Details */}
-        <div className="flex-1 min-w-0 pt-1">
+        <div className="flex-1 min-w-0">
           <Link href={`/author/${slug}`}>
-            <h3 className="font-display text-2xl font-bold text-gray-900 hover:text-primary-red transition-colors mb-2">
+            <h3 className="font-display text-xl md:text-2xl font-bold text-gray-900 hover:text-primary-red transition-colors mb-1">
               {name}
             </h3>
           </Link>
 
           {bio && (
-            <p className="font-serif text-base leading-[1.6] text-gray-700 mb-4 max-w-xl">
+            <p className="font-serif text-sm md:text-base leading-[1.6] text-gray-700 mb-3 line-clamp-2 md:line-clamp-none md:max-w-xl">
               {bio}
             </p>
           )}

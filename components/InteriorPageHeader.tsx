@@ -54,12 +54,12 @@ export default function InteriorPageHeader({
               {title}
             </h1>
             {subtitle && (
-              <p className={`font-display text-2xl md:text-3xl text-gray-300 mb-6 leading-[1.2]`}>
+              <p className={`font-display text-2xl md:text-3xl text-white/80 mb-6 leading-[1.2]`}>
                 {subtitle}
               </p>
             )}
             {description && (
-              <p className={`font-serif ${typography.body.xl} text-gray-300 leading-[1.7] max-w-[700px] mx-auto`}>
+              <p className={`font-serif ${typography.body.xl} text-white/80 leading-[1.7] max-w-[700px] mx-auto`}>
                 {description}
               </p>
             )}

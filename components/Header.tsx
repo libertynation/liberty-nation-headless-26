@@ -81,17 +81,19 @@ export default function Header() {
         {/* Header at Top */}
         <div className="p-6 pb-8 border-b border-white/10">
           <div className="pr-12">
-            <Link href="/" onClick={() => setMenuOpen(false)} className="block">
-              <div className="relative w-full h-[60px]">
-                <Image
-                  src="/white_logo.png"
-                  alt="Liberty Nation News"
-                  fill
-                  className="object-contain object-left"
-                  priority
-                />
-              </div>
-            </Link>
+            <div onClick={() => setMenuOpen(false)}>
+              <Link href="/" className="block">
+                <div className="relative w-full h-[60px]">
+                  <Image
+                    src="/white_logo.png"
+                    alt="Liberty Nation News"
+                    fill
+                    className="object-contain object-left"
+                    priority
+                  />
+                </div>
+              </Link>
+            </div>
           </div>
           <button
             onClick={() => setMenuOpen(false)}
@@ -184,14 +186,18 @@ export default function Header() {
           {/* MAIN MENU */}
           <div className="space-y-1 pt-6">
             {/* Home */}
-            <Link href="/" onClick={() => setMenuOpen(false)} className="block py-3 font-display font-bold text-xl text-white hover:text-primary-red transition-colors duration-200">
-              Home
-            </Link>
+            <div onClick={() => setMenuOpen(false)}>
+              <Link href="/" className="block py-3 font-display font-bold text-xl text-white hover:text-primary-red transition-colors duration-200">
+                Home
+              </Link>
+            </div>
 
             {/* News */}
-            <Link href="/category/articles" onClick={() => setMenuOpen(false)} className="block py-3 font-display font-bold text-xl text-white hover:text-primary-red transition-colors duration-200">
-              News
-            </Link>
+            <div onClick={() => setMenuOpen(false)}>
+              <Link href="/category/articles" className="block py-3 font-display font-bold text-xl text-white hover:text-primary-red transition-colors duration-200">
+                News
+              </Link>
+            </div>
 
             {/* Video */}
             <div>
@@ -206,23 +212,31 @@ export default function Header() {
               </button>
               <div className={`overflow-hidden transition-all duration-300 ${expandedSection === 'video' ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
                 <div className="pl-4 pb-2 pt-1 space-y-1 border-l border-white/20 ml-2">
-                  <Link href="/category/lntv" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
-                    Liberty Nation TV
-                  </Link>
-                  <Link href="/category/the-conservative-five" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
-                    The Conservative 5
-                  </Link>
-                  <Link href="/category/videocasts" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
-                    Videocasts
-                  </Link>
+                  <div onClick={() => setMenuOpen(false)}>
+                    <Link href="/category/lntv" className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
+                      Liberty Nation TV
+                    </Link>
+                  </div>
+                  <div onClick={() => setMenuOpen(false)}>
+                    <Link href="/category/the-conservative-five" className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
+                      The Conservative 5
+                    </Link>
+                  </div>
+                  <div onClick={() => setMenuOpen(false)}>
+                    <Link href="/category/videocasts" className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
+                      Videocasts
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Radio */}
-            <Link href="/category/audio" onClick={() => setMenuOpen(false)} className="block py-3 font-display font-bold text-xl text-white hover:text-primary-red transition-colors duration-200">
-              Radio
-            </Link>
+            <div onClick={() => setMenuOpen(false)}>
+              <Link href="/category/audio" className="block py-3 font-display font-bold text-xl text-white hover:text-primary-red transition-colors duration-200">
+                Radio
+              </Link>
+            </div>
 
             {/* Liberty Vault */}
             <div>
@@ -237,15 +251,21 @@ export default function Header() {
               </button>
               <div className={`overflow-hidden transition-all duration-300 ${expandedSection === 'liberty-vault' ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
                 <div className="pl-4 pb-2 pt-1 space-y-1 border-l border-white/20 ml-2">
-                  <Link href="/liberty-vault" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
-                    The Supreme Court
-                  </Link>
-                  <Link href="/liberty-vault" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
-                    Federalist Papers
-                  </Link>
-                  <Link href="/liberty-vault" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
-                    Founding Documents
-                  </Link>
+                  <div onClick={() => setMenuOpen(false)}>
+                    <Link href="/liberty-vault" className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
+                      The Supreme Court
+                    </Link>
+                  </div>
+                  <div onClick={() => setMenuOpen(false)}>
+                    <Link href="/liberty-vault" className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
+                      Federalist Papers
+                    </Link>
+                  </div>
+                  <div onClick={() => setMenuOpen(false)}>
+                    <Link href="/liberty-vault" className="block py-2 font-sans text-sm text-gray-400 hover:text-white transition-colors">
+                      Founding Documents
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -256,18 +276,26 @@ export default function Header() {
 
           {/* SECONDARY MENU */}
           <div className="border-t border-white/10 pt-5 pb-2 space-y-1">
-            <Link href="/subscribe" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
-              Subscribe Now
-            </Link>
-            <Link href="/authors" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
-              Our Authors
-            </Link>
-            <Link href="/about" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
-              About Us
-            </Link>
-            <Link href="/contact" onClick={() => setMenuOpen(false)} className="block py-2 font-sans text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
-              Contact Us
-            </Link>
+            <div onClick={() => setMenuOpen(false)}>
+              <Link href="/subscribe" className="block py-2 font-sans text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
+                Subscribe Now
+              </Link>
+            </div>
+            <div onClick={() => setMenuOpen(false)}>
+              <Link href="/authors" className="block py-2 font-sans text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
+                Our Authors
+              </Link>
+            </div>
+            <div onClick={() => setMenuOpen(false)}>
+              <Link href="/about" className="block py-2 font-sans text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
+                About Us
+              </Link>
+            </div>
+            <div onClick={() => setMenuOpen(false)}>
+              <Link href="/contact" className="block py-2 font-sans text-xs uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
+                Contact Us
+              </Link>
+            </div>
           </div>
         </nav>
 

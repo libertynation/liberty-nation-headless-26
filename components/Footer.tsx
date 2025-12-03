@@ -44,17 +44,14 @@ export default function Footer() {
             <div>
               <h4 className="font-sans font-black text-xs uppercase mb-4 tracking-wider">Liberty Nation News</h4>
               <nav className="space-y-2">
-                <Link href="/about-us" className="block font-sans text-sm text-gray-400 hover:text-white transition">
+                <Link href="/about" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   About Us
                 </Link>
                 <Link href="/authors" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Our Authors
                 </Link>
-                <Link href="/contact-us" className="block font-sans text-sm text-gray-400 hover:text-white transition">
+                <Link href="/contact" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Contact Us
-                </Link>
-                <Link href="/submissions" className="block font-sans text-sm text-gray-400 hover:text-white transition">
-                  Submissions
                 </Link>
                 <Link href="/republishing-guidelines" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Republishing Guidelines
@@ -66,28 +63,28 @@ export default function Footer() {
             <div>
               <h4 className="font-sans font-black text-xs uppercase mb-4 tracking-wider">Topics</h4>
               <nav className="space-y-2">
-                <Link href="/politics" className="block font-sans text-sm text-gray-400 hover:text-white transition">
+                <Link href="/category/politics" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Politics
                 </Link>
-                <Link href="/business" className="block font-sans text-sm text-gray-400 hover:text-white transition">
+                <Link href="/category/business" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Business
                 </Link>
-                <Link href="/culture" className="block font-sans text-sm text-gray-400 hover:text-white transition">
+                <Link href="/category/culture" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Culture
                 </Link>
-                <Link href="/economy" className="block font-sans text-sm text-gray-400 hover:text-white transition">
+                <Link href="/category/economy" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Economy
                 </Link>
-                <Link href="/education" className="block font-sans text-sm text-gray-400 hover:text-white transition">
+                <Link href="/category/education" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Education
                 </Link>
-                <Link href="/international" className="block font-sans text-sm text-gray-400 hover:text-white transition">
+                <Link href="/category/international" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   International
                 </Link>
-                <Link href="/law" className="block font-sans text-sm text-gray-400 hover:text-white transition">
+                <Link href="/category/law" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Law
                 </Link>
-                <Link href="/ln-genz" className="block font-sans text-sm text-gray-400 hover:text-white transition">
+                <Link href="/category/ln-genz" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   LN GenZ
                 </Link>
               </nav>
@@ -100,13 +97,13 @@ export default function Footer() {
                 <Link href="/lntv" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Liberty Nation TV
                 </Link>
-                <Link href="/podcasts" className="block font-sans text-sm text-gray-400 hover:text-white transition">
+                <Link href="/audio" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Podcasts
                 </Link>
                 <Link href="/newsletters" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Newsletters
                 </Link>
-                <Link href="/subscribe-now" className="block font-sans text-sm text-gray-400 hover:text-white transition">
+                <Link href="/subscribe" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Subscribe Now!
                 </Link>
                 <Link href="/donate" className="block font-sans text-sm text-gray-400 hover:text-white transition">
@@ -125,7 +122,7 @@ export default function Footer() {
                 <Link href="/terms-and-conditions" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Terms and Conditions
                 </Link>
-                <Link href="/login" className="block font-sans text-sm text-gray-400 hover:text-white transition">
+                <Link href="/signin" className="block font-sans text-sm text-gray-400 hover:text-white transition">
                   Login
                 </Link>
               </nav>
@@ -142,16 +139,16 @@ export default function Footer() {
               Privacy Policy
             </Link>
             <span className="text-gray-700">|</span>
-            <Link href="/terms" className="font-sans text-gray-500 hover:text-white transition">
+            <Link href="/terms-and-conditions" className="font-sans text-gray-500 hover:text-white transition">
               Terms of Service
             </Link>
             <span className="text-gray-700">|</span>
-            <Link href="/editorial-guidelines" className="font-sans text-gray-500 hover:text-white transition">
+            <Link href="/republishing-guidelines" className="font-sans text-gray-500 hover:text-white transition">
               Editorial Guidelines
             </Link>
             <span className="text-gray-700">|</span>
-            <Link href="/corrections" className="font-sans text-gray-500 hover:text-white transition">
-              Corrections
+            <Link href="/contact" className="font-sans text-gray-500 hover:text-white transition">
+              Contact / Corrections
             </Link>
           </div>
         </div>

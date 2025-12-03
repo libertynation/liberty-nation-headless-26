@@ -188,7 +188,7 @@ export default function AnimatedSection({
             transitionDelay: '4200ms',
           }}
         >
-          <div className={changeTextColor ? '[&_*]:!text-white [&_.white-card]:!bg-transparent [&_.white-card]:!shadow-none' : ''}>
+          <div className={changeTextColor ? '[&_*]:!text-white [&_input]:!text-black [&_.white-card]:!bg-transparent [&_.white-card]:!shadow-none [&_.badge-dark]:!bg-white/20' : ''}>
             {children}
           </div>
         </div>

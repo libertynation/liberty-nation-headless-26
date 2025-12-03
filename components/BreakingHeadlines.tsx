@@ -17,7 +17,7 @@ export default function BreakingHeadlines({ posts }: BreakingHeadlinesProps) {
   const displayPosts = posts.slice(0, 5);
 
   return (
-    <div className={`bg-bg-offwhite ${spacing.section.md} relative`}>
+    <div className="bg-bg-offwhite relative">
       {/* Top border - animates in from left */}
       <motion.div
         className="absolute top-0 left-0 right-0 h-[2px] bg-black"
@@ -36,8 +36,8 @@ export default function BreakingHeadlines({ posts }: BreakingHeadlinesProps) {
         transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
       />
 
-      <div className={`max-w-[1600px] mx-auto ${spacing.container.default}`}>
-        <div className={`flex items-center justify-center ${spacing.gap.md}`}>
+      <div className={`max-w-[1600px] mx-auto ${spacing.container.default} py-6`}>
+        <div className="flex items-center gap-6">
           {/* Breaking Label - fades in after borders */}
           <motion.div
             className="flex-shrink-0"
@@ -46,14 +46,14 @@ export default function BreakingHeadlines({ posts }: BreakingHeadlinesProps) {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 1.2, ease: 'easeOut' }}
           >
-            <span className="font-sans font-black text-xl uppercase text-white bg-primary-red px-5 py-2 inline-block">
+            <span className="font-sans font-black text-xl uppercase text-white bg-primary-red px-6 py-4 inline-block tracking-tight">
               BREAKING
             </span>
           </motion.div>
 
-          {/* 5 Column Grid - Equal width columns, centered text */}
+          {/* 5 Column Grid - Equal width columns, vertically centered */}
           <motion.div
-            className={`grid grid-cols-5 ${spacing.gap.sm} flex-1`}
+            className="grid grid-cols-5 gap-6 flex-1 items-center"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}

@@ -5,6 +5,7 @@ import { getAuthorBySlug, getPostsByAuthorSlug } from '@/lib/wordpress';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ArticleCard from '@/components/ArticleCard';
+import AuthorPromoVideo from '@/components/AuthorPromoVideo';
 
 // ISR: Revalidate every 60 seconds for news site - fast updates critical
 export const revalidate = 60;
@@ -53,17 +54,32 @@ export default async function AuthorPage({ params, searchParams }: AuthorPagePro
 
   const posts = postsResponse.data;
   const totalPages = postsResponse.totalPages || 1;
-  const totalPosts = postsResponse.total || 0;
+  const totalPosts = postsResponse.totalItems || 0;
 
-  // Get author avatar - try to get highest resolution
-  const authorAvatar = author.avatar_urls?.['96'] || author.avatar_urls?.['48'] || author.avatar_urls?.['24'] || null;
-  const authorTitle = author.acf?.title || null;
-  const authorPromoVideo = author.acf?.promo_video || author.acf?.video || null; // Try different field names
+  // Get author avatar - try ACF photo first (most reliable), then avatar_urls
+  const authorAvatar = author.acf?.photo?.url || author.acf?.photo || author.acf?.avatar || author.avatar_urls?.['96'] || author.avatar_urls?.['48'] || author.avatar_urls?.['24'] || null;
+
+  // Get author designation/title - use correct ACF field name
+  const authorTitle = author.acf?.author_designation || author.acf?.title || null;
+
+  // Get author promo video URL - use correct ACF field name
+  const authorPromoVideo = author.acf?.author_promo || author.acf?.promo_video || author.acf?.video || null;
+
+  // Get author promo featured image - use correct ACF field name
+  const authorPromoFeaturedImage = author.acf?.author_promo_featured_image?.url || author.acf?.author_promo_featured_image || null;
+
+  // Get author bio/description
+  const authorBio = author.description || author.acf?.bio || author.acf?.description || null;
 
   // Social media links
   const twitterUrl = author.acf?.twitter || null;
   const facebookUrl = author.acf?.facebook || null;
   const linkedinUrl = author.acf?.linkedin || null;
+
+  // Debug log to see what ACF fields we're getting
+  console.log('Author ACF data:', JSON.stringify(author.acf, null, 2));
+  console.log('Author avatar:', authorAvatar);
+  console.log('Author bio:', authorBio);
 
   return (
     <>
@@ -151,10 +167,10 @@ export default async function AuthorPage({ params, searchParams }: AuthorPagePro
                 </div>
 
                 {/* Author Bio */}
-                {author?.description && (
+                {authorBio && (
                   <div className="prose prose-lg max-w-none font-serif">
                     <p className="text-[19px] leading-[1.7] text-gray-800">
-                      {author.description}
+                      {authorBio}
                     </p>
                   </div>
                 )}
@@ -170,17 +186,11 @@ export default async function AuthorPage({ params, searchParams }: AuthorPagePro
               {/* Right: Promo Video or Newsletter Signup */}
               <div className="lg:col-span-1">
                 {authorPromoVideo ? (
-                  <div className="bg-black rounded-sm overflow-hidden shadow-xl">
-                    <div className="relative w-full aspect-video">
-                      <iframe
-                        src={`https://www.youtube.com/embed/${authorPromoVideo}`}
-                        title={`${author.name} - Author Promo`}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        className="absolute inset-0 w-full h-full"
-                      />
-                    </div>
-                  </div>
+                  <AuthorPromoVideo
+                    videoUrl={authorPromoVideo}
+                    featuredImage={authorPromoFeaturedImage}
+                    authorName={author?.name || 'Author'}
+                  />
                 ) : (
                   // Fallback: Newsletter signup if no promo video
                   <div className="bg-white border-2 border-gray-200 rounded-sm p-6 shadow-lg">

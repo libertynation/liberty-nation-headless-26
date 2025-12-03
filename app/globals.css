@@ -147,13 +147,29 @@ p {
 }
 
 /* Red Dropcap for Article First Paragraph */
-.prose > p:first-of-type::first-letter {
+/* Target the first paragraph in article content */
+.article-content > p:first-of-type::first-letter,
+.prose.article-content > p:first-of-type::first-letter {
   float: left;
   font-size: 5.5em;
-  line-height: 0.85;
+  line-height: 0.8;
   font-weight: 700;
-  margin-right: 0.1em;
-  margin-top: 0.05em;
+  margin-right: 0.12em;
+  margin-top: 0.02em;
+  padding-top: 0.05em;
+  color: var(--accent-red);
+  font-family: 'Lora', Georgia, serif;
+}
+
+/* Fallback: also target first-child p in case content structure varies */
+.article-content p:first-child::first-letter {
+  float: left;
+  font-size: 5.5em;
+  line-height: 0.8;
+  font-weight: 700;
+  margin-right: 0.12em;
+  margin-top: 0.02em;
+  padding-top: 0.05em;
   color: var(--accent-red);
   font-family: 'Lora', Georgia, serif;
 }
