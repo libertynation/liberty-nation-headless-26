@@ -46,7 +46,7 @@ export default function MoreSection({ posts, title = "MORE" }: MoreSectionProps)
               <article key={post.id} className="group text-center">
                 <Link href={`/${post.slug}`}>
                   {imageUrl && (
-                    <div className="relative w-full aspect-[580/436] overflow-hidden bg-gray-200 mb-3">
+                    <div className="relative w-full aspect-[580/436] overflow-hidden bg-gray-200">
                       <Image
                         src={imageUrl}
                         alt={post.title.rendered}
@@ -57,7 +57,7 @@ export default function MoreSection({ posts, title = "MORE" }: MoreSectionProps)
                     </div>
                   )}
 
-                  <h3 className="font-display font-black text-xl sm:text-2xl md:text-3xl leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
+                  <h3 className="font-display font-black text-xl sm:text-2xl md:text-3xl leading-[1.2] mt-3 mb-3 group-hover:text-primary-red transition-colors duration-300">
                     {decodeHtmlEntities(post.title.rendered)}
                   </h3>
 

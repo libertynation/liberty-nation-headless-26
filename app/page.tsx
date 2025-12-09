@@ -17,6 +17,7 @@ import PoliticsSection from '@/components/PoliticsSection';
 import FadeInSection from '@/components/FadeInSection';
 import Image from 'next/image';
 import Link from 'next/link';
+import DonateSection from '@/components/DonateSection';
 import SectionHeader from '@/components/SectionHeader';
 import { grids, spacing, typography, transitions, aspectRatios, authorMeta } from '@/lib/design-tokens';
 
@@ -229,7 +230,7 @@ export default async function HomePage() {
                 <article key={post.id} className="group text-center">
                   <Link href={`/${post.slug}`}>
                     {post._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
-                      <div className={`relative w-full ${aspectRatios.hero} bg-gray-200 ${spacing.mb.sm} overflow-hidden`}>
+                      <div className={`relative w-full ${aspectRatios.hero} bg-gray-200 overflow-hidden`}>
                         <Image
                           src={post._embedded['wp:featuredmedia'][0].source_url}
                           alt={decodeHtmlEntities(post.title.rendered)}
@@ -244,7 +245,7 @@ export default async function HomePage() {
                         </div>
                       </div>
                     )}
-                    <h3 className={`font-display font-black ${typography.card.medium} ${spacing.mb.sm} group-hover:text-primary-red ${transitions.color}`}>
+                    <h3 className={`font-display font-black ${typography.card.medium} mt-3 ${spacing.mb.sm} group-hover:text-primary-red ${transitions.color}`}>
                       {decodeHtmlEntities(post.title.rendered)}
                     </h3>
                     <div className={`flex items-center justify-center ${authorMeta.containerGap.tight} ${typography.meta.small} font-sans uppercase tracking-wide`}>
@@ -257,7 +258,7 @@ export default async function HomePage() {
               )) : youtubeVideos.map((video) => (
                 <article key={video.id} className="group text-center">
                   <a href={video.videoUrl} target="_blank" rel="noopener noreferrer">
-                    <div className={`relative w-full ${aspectRatios.hero} bg-gray-200 ${spacing.mb.sm} overflow-hidden`}>
+                    <div className={`relative w-full ${aspectRatios.hero} bg-gray-200 overflow-hidden`}>
                       <Image
                         src={video.thumbnailUrl}
                         alt={video.title}
@@ -271,7 +272,7 @@ export default async function HomePage() {
                         </div>
                       </div>
                     </div>
-                    <h3 className={`font-display font-black ${typography.card.medium} ${spacing.mb.sm} group-hover:text-primary-red ${transitions.color}`}>
+                    <h3 className={`font-display font-black ${typography.card.medium} mt-3 ${spacing.mb.sm} group-hover:text-primary-red ${transitions.color}`}>
                       {video.title}
                     </h3>
                     <div className={`flex items-center justify-center ${authorMeta.containerGap.tight} ${typography.meta.small} font-sans uppercase tracking-wide`}>
@@ -292,7 +293,7 @@ export default async function HomePage() {
 
         {/* Dailies Section - Less prominent than other sections */}
         <FadeInSection delay={0.2}>
-          <div className="bg-bg-offwhite py-10 sm:py-12 lg:py-14">
+          <div className="bg-bg-offwhite pb-10 sm:pb-12 lg:pb-14">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header - Using SectionHeader component */}
             <SectionHeader title="Dailies" ctaHref="/category/articles" ctaText="See All" />
@@ -338,7 +339,7 @@ export default async function HomePage() {
 
         {/* Opinion & Analysis Section */}
         <FadeInSection delay={0.1}>
-          <div className="bg-white py-12 sm:py-16 lg:py-20">
+          <div className="bg-white pb-12 sm:pb-16 lg:pb-20">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header - Using SectionHeader component */}
             <SectionHeader title="Opinion & Analysis" ctaHref="/category/opinion" ctaText="See All" />
@@ -388,7 +389,7 @@ export default async function HomePage() {
 
         {/* Audio Section (Podcasts, LN Radio) */}
         <FadeInSection delay={0.2}>
-          <div className="bg-bg-offwhite py-12 sm:py-16 lg:py-20 relative overflow-hidden">
+          <div className="bg-bg-offwhite pb-12 sm:pb-16 lg:pb-20 relative overflow-hidden">
           <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
             {/* Section Header */}
             <SectionHeader title="Audio" ctaHref="/category/audio" ctaText="Listen to more podcasts" />
@@ -397,7 +398,7 @@ export default async function HomePage() {
                 <article key={post.id} className="group text-center">
                   <Link href={`/${post.slug}`}>
                     {post._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
-                      <div className="relative w-full aspect-[580/436] bg-gray-200 mb-4 overflow-hidden">
+                      <div className="relative w-full aspect-[580/436] bg-gray-200 overflow-hidden">
                         <Image
                           src={post._embedded['wp:featuredmedia'][0].source_url}
                           alt={decodeHtmlEntities(post.title.rendered)}
@@ -430,7 +431,7 @@ export default async function HomePage() {
                         </div>
                       </div>
                     )}
-                    <h3 className="font-display font-black text-xl sm:text-2xl md:text-3xl leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
+                    <h3 className="font-display font-black text-xl sm:text-2xl md:text-3xl leading-[1.2] mt-3 mb-3 group-hover:text-primary-red transition-colors duration-300">
                       {decodeHtmlEntities(post.title.rendered)}
                     </h3>
                     <div className="flex items-center justify-center gap-2 text-xs font-sans uppercase tracking-wide">
@@ -451,44 +452,7 @@ export default async function HomePage() {
 
         {/* Donate Section - Fixed height container with contained video */}
         <FadeInSection delay={0.1}>
-          <div className="bg-black relative overflow-hidden h-[450px]">
-          {/* Video Background - Strictly contained within section bounds */}
-          <div className="absolute inset-0 overflow-hidden">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover opacity-40"
-              style={{ maxHeight: '450px' }}
-            >
-              <source src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Untitled%20video-FU26yq0MK1y0rKSt7TYfo68XneAQ14.mp4" type="video/mp4" />
-            </video>
-            {/* Dark overlay for text readability */}
-            <div className="absolute inset-0 bg-black/60" />
-          </div>
-
-          {/* Spotlight Effect */}
-          <Spotlight />
-
-          {/* Content - centered vertically and horizontally */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="max-w-[800px] mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-              <span className="inline-block font-sans font-bold text-xs uppercase text-primary-red tracking-widest mb-4">
-                Support Independent Journalism
-              </span>
-              <h2 className="font-display font-black text-3xl sm:text-4xl md:text-5xl mb-4 uppercase text-white leading-tight">
-                Defend Free Speech
-              </h2>
-              <p className="font-serif text-base sm:text-lg text-gray-300 mb-6 leading-relaxed max-w-[600px] mx-auto">
-                Your support keeps Liberty Nation independent and fearless in defending truth and the Constitution.
-              </p>
-              <Link href="/donate" className="inline-block bg-primary-red text-white px-8 py-3 font-sans font-bold text-sm uppercase hover:bg-white hover:text-primary-red transition-all duration-300">
-                Donate Now
-              </Link>
-            </div>
-          </div>
-        </div>
+          <DonateSection />
         </FadeInSection>
 
         {/* More Stories Section */}

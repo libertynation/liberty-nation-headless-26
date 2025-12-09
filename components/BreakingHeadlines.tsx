@@ -65,7 +65,7 @@ export default function BreakingHeadlines({ posts }: BreakingHeadlinesProps) {
                 href={`/${post.slug}`}
                 className="text-center group"
               >
-                <p className={`font-display text-lg font-black text-gray-900 group-hover:text-primary-red ${transitions.fast} leading-tight line-clamp-3`}>
+                <p className={`font-display text-lg font-black text-gray-900 group-hover:text-primary-red ${transitions.fast} leading-tight line-clamp-3 mb-0`}>
                   {decodeHtmlEntities(post.title.rendered)}
                 </p>
               </Link>

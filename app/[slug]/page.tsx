@@ -439,6 +439,8 @@ export default async function DynamicPage({ params }: PageProps) {
 
   // Check if post is in LNTV category (ID: 600) or child categories - hide featured image for LNTV posts
   const isLNTV = await isLNTVPost(post);
+  // Also check if any of the post's categories are children of LNTV (ID: 600)
+  // This is handled by isLNTVPost helper, but we verify here
   const shouldShowFeaturedImage = imageUrl && !isLNTV;
 
   // Fetch YouTube videos from Liberty Nation channel

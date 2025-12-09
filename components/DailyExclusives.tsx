@@ -39,7 +39,7 @@ export default function DailyExclusives({ posts }: DailyExclusivesProps) {
           <article className="group">
             <Link href={`/${featuredPost.slug}`}>
               {getFeaturedImageUrl(featuredPost) && (
-                <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-200 mb-4 shadow-xl">
+                <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-200 shadow-xl">
                   <Image
                     src={getFeaturedImageUrl(featuredPost)!}
                     alt={decodeHtmlEntities(featuredPost.title.rendered)}
@@ -51,7 +51,7 @@ export default function DailyExclusives({ posts }: DailyExclusivesProps) {
                 </div>
               )}
 
-              <h3 className="font-display font-black text-3xl sm:text-4xl md:text-5xl leading-[1.1] mb-4 group-hover:text-primary-red transition-colors duration-300">
+              <h3 className="font-display font-black text-3xl sm:text-4xl md:text-5xl leading-[1.1] mt-3 mb-4 group-hover:text-primary-red transition-colors duration-300">
                 {decodeHtmlEntities(featuredPost.title.rendered)}
               </h3>
 
@@ -83,7 +83,7 @@ export default function DailyExclusives({ posts }: DailyExclusivesProps) {
                 <article key={post.id} className="group">
                   <Link href={`/${post.slug}`}>
                     {imageUrl && (
-                      <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-200 mb-3 shadow-md">
+                      <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-200 shadow-md">
                         <Image
                           src={imageUrl}
                           alt={decodeHtmlEntities(post.title.rendered)}
@@ -94,7 +94,7 @@ export default function DailyExclusives({ posts }: DailyExclusivesProps) {
                       </div>
                     )}
 
-                    <h4 className="font-display font-black text-xl sm:text-2xl leading-[1.2] mb-3 group-hover:text-primary-red transition-colors duration-300">
+                    <h4 className="font-display font-black text-xl sm:text-2xl leading-[1.2] mt-3 mb-3 group-hover:text-primary-red transition-colors duration-300">
                       {decodeHtmlEntities(post.title.rendered)}
                     </h4>
 

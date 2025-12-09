@@ -42,24 +42,24 @@ export default async function CategoryButtons() {
       {/* Bottom border */}
       <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-black" />
 
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-6">
-        <div className="flex items-center gap-6">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-10 py-8">
+        <div className="flex flex-col lg:flex-row items-stretch gap-6">
           {/* Explore Topics Label - Black box with white text */}
-          <div className="flex-shrink-0">
-            <span className="font-sans font-black text-xl uppercase text-white bg-black px-6 py-4 inline-block tracking-tight">
+          <div className="flex-shrink-0 self-stretch flex">
+            <span className="font-sans font-black text-lg uppercase text-white bg-black px-6 py-4 rounded-sm flex items-center justify-center tracking-tight h-full">
               EXPLORE TOPICS
             </span>
           </div>
 
-          {/* Category Grid - Inline with label, items-center for vertical alignment */}
-          <div className="flex-1 grid grid-cols-4 lg:grid-cols-8 gap-3 items-center">
+          {/* Category Grid - Inline with label */}
+          <div className="flex-1 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
             {displayCategories.map((category) => (
               <Link
                 key={category.id}
                 href={`/category/${category.slug}`}
-                className="group text-center py-4 px-3 border-2 border-gray-200 hover:border-black hover:bg-black transition-all duration-300 flex items-center justify-center"
+                className="group text-center py-4 px-3 border-2 border-gray-200 hover:border-black hover:bg-black rounded-sm transition-all duration-300 flex items-center justify-center h-full min-h-[80px]"
               >
-                <h3 className="font-sans font-bold text-sm text-gray-900 group-hover:text-white transition-colors duration-300 leading-tight">
+                <h3 className="font-sans font-bold text-xs sm:text-sm text-gray-900 group-hover:text-white transition-colors duration-300 leading-tight uppercase line-clamp-3 mt-0 mb-0">
                   {category.name}
                 </h3>
               </Link>

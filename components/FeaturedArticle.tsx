@@ -21,7 +21,7 @@ export default function FeaturedArticle({ post }: FeaturedArticleProps) {
     <article className="group">
       <Link href={`/${post.slug}`} prefetch={true}>
         {imageUrl && (
-          <div className={`relative w-full ${aspectRatios.hero} overflow-hidden bg-gray-200 ${spacing.mb.lg} ${shadows.card} ${shadows.cardHover} ${transitions.shadow}`}>
+          <div className={`relative w-full ${aspectRatios.hero} overflow-hidden bg-gray-200 ${shadows.card} ${shadows.cardHover} ${transitions.shadow} ${spacing.mb.sm}`}>
             <Image
               src={imageUrl}
               alt={post.title.rendered}

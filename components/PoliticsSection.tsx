@@ -39,7 +39,7 @@ export default function PoliticsSection({ posts }: PoliticsSectionProps) {
           <article className="group">
             <Link href={`/${featuredPost.slug}`}>
               {getFeaturedImageUrl(featuredPost) && (
-                <div className="relative w-full aspect-[16/10] overflow-hidden bg-gray-200 mb-5 shadow-xl">
+                <div className="relative w-full aspect-[16/10] overflow-hidden bg-gray-200 shadow-xl">
                   <Image
                     src={getFeaturedImageUrl(featuredPost)!}
                     alt={decodeHtmlEntities(featuredPost.title.rendered)}
@@ -50,7 +50,7 @@ export default function PoliticsSection({ posts }: PoliticsSectionProps) {
                 </div>
               )}
 
-              <h3 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl leading-[1.05] mb-5 tracking-tight group-hover:text-primary-red transition-colors duration-300">
+              <h3 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl leading-[1.05] mt-3 mb-5 tracking-tight group-hover:text-primary-red transition-colors duration-300">
                 {decodeHtmlEntities(featuredPost.title.rendered)}
               </h3>
 
@@ -83,7 +83,7 @@ export default function PoliticsSection({ posts }: PoliticsSectionProps) {
                 <article key={post.id} className="group flex flex-col">
                   <Link href={`/${post.slug}`} className="flex flex-col h-full">
                     {imageUrl && (
-                      <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-200 mb-3 shadow-md">
+                      <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-200 shadow-md">
                         <Image
                           src={imageUrl}
                           alt={decodeHtmlEntities(post.title.rendered)}
@@ -94,7 +94,7 @@ export default function PoliticsSection({ posts }: PoliticsSectionProps) {
                       </div>
                     )}
 
-                    <h4 className="font-display font-black text-lg sm:text-xl leading-[1.2] mb-2 group-hover:text-primary-red transition-colors duration-300">
+                    <h4 className="font-display font-black text-lg sm:text-xl leading-[1.2] mt-3 mb-2 group-hover:text-primary-red transition-colors duration-300">
                       {decodeHtmlEntities(post.title.rendered)}
                     </h4>
 

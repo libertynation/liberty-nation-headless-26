@@ -22,7 +22,7 @@ export default function ArticleCard({ post, variant = 'sidebar' }: ArticleCardPr
     <article className="group text-center">
       <Link href={`/${post.slug}`} className="block" prefetch={true}>
         {imageUrl && (
-          <div className={`relative w-full ${aspectRatios.hero} overflow-hidden bg-gray-200 ${spacing.mb.sm}`}>
+          <div className={`relative w-full ${aspectRatios.hero} overflow-hidden bg-gray-200`}>
             <Image
               src={imageUrl}
               alt={post.title.rendered}
@@ -36,7 +36,7 @@ export default function ArticleCard({ post, variant = 'sidebar' }: ArticleCardPr
           </div>
         )}
 
-        <h3 className={`font-display font-black ${typography.card.large} ${spacing.mb.sm} tracking-tight group-hover:text-primary-red ${transitions.color}`}>
+        <h3 className={`font-display font-black ${typography.card.large} mt-5 ${spacing.mb.sm} tracking-tight group-hover:text-primary-red ${transitions.color}`}>
           {decodeHtmlEntities(post.title.rendered)}
         </h3>
 

@@ -86,7 +86,7 @@ export default function ExclusivesSliderFinal({ posts }: ExclusivesSliderFinalPr
                   <div className="relative z-10 px-4 lg:px-6 py-4 w-full">
                     <Link href={`/${post.slug}`}>
                       <motion.h3
-                        className="font-display font-bold text-lg lg:text-xl leading-tight mb-1"
+                        className="font-display font-bold text-lg lg:text-xl leading-tight mb-4 mt-0"
                         animate={{ color: isActive ? '#ffffff' : '#000000' }}
                         transition={{ duration: 0.6 }}
                       >
