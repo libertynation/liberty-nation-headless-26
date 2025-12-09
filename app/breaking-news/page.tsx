@@ -1,4 +1,4 @@
-import { getPosts, getFeaturedImageUrl, getAuthorName, formatDate, decodeHtmlEntities } from '@/lib/wordpress';
+import { getPosts, getFeaturedImageUrl, getAuthorName, formatDate, decodeHtmlEntities, type WordPressPost } from '@/lib/wordpress';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
@@ -13,7 +13,14 @@ export const metadata = {
 
 export default async function BreakingNewsPage() {
   // Fetch latest posts as "breaking news"
-  const posts = await getPosts({ per_page: 20, orderby: 'date', order: 'desc' });
+  // Wrap in try-catch to handle SSL cert issues during Vercel builds
+  let posts: WordPressPost[] = [];
+  try {
+    posts = await getPosts({ per_page: 20, orderby: 'date', order: 'desc' });
+  } catch (error) {
+    console.error('Error fetching breaking news posts:', error);
+    // ISR will retry and update the page
+  }
 
   return (
     <>
