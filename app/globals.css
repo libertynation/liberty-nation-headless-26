@@ -31,7 +31,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.02em;
-  color: var(--text-dark);
+  /* Color inherited from parent - allows text-white to work on dark backgrounds */
 }
 
 /* Specific heading sizes */
@@ -70,7 +70,7 @@ p {
   font-size: 1.125rem; /* 18px */
   line-height: 1.7;
   margin-bottom: 1.5rem;
-  color: var(--text-dark);
+  /* Color inherited from parent - allows text-white to work on dark backgrounds */
 }
 
 @layer utilities {

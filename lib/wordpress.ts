@@ -1,4 +1,4 @@
-const API_URL = process.env.WORDPRESS_API_URL || 'https://libertynation.com/wp-json/wp/v2';
+const API_URL = process.env.WORDPRESS_API_URL || 'https://www.libertynation.com/wp-json/wp/v2';
 const WP_USERNAME = process.env.WP_APP_USERNAME;
 const WP_PASSWORD = process.env.WP_APP_PASSWORD;
 

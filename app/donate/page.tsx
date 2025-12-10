@@ -26,7 +26,7 @@ export default function DonatePage() {
       <Header />
       <main className="min-h-screen bg-white">
         {/* Hero Section - High contrast with more padding for header */}
-        <section className="bg-text-dark text-white relative overflow-hidden">
+        <section className="bg-text-dark relative overflow-hidden">
           {/* Accent bar */}
           <div className="absolute top-0 left-0 w-2 h-full bg-primary-red" />
 
@@ -42,10 +42,10 @@ export default function DonatePage() {
                 <p className="font-sans text-xs font-bold uppercase tracking-[0.3em] text-primary-red mb-6">
                   Support Our Mission
                 </p>
-                <h1 className="font-display font-black text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-8 uppercase">
+                <h1 className="font-display font-black text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-8 uppercase text-white">
                   Defend Truth.<br />Fund Freedom.
                 </h1>
-                <p className="font-serif text-xl text-white/70 leading-[1.6] max-w-[500px]">
+                <p className="font-serif text-xl text-gray-300 leading-[1.6] max-w-[500px]">
                   Your tax-deductible contribution powers independent journalism that holds power accountable and champions constitutional liberty.
                 </p>
               </div>
@@ -237,12 +237,12 @@ export default function DonatePage() {
         </section>
 
         {/* Quote Section - Replace fake testimonials */}
-        <section className="py-20 md:py-24 bg-text-dark text-white">
+        <section className="py-20 md:py-24 bg-text-dark">
           <div className="max-w-[900px] mx-auto px-8">
             <div className="text-center">
               <blockquote className="relative">
                 <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-primary-red text-9xl font-serif leading-none opacity-20">"</div>
-                <p className="font-serif text-2xl md:text-3xl lg:text-4xl leading-[1.5] mb-8 relative z-10">
+                <p className="font-serif text-2xl md:text-3xl lg:text-4xl leading-[1.5] mb-8 relative z-10 text-white">
                   The strength of a free press lies not in its independence from the government,
                   but in its independence from special interests that would corrupt the truth.
                 </p>

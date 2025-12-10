@@ -365,9 +365,9 @@ export default function Header() {
                 DONATE
               </Link>
             </nav>
-            <button className="hidden sm:block text-primary-red px-4 lg:px-6 py-2 font-sans font-bold text-xs lg:text-sm uppercase hover:bg-primary-red hover:text-white transition whitespace-nowrap border-2 border-primary-red">
+            <Link href="/subscribe" className="hidden sm:block text-primary-red px-4 lg:px-6 py-2 font-sans font-bold text-xs lg:text-sm uppercase hover:bg-primary-red hover:text-white transition whitespace-nowrap border-2 border-primary-red">
               SUBSCRIBE
-            </button>
+            </Link>
           </div>
         </div>
       </header>

@@ -9,27 +9,33 @@ interface PageTransitionProps {
 }
 
 /**
- * Page transition wrapper that provides smooth fade/slide transitions
- * when navigating between pages without affecting analytics pageviews
+ * Page transition wrapper that provides smooth fade transitions
+ * Uses popLayout mode to prevent white flash by keeping old content visible
+ * during the transition
  */
 export default function PageTransition({ children }: PageTransitionProps) {
   const pathname = usePathname();
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence mode="popLayout" initial={false}>
       <motion.div
         key={pathname}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         transition={{
-          type: 'spring',
-          stiffness: 260,
-          damping: 20,
-          duration: 0.3,
+          duration: 0.15,
+          ease: 'easeInOut',
+        }}
+        style={{
+          position: 'relative',
+          minHeight: '100vh',
+          backgroundColor: '#161613', // Match text-dark to prevent white flash
         }}
       >
-        {children}
+        <div style={{ backgroundColor: '#ffffff' }}>
+          {children}
+        </div>
       </motion.div>
     </AnimatePresence>
   );

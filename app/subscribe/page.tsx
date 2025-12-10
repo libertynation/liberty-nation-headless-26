@@ -29,7 +29,7 @@ export default function SubscribePage() {
       <Header />
       <main className="min-h-screen bg-white">
         {/* Hero Section */}
-        <section className="bg-text-dark text-white relative overflow-hidden">
+        <section className="bg-text-dark relative overflow-hidden">
           {/* Background pattern */}
           <div className="absolute inset-0 opacity-5" style={{
             backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
@@ -40,10 +40,10 @@ export default function SubscribePage() {
               <p className="font-sans text-xs font-bold uppercase tracking-[0.3em] text-primary-red mb-6">
                 Stay Connected
               </p>
-              <h1 className="font-display font-black text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-6 uppercase">
+              <h1 className="font-display font-black text-5xl md:text-6xl lg:text-7xl leading-[1.05] mb-6 uppercase text-white">
                 Subscribe to Liberty Nation
               </h1>
-              <p className="font-serif text-xl md:text-2xl text-white/70 leading-[1.6]">
+              <p className="font-serif text-xl md:text-2xl text-gray-300 leading-[1.6]">
                 Choose how you want to stay informed with independent journalism
               </p>
             </div>
@@ -54,22 +54,22 @@ export default function SubscribePage() {
         </section>
 
         {/* Daily Briefing - Primary CTA */}
-        <section className="py-16 md:py-20 bg-primary-red text-white">
+        <section className="py-16 md:py-20 bg-primary-red">
           <div className="max-w-[800px] mx-auto px-8">
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-3 mb-6 bg-white/20 px-5 py-2 rounded-full">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                 </svg>
-                <span className="font-sans font-bold text-sm uppercase tracking-widest">
+                <span className="font-sans font-bold text-sm uppercase tracking-widest text-white">
                   Daily Briefing
                 </span>
               </div>
 
-              <h2 className="font-display font-black text-4xl md:text-5xl mb-4 uppercase">
+              <h2 className="font-display font-black text-4xl md:text-5xl mb-4 uppercase text-white">
                 Your Morning Dose of Liberty
               </h2>
-              <p className="font-serif text-lg md:text-xl text-white/80 max-w-[600px] mx-auto">
+              <p className="font-serif text-lg md:text-xl text-white/90 max-w-[600px] mx-auto">
                 Get the day's most important stories delivered to your inbox every morning. No fluff. No propaganda. Just truth.
               </p>
             </div>
@@ -108,24 +108,24 @@ export default function SubscribePage() {
               </form>
             )}
 
-            <div className="flex items-center justify-center gap-6 mt-6 text-sm text-white/70">
+            <div className="flex flex-wrap items-center justify-center gap-6 mt-6 text-sm text-white/80">
               <div className="flex items-center gap-2">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span className="font-sans font-semibold">Free Forever</span>
+                <span className="font-sans font-semibold text-white">Free Forever</span>
               </div>
               <div className="flex items-center gap-2">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span className="font-sans font-semibold">No Spam</span>
+                <span className="font-sans font-semibold text-white">No Spam</span>
               </div>
               <div className="flex items-center gap-2">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span className="font-sans font-semibold">Unsubscribe Anytime</span>
+                <span className="font-sans font-semibold text-white">Unsubscribe Anytime</span>
               </div>
             </div>
           </div>
@@ -301,9 +301,9 @@ export default function SubscribePage() {
         </section>
 
         {/* Social Media Section */}
-        <section className="py-16 bg-text-dark text-white">
+        <section className="py-16 bg-text-dark">
           <div className="max-w-[800px] mx-auto px-8 text-center">
-            <h3 className="font-display font-bold text-2xl mb-8">
+            <h3 className="font-display font-bold text-2xl mb-8 text-white">
               Follow Us on Social Media
             </h3>
             <div className="flex justify-center gap-6">

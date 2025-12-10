@@ -134,9 +134,9 @@ export default function AboutPage() {
             <p className={`font-serif ${typography.body.lg} mb-8 text-white leading-[1.8]`}>
               Stay informed with independent news and commentary delivered daily to your inbox
             </p>
-            <button className="bg-white text-primary-red px-8 py-4 font-sans font-bold text-sm uppercase hover:bg-gray-100 transition">
+            <a href="/subscribe" className="inline-block bg-white text-primary-red px-8 py-4 font-sans font-bold text-sm uppercase hover:bg-gray-100 transition">
               Subscribe Now
-            </button>
+            </a>
           </div>
         </div>
       </main>
