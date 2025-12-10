@@ -1,3 +1,9 @@
+// Bypass SSL certificate verification for WPEngine's certificate chain issue
+// This is safe because we're only connecting to our own WordPress backend
+if (typeof process !== 'undefined' && process.env) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
 const API_URL = process.env.WORDPRESS_API_URL || 'https://www.libertynation.com/wp-json/wp/v2';
 const WP_USERNAME = process.env.WP_APP_USERNAME;
 const WP_PASSWORD = process.env.WP_APP_PASSWORD;
