@@ -5,6 +5,17 @@ import PageTransition from "@/components/PageTransition";
 export const metadata: Metadata = {
   title: "Liberty Nation - Free Thinking. Free Speech.",
   description: "Independent news and commentary for the liberty-minded",
+  // Block all search engine indexing - this is a dev/staging site
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+    },
+  },
 };
 
 export default function RootLayout({
